@@ -1,7 +1,9 @@
 # Personal Career Website — Codex implementation specification
 
-Status: implementation-ready v1.0 (2026-10-22)
+Status: current canonical specification v4.1 (2026-10-22)
 Owner: portfolio owner; GitHub: https://github.com/no0vie
+
+This file incorporates the approved Portfolio Update v4 requirements and is the single product and public-fact specification. Historical implementation decisions belong in `docs/DECISIONS.md`; actual verification results belong in `docs/QA.md`.
 
 ## 1. Product definition
 
@@ -37,9 +39,9 @@ Use the selected Figma community design as _inspiration only_ if it can be inspe
 
 ## 4. Spore-inspired optional Evolution mode
 
-- Concept: career growth from early frontend work (Tensor, 2017–2021) to product/platform engineering (Yandex Market, 2021–2024) to architecture/ownership/automation (MTS Web Services, 2024–present).
+- Concept: career growth from paid early software work at FRUCT (2015–2016), through frontend work at Tensor (2017–2021), product/platform engineering at Yandex Market (2021–2024), to architecture/ownership/automation at MTS Web Services (2024–present). A Tensor scholarship/Tic-Tac-Toe milestone may appear between FRUCT and Tensor but is not employment and does not increase experience duration.
 - Inspiration is evolution/progression and branching skill acquisition; **do not copy Spore assets, trademarks, creatures, audio or UI**.
-- SVG / CSS / React-driven interactive map; 3 primary career nodes and optional child nodes for case studies and technologies.
+- SVG / CSS / React-driven interactive map or factual timeline; 4 employment nodes and optional milestone/child nodes for transitions, case studies and technologies.
 - Click/tap/keyboard to focus nodes and show factual text panels. Optional guided autoplay, paused by interaction, default off. No forced animations; obey `prefers-reduced-motion`.
 - Mobile fallback: vertical stepper / timeline, same data, same content. Full noninteractive textual fallback.
 - Build only after core resume, bilingual content, print and accessibility are complete. Feature flag `ENABLE_EVOLUTION`; optional mode can be disabled without breaking routes/navigation.
@@ -97,10 +99,26 @@ type CareerItem = {
   role: Localized;
   start: string; // YYYY-MM
   end?: string;
+  datePrecision: 'exact' | 'approximate';
   overview: Localized;
   achievements: Array<{ id: string; text: Localized; evidence: Evidence; publishable: boolean }>;
   technologies: string[];
   caseStudySlugs: string[];
+};
+type CareerMilestone = {
+  id: string;
+  afterExperienceId: string;
+  beforeExperienceId: string;
+  title: Localized;
+  text: Localized;
+  githubUrl?: string; // verify ownership and content before publishing
+};
+type Availability = {
+  status: 'available' | 'selective' | 'unavailable' | 'unknown';
+  label: Localized;
+  updatedAt: string; // YYYY-MM-DD
+  source: 'manual' | 'hh';
+  verifiedAt?: string;
 };
 type Project = {
   slug: string;
@@ -114,9 +132,23 @@ type Project = {
 };
 ```
 
-`publishable=false` content must NEVER be emitted into client bundles, generated HTML, PDF, metadata, search index, source maps or static JSON. Better: store private notes outside the repository entirely; public content schema should accept only approved content. Build validator fails on unapproved metrics or unsupported public links. Do not commit personal phone/email without explicit user approval. Owner approval was granted for `eugene.malin765@gmail.com`, `evgeniys-nov@yandex.ru`, `https://t.me/no_0vie`, and the WhatsApp QR URL `https://wa.me/qr/XFZZQSNXJCSBL1`. The owner approved the static availability statement “Рассматриваю предложения” / “Open to opportunities”. Do not expose a phone number, link to external resume services, or infer availability dynamically.
+`publishable=false` content must NEVER be emitted into client bundles, generated HTML, PDF, metadata, search index, source maps or static JSON. Better: store private notes outside the repository entirely; public content schema should accept only approved content. Build validator fails on unapproved metrics or unsupported public links. Do not commit personal phone/email without explicit user approval. Owner approval was granted for `eugene.malin765@gmail.com`, `evgeniys-nov@yandex.ru`, `https://t.me/no_0vie`, and the WhatsApp QR URL `https://wa.me/qr/XFZZQSNXJCSBL1`. The current owner-approved manual availability record is `available`, labeled “Рассматриваю предложения” / “Open to opportunities”, updated `2026-10-22`, source `manual`. HTML, both PDFs and build-generated `/availability.json` must use this one record without mandatory runtime fetching. Do not expose a phone number, link to external resume services, infer availability from HH publication state or automatically change it to `available`.
 
 ## 7. Seed career content — verified facts
+
+### FRUCT Laboratory — 2015 to 2016
+
+Public employer label: «Лаборатория FRUCT, Ярославский государственный университет им. П. Г. Демидова» / “FRUCT Laboratory, P. G. Demidov Yaroslavl State University”. Role: «Разработчик ПО (внештатная почасовая работа)» / “Software Developer (part-time, hourly paid contractor)”. Internally retain approximate dates `2015-07`–`2016-12` with `datePrecision: 'approximate'`; publicly show only `2015–2016`.
+
+- Paid university-laboratory work on software for LED information displays.
+- Implemented software for a glass factory in Gus-Khrustalny and contributed to petrol-station and sports-display solutions. Do not imply sole development of the entire system or hardware.
+- Used Java and Kotlin, Mattermost and an unspecified task tracker. Do not publish “Redmine” as a fact.
+- Participated in a hackathon developing an application for Aurora mobile OS using C++ and QML. This was a hackathon, not commercial OS development or a current core specialization.
+- Do not invent customer/manufacturer identities, deployment scale or commercial outcomes.
+
+### Tensor transition milestone
+
+Not employment: joined Tensor through its student scholarship programme and built a Tic-Tac-Toe project for the final technical interview. The verified repository is `https://github.com/no0vie/tic-tac-toe`. Keep this out of top highlights and HH/LinkedIn core achievements; it must not increase experience duration.
 
 ### Tensor (Тензор) — Jan 2017 to Mar 2021
 
@@ -142,7 +174,11 @@ Role: Lead Developer / Ведущий разработчик. OMNI and ORP produ
 - Owned substantial frontend architecture and implementation of cascade campaigns wizard.
 - First release supported **three channels: SMS, MMS, Email**.
 - Common channel contract + isolated per-channel state/forms/business rules; extensible architecture.
-- New channel or form replacement typically **1–2 working days including fixes after testing**.
+- Canonical RU heading: **«Архитектура, рассчитанная на развитие»**.
+- Canonical RU text: **«Спроектировал расширяемую архитектуру мастера каскадных кампаний, изолировав логику отдельных каналов и их формы от общего сценария. Благодаря этому добавление нового канала или замена редактора стали занимать 1–2 рабочих дня, включая исправления после тестирования, вместо примерно двухнедельного спринта в существовавшем механизме с аналогичной функциональностью.»**
+- Canonical EN heading: **“Architecture designed for extensibility”**.
+- Canonical EN text: **“Designed an extensible cascade campaign wizard architecture, separating channel-specific logic and forms from the shared workflow. This reduced the effort required to add a new channel or replace an editor to 1–2 working days, including post-testing fixes, compared with approximately a two-week sprint in the existing implementation of similar functionality.”**
+- Reuse the canonical record in Highlights, Experience, case studies, clipboard/export text and PDF; do not maintain shortened conflicting copies.
 - SMS and MMS later migrated to newer template editors without major architectural rework.
 - UX constraints, client-side validation, mapping public API errors to human-readable feedback.
 - Similar legacy campaign flow required roughly **one two-week sprint** for adding a channel; **not a controlled apples-to-apples benchmark**. If published, phrase explicitly as an approximate comparison of different modules, never as '10x proven acceleration'.
@@ -162,9 +198,9 @@ GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https:/
 
 ## 8. Content writing and bilingual editorial policy
 
-- Position: **Senior Software Engineer (Frontend-focused)**, not unqualified Fullstack Architect.
+- Public position: **Senior Software Engineer (Frontend-focused)** / **Старший разработчик ПО (фокус на фронтенде)**, not unqualified Fullstack Architect. Preserve official historical role titles in experience records.
 - Russian and English are separately edited but semantically equivalent. No runtime machine translation.
-- English wording must be idiomatic and restrained. Sample: 'Designed an extensible campaign wizard supporting SMS, MMS, and email at launch. Subsequent channel integrations and editor replacements typically took 1–2 working days, including post-test fixes.'
+- English wording must be idiomatic and restrained. For the MTS extensibility result, use the canonical text above so the architecture, 1–2 working days and approximate two-week baseline remain together.
 - Each achievement should express action + technical decision + effect where confirmed. If no metric, emphasize scope, tradeoffs, experimentation or ownership.
 - Avoid fabricated business numbers, cache hit ratios, traffic volumes, test coverage, growth, dates or causality.
 - Public case studies: problem → constraints → approach → tradeoffs → results (verified) → lessons. Do not disclose proprietary code, internal diagrams or contract details.
@@ -215,7 +251,7 @@ GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https:/
 
 ## 13. Definition of Done
 
-1. RU and EN resume pages are complete, factually aligned, and readable without opening the evolution mode.
+1. RU and EN resume pages are complete, factually aligned, include FRUCT before Tensor, and are readable without opening the evolution mode.
 2. Both themes work and persist; system theme honored by default.
 3. Mobile layouts work down to 320px with no horizontal scrolling.
 4. Downloadable RU/EN PDF matches site content and contains selectable text.
@@ -228,4 +264,4 @@ GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https:/
 
 ## 14. Instructions to Codex
 
-Implement incrementally, with working commits/checkpoints per phase. Start by inspecting repository and writing a short plan. Make reasonable implementation decisions without repeatedly asking for cosmetic choices, but **ask for approval before publishing personal contact data, confidential company information, unverifiable performance metrics, or unverified external links**. Do not manufacture proof. Keep project buildable at every phase. After each phase run available validation and report exact results. If a dependency, Figma or GitHub access is unavailable, document the limitation and continue with a graceful fallback. Avoid overengineering.
+Implement incrementally, with working checkpoints per phase. Start by inspecting the repository and writing a short plan. Make reasonable implementation decisions without repeatedly asking for cosmetic choices, but **ask for approval before publishing personal contact data, confidential company information, unverifiable performance metrics, or unverified external links**. Do not manufacture proof. Keep the project buildable at every phase. After each phase run available validation and report exact results. If a dependency, design reference or GitHub access is unavailable, document the limitation and continue with a graceful fallback. Avoid overengineering. When this specification changes, update `AGENTS.md`, the relevant project skill, README, decisions and QA only where their responsibilities are affected; do not add another competing current specification.

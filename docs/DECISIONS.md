@@ -52,3 +52,10 @@
 - Availability now has `available | selective | unavailable | unknown`, `updatedAt`, `source` and optional `verifiedAt`; the current owner-approved manual value is emitted to `/availability.json` and reused by HTML/PDF.
 - Evolution remains optional but now follows FRUCT → Tensor → Yandex Market → MTS, with the scholarship milestone between FRUCT and Tensor.
 - HH OAuth/scraping, backend status synchronization and external profile publication remain explicitly out of scope.
+
+## Documentation consolidation (2026-10-22)
+
+- `SPEC.md` is the single current product and public-fact specification and incorporates Portfolio Update v4. New updates must revise it rather than add another competing current spec.
+- One-time task instructions and completed migration audits are removed after their durable decisions and verification boundaries have been moved into `docs/DECISIONS.md` and `docs/QA.md`.
+- `docs/QA.md` keeps current reproducible results first and labels older Lighthouse evidence as historical. Recruiter-readiness follow-ups now live in QA instead of a separate stale audit.
+- `README.md` remains operational documentation; `docs/CONTENT_POLICY.md` remains the publication/privacy policy; `.agents/skills/career-update/SKILL.md` remains the reusable career-editing workflow.
