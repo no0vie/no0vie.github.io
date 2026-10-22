@@ -1,11 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { experience, highlights, profile, type Locale } from '../content';
+import { experience, highlights, profile, projects, skillGroups, type Locale } from '../content';
 import { cases } from '../content/cases';
 import { copy } from './copy';
 import { localePath, pageKind, pdfPath } from './routes';
+import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 
 type Theme = 'system' | 'light' | 'dark';
 const themes: Theme[] = ['system', 'light', 'dark'];
+
+function CopyButton({ locale, text }: { locale: Locale; text: string }) {
+  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const t = copy[locale];
+
+  async function copyBlock() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setStatus('copied');
+      window.setTimeout(() => setStatus('idle'), 2000);
+    } catch {
+      setStatus('failed');
+    }
+  }
+
+  const label = status === 'copied' ? t.copied : status === 'failed' ? t.copyFailed : t.copy;
+  return (
+    <button type="button" className="copy-button" onClick={() => void copyBlock()}>
+      {label}
+      <span aria-hidden="true"> ⧉</span>
+    </button>
+  );
+}
+
+function ProjectCards({ locale }: { locale: Locale }) {
+  const t = copy[locale];
+  const stageLabel = {
+    released: t.released,
+    'in-progress': t.inProgress,
+    concept: t.concept,
+  } as const;
+  return (
+    <div className="project-grid">
+      {projects.map((project) => (
+        <article className="project-card" key={project.slug}>
+          <div className="project-heading">
+            <h3>{project.title[locale]}</h3>
+            <span className={`stage stage-${project.stage}`}>{stageLabel[project.stage]}</span>
+          </div>
+          <p>{project.summary[locale]}</p>
+          {project.tech.length > 0 && (
+            <ul className="tags" aria-label={t.skills}>
+              {project.tech.map((technology) => (
+                <li key={technology}>{technology}</li>
+              ))}
+            </ul>
+          )}
+          {project.githubUrl && (
+            <a className="text-link" href={project.githubUrl} rel="noopener noreferrer">
+              {t.github} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </article>
+      ))}
+    </div>
+  );
+}
 
 function ThemeButton({ locale }: { locale: Locale }) {
   const [theme, setTheme] = useState<Theme>('system');
@@ -70,7 +128,6 @@ export function App({
     if (kind === 'evolution')
       void import('./evolution').then(({ enhanceEvolution }) => enhanceEvolution());
   }, [kind]);
-  const technologies = [...new Set(experience.flatMap((item) => item.technologies))];
 
   return (
     <>
@@ -153,7 +210,12 @@ export function App({
                 </span>
               </h1>
               <div className="hero-bottom">
-                <p className="hero-context">React / TypeScript / Frontend</p>
+                <div>
+                  <p className="hero-context">React / TypeScript / Frontend</p>
+                  <p className="availability-status">
+                    <span aria-hidden="true">●</span> {profile.availability[locale]}
+                  </p>
+                </div>
                 <a className="button primary" href={pdfPath(locale)} download>
                   {t.download}
                   <span aria-hidden="true"> ↓</span>
@@ -175,7 +237,10 @@ export function App({
               aria-labelledby="about-title"
             >
               <h2 id="about-title">{t.about}</h2>
-              <p className="lead">{profile.about[locale]}</p>
+              <div className="copyable-block">
+                <p className="lead">{profile.about[locale]}</p>
+                <CopyButton locale={locale} text={formatAboutForClipboard(profile, locale)} />
+              </div>
             </section>
             <section className="highlights-section" aria-labelledby="highlights-title">
               <h2 id="highlights-title">{t.highlights}</h2>
@@ -225,6 +290,7 @@ export function App({
                         <li key={technology}>{technology}</li>
                       ))}
                     </ul>
+                    <CopyButton locale={locale} text={formatExperienceForClipboard(item, locale)} />
                   </article>
                 ))}
               </div>
@@ -247,20 +313,25 @@ export function App({
             <section className="resume-section" id="projects" aria-labelledby="projects-title">
               <h2 id="projects-title">{t.projects}</h2>
               <div>
-                <p>{t.empty}</p>
-                <a className="text-link" href={localePath(locale, 'projects')}>
+                <ProjectCards locale={locale} />
+                <a className="text-link all-projects-link" href={localePath(locale, 'projects')}>
                   {t.projectsDetail}
                 </a>
               </div>
             </section>
             <section className="resume-section" id="skills" aria-labelledby="skills-title">
               <h2 id="skills-title">{t.skills}</h2>
-              <div>
-                <ul className="tags skills-list">
-                  {technologies.map((technology) => (
-                    <li key={technology}>{technology}</li>
-                  ))}
-                </ul>
+              <div className="skill-groups">
+                {skillGroups.map((group) => (
+                  <section key={group.id}>
+                    <h3>{group.label[locale]}</h3>
+                    <ul className="tags skills-list">
+                      {group.skills.map((skill) => (
+                        <li key={skill}>{skill}</li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
               </div>
             </section>
             <section className="resume-section" id="education" aria-labelledby="education-title">
@@ -269,11 +340,39 @@ export function App({
             </section>
             <section className="resume-section" aria-labelledby="contact-title">
               <h2 id="contact-title">{t.contact}</h2>
-              <p>
-                <a className="text-link" href={profile.github} rel="noopener noreferrer">
-                  GitHub · no0vie <span aria-hidden="true">↗</span>
-                </a>
-              </p>
+              <ul className="contact-list">
+                {profile.contacts.emails.map((email) => (
+                  <li key={email}>
+                    <a className="text-link" href={`mailto:${email}`}>
+                      {email}
+                    </a>
+                  </li>
+                ))}
+                <li>
+                  <a
+                    className="text-link"
+                    href={profile.contacts.telegram}
+                    rel="noopener noreferrer"
+                  >
+                    Telegram · @no_0vie <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="text-link"
+                    href={profile.contacts.whatsapp}
+                    rel="noopener noreferrer"
+                  >
+                    {t.whatsapp} <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+
+                <li>
+                  <a className="text-link" href={profile.github} rel="noopener noreferrer">
+                    GitHub · no0vie <span aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              </ul>
             </section>
           </>
         ) : kind === 'case' ? (
@@ -342,19 +441,16 @@ export function App({
           <section className="standalone-page" aria-labelledby="page-title">
             <p className="eyebrow">{kind === 'projects' ? t.projectsDetail : '404'}</p>
             <h1 id="page-title">{kind === 'projects' ? t.projects : t.notFound}</h1>
-            <div className="empty-state">
-              {kind === 'projects' ? (
-                <>
-                  <h2>{t.empty}</h2>
-                  <p>{t.emptyDetail}</p>
-                  <a className="text-link" href={profile.github} rel="noopener noreferrer">
-                    GitHub · no0vie ↗
-                  </a>
-                </>
-              ) : (
+            {kind === 'projects' ? (
+              <>
+                <p className="projects-intro">{t.emptyDetail}</p>
+                <ProjectCards locale={locale} />
+              </>
+            ) : (
+              <div className="empty-state">
                 <p>{t.notFoundDetail}</p>
-              )}
-            </div>
+              </div>
+            )}
             <a className="button" href={localePath(locale)}>
               {t.back} <span aria-hidden="true">→</span>
             </a>
@@ -364,6 +460,17 @@ export function App({
       <footer className="site-footer">
         <div>
           <span>{profile.name[locale]} · </span>
+          <a href={`mailto:${profile.contacts.emails[0]}`}>{profile.contacts.emails[0]}</a>
+          <span> · </span>
+          <a href={profile.contacts.telegram} rel="noopener noreferrer">
+            Telegram
+          </a>
+          <span> · </span>
+          <a href={profile.contacts.whatsapp} rel="noopener noreferrer">
+            {t.whatsapp}
+          </a>
+
+          <span> · </span>
           <a href={profile.github} rel="noopener noreferrer">
             GitHub
           </a>

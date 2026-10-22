@@ -55,7 +55,7 @@ try {
         name: profile.name[locale],
         url: config.url(locale),
         email: `mailto:${profile.contacts.emails[0]}`,
-        sameAs: [profile.github, profile.contacts.telegram, profile.hhUrl],
+        sameAs: [profile.github, profile.contacts.telegram],
         hasOccupation: { '@type': 'Occupation', name: profile.role[locale] },
         alumniOf: {
           '@type': 'EducationalOrganization',

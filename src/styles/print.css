@@ -23,7 +23,8 @@
   .skip-link,
   .section-navigation,
   .hero .button,
-  .site-footer {
+  .site-footer,
+  .copy-button {
     display: none !important;
   }
   .main-content {
@@ -134,6 +135,20 @@
     content: ' (' attr(href) ')';
     font-weight: 400;
     font-size: 9pt;
+  }
+  .project-grid {
+    display: block !important;
+  }
+  .project-card {
+    break-inside: avoid;
+    padding: 3mm 0 !important;
+    margin-bottom: 2mm;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: none !important;
+  }
+  .skill-groups section {
+    break-inside: avoid;
   }
   .standalone-page {
     min-height: 0 !important;

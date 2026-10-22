@@ -9,30 +9,34 @@ const achievement = (id: string, ru: string, en: string): Achievement => ({
 });
 
 // Source: SPEC.md §7–8 and the repository's pre-existing public index.html.
-// Editorial TODOs (not public claims): English level; address experiment outcome;
-// AI-assisted testing status; project repository audit.
+// Remaining editorial TODOs (not public claims): address experiment outcome and
+// AI-assisted testing status. Contacts, English self-assessment and project statuses are owner-approved.
 export const seedContent = {
   profile: {
     name: localized('Евгений Новиков', 'Eugene Novikov'),
-    role: localized(
-      'Старший инженер-программист · Фронтенд',
-      'Senior Software Engineer · Frontend-focused',
-    ),
+    role: localized('Старший разработчик ПО', 'Senior Software Developer'),
     about: localized(
-      'Разрабатываю интерфейсы бизнес-приложений: от корпоративных процессов до оформления заказов и управления коммуникациями. В работе уделяю внимание архитектуре фронтенда, понятному взаимодействию с пользователем и сопровождению продукта. Участвую в ревью кода и помогаю коллегам осваивать проект.',
-      'I build business application interfaces, from corporate workflows to checkout and campaign management. My work focuses on frontend architecture, clear user interactions, and ongoing product maintenance. I also review code and help colleagues get familiar with the codebase.',
+      'Разрабатываю программные продукты с 2017 года: от корпоративных бизнес-приложений до оформления заказов и платформ управления коммуникациями. Беру ответственность за архитектуру фронтенда и продуктовые сценарии, участвую в дежурствах и расследовании инцидентов, провожу ревью кода и помогаю коллегам расти.',
+      'I have built software products since 2017, from corporate business applications to checkout and communication-management platforms. I take ownership of frontend architecture and product flows, participate in production on-call and incident investigation, review code, and mentor colleagues.',
     ),
     education: localized(
-      'Ярославский государственный университет им. П. Г. Демидова. Бакалавр по направлению «Прикладная математика и информатика», 2018.',
-      'P. G. Demidov Yaroslavl State University. Bachelor’s degree in Applied Mathematics and Informatics, 2018.',
+      'Ярославский государственный университет им. П. Г. Демидова. Бакалавр по направлению «Прикладная математика и информатика», 2018. Английский — B1 (самооценка): читаю техническую документацию и уверенно общаюсь по рабочим вопросам.',
+      'P. G. Demidov Yaroslavl State University. Bachelor’s degree in Applied Mathematics and Informatics, 2018. English — B1 (self-assessed): I read technical documentation and communicate comfortably on work topics.',
     ),
     github: 'https://github.com/no0vie',
+
+    availability: localized('Рассматриваю предложения', 'Open to opportunities'),
+    contacts: {
+      emails: ['eugene.malin765@gmail.com', 'evgeniys-nov@yandex.ru'],
+      telegram: 'https://t.me/no_0vie',
+      whatsapp: 'https://wa.me/qr/XFZZQSNXJCSBL1',
+    },
     updated: '2026-10-22',
   },
   highlights: [
     localized(
-      'Спроектировал расширяемый мастер каскадных кампаний с общим контрактом каналов и изолированными формами и состоянием.',
-      'Designed an extensible cascade campaign wizard with a shared channel contract and isolated forms and state.',
+      'Спроектировал расширяемый мастер каскадных кампаний: подключение нового канала или замена формы обычно занимали 1–2 рабочих дня с учётом исправлений после тестирования.',
+      'Designed an extensible cascade campaign wizard where adding a channel or replacing a form typically took 1–2 working days, including post-test fixes.',
     ),
     localized(
       'Участвовал в оптимизации кеширования адресных данных в Memcached, снизившей нагрузку на адресный сервис.',
@@ -47,7 +51,7 @@ export const seedContent = {
     {
       id: 'mts',
       employer: localized('МТС Web Services', 'MTS Web Services'),
-      role: localized('Ведущий разработчик', 'Lead Developer'),
+      role: localized('Старший разработчик ПО', 'Senior Software Developer'),
       start: '2024-05',
       overview: localized(
         'Разработка продуктов OMNI и ORP: интерфейсы управления кампаниями, архитектура фронтенда и инженерные инструменты.',
@@ -63,6 +67,11 @@ export const seedContent = {
           'channel-contract',
           'Выделил общий контракт каналов, изолировав состояние, формы и бизнес-правила каждого канала для расширения мастера.',
           'Established a shared channel contract with isolated per-channel state, forms, and business rules to support extension of the wizard.',
+        ),
+        achievement(
+          'extension-cycle',
+          'Подключение нового канала или замена формы обычно занимали 1–2 рабочих дня с учётом исправлений после тестирования.',
+          'Adding a new channel or replacing a form typically took 1–2 working days, including post-test fixes.',
         ),
         achievement(
           'template-editors',
@@ -91,7 +100,7 @@ export const seedContent = {
         'Webpack',
         'Ant Design',
       ],
-      caseStudySlugs: [],
+      caseStudySlugs: ['campaign-wizard'],
     },
     {
       id: 'yandex',
@@ -110,6 +119,11 @@ export const seedContent = {
           'Developed cart and checkout interfaces and user address management panels.',
         ),
         achievement(
+          'production-on-call',
+          'Во время дежурств отслеживал состояние сервисов в Grafana, расследовал инциденты и аномальный трафик, взаимодействовал с командой безопасности; применял ограничение запросов и масштабирование инстансов, когда это требовалось.',
+          'Monitored service health in Grafana during production on-call shifts, investigated incidents and anomalous traffic, and coordinated with security; applied throttling and instance scaling where appropriate.',
+        ),
+        achievement(
           'microfrontends',
           'Участвовал в становлении и развитии микрофронтенд-архитектуры.',
           'Contributed to the introduction and evolution of microfrontend architecture.',
@@ -125,14 +139,9 @@ export const seedContent = {
           'Worked on frontend map preloading to improve responsiveness in address flows.',
         ),
         achievement(
-          'address-experiment',
-          'Участвовал в A/B-тестах и самостоятельно провёл эксперимент с ускоренным взаимодействием с кнопкой адреса.',
-          'Participated in A/B tests and independently ran an experiment on faster interaction with the address button.',
-        ),
-        achievement(
-          'production-on-call',
-          'Во время дежурств отслеживал состояние сервисов в Grafana, расследовал инциденты и аномальный трафик, взаимодействовал с командой безопасности; применял ограничение запросов и масштабирование инстансов, когда это требовалось.',
-          'Monitored service health in Grafana during production on-call shifts, investigated incidents and anomalous traffic, and coordinated with security; applied throttling and instance scaling where appropriate.',
+          'ab-experiments',
+          'Участвовал в продуктовых A/B-экспериментах.',
+          'Participated in product A/B experiments.',
         ),
         achievement(
           'reviews-mentoring',
@@ -185,5 +194,52 @@ export const seedContent = {
       caseStudySlugs: [],
     },
   ],
-  projects: [],
+  projects: [
+    {
+      slug: 'pantry',
+      title: localized('Pantry', 'Pantry'),
+      summary: localized(
+        'Разработка публичной версии приложения для рецептов и списка покупок завершена; в планах — развитие проекта в платформу.',
+        'The public version is complete; evolving this recipe and grocery-list application into a platform is planned.',
+      ),
+      stage: 'released',
+      tech: ['React', 'TypeScript', 'Vite', 'MobX', 'Ant Design', 'Playwright'],
+      githubUrl: 'https://github.com/no0vie/pantry',
+      public: true,
+    },
+    {
+      slug: 'magic-ball',
+      title: localized('Magic Ball', 'Magic Ball'),
+      summary: localized(
+        'Основные сценарии реализованы; полная приёмка во всех браузерах ещё не завершена.',
+        'The main scenarios are implemented; full cross-browser acceptance is not yet complete.',
+      ),
+      stage: 'in-progress',
+      tech: ['Vue 3', 'JavaScript', 'Vuex', 'Vue Router', 'Vite', 'Playwright'],
+      githubUrl: 'https://github.com/no0vie/magic-ball',
+      public: true,
+    },
+    {
+      slug: 'riply',
+      title: localized('Riply', 'Riply'),
+      summary: localized(
+        'Концепция будущего Telegram-бота об игре с рыбалкой; разработка ещё не начата.',
+        'A concept for a future fishing-game Telegram bot; implementation has not started.',
+      ),
+      stage: 'concept',
+      tech: [],
+      public: true,
+    },
+    {
+      slug: 'cave-escaper',
+      title: localized('Cave Escaper', 'Cave Escaper'),
+      summary: localized(
+        'Концепция будущего игрового Telegram-бота о побеге из пещеры; разработка ещё не начата.',
+        'A concept for a future Telegram game bot about escaping a cave; implementation has not started.',
+      ),
+      stage: 'concept',
+      tech: [],
+      public: true,
+    },
+  ],
 } satisfies Content;

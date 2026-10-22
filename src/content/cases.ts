@@ -50,8 +50,8 @@ export const cases = [
         en: 'The shared abstraction covered the contract between the wizard and its channels, rather than every form detail. This boundary preserved channel-specific behavior.',
       },
       results: {
-        ru: 'Мастер поддерживал SMS, MMS и электронную почту при запуске. Позднее SMS и MMS были переведены на новые редакторы шаблонов без существенной переработки архитектуры мастера.',
-        en: 'The wizard supported SMS, MMS, and email at launch. SMS and MMS were later migrated to newer template editors without major changes to the wizard architecture.',
+        ru: 'Мастер поддерживал SMS, MMS и электронную почту при запуске. Подключение нового канала или замена формы обычно занимали 1–2 рабочих дня с учётом исправлений после тестирования. Позднее SMS и MMS были переведены на новые редакторы шаблонов без существенной переработки архитектуры мастера.',
+        en: 'The wizard supported SMS, MMS, and email at launch. Adding a new channel or replacing a form typically took 1–2 working days, including post-test fixes. SMS and MMS were later migrated to newer template editors without major changes to the wizard architecture.',
       },
       lessons: {
         ru: 'Этот пример иллюстрирует разделение общего контракта и изменяемых деталей: редакторы шаблонов можно заменять, сохраняя архитектуру мастера.',

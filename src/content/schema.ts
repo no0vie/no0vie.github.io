@@ -16,6 +16,14 @@ export const dateSchema = z
     return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
   }, 'Expected a real calendar date');
 
+export const contactSchema = z
+  .object({
+    emails: z.tuple([z.literal('eugene.malin765@gmail.com'), z.literal('evgeniys-nov@yandex.ru')]),
+    telegram: z.literal('https://t.me/no_0vie'),
+    whatsapp: z.literal('https://wa.me/qr/XFZZQSNXJCSBL1'),
+  })
+  .strict();
+
 export const profileSchema = z
   .object({
     name: localizedSchema,
@@ -23,6 +31,9 @@ export const profileSchema = z
     about: localizedSchema,
     education: localizedSchema,
     github: z.literal('https://github.com/no0vie'),
+
+    availability: localizedSchema,
+    contacts: contactSchema,
     updated: dateSchema,
   })
   .strict();
@@ -53,8 +64,7 @@ export const experienceSchema = z
       .min(1)
       .refine(uniqueIds, 'Achievement IDs must be unique'),
     technologies: z.array(textSchema),
-    // No case routes exist in Phase 1; reject dangling references.
-    caseStudySlugs: z.array(idSchema).max(0),
+    caseStudySlugs: z.array(z.literal('campaign-wizard')).max(1),
   })
   .strict()
   .refine(({ start, end }) => end === undefined || start <= end, {
@@ -65,6 +75,10 @@ export type CareerItem = z.infer<typeof experienceSchema>;
 
 export const projectStageSchema = z.enum(['released', 'in-progress', 'concept']);
 export type ProjectStage = z.infer<typeof projectStageSchema>;
+const verifiedProjectUrlSchema = z.enum([
+  'https://github.com/no0vie/pantry',
+  'https://github.com/no0vie/magic-ball',
+]);
 export const projectSchema = z
   .object({
     slug: idSchema,
@@ -72,13 +86,32 @@ export const projectSchema = z
     summary: localizedSchema,
     stage: projectStageSchema,
     tech: z.array(textSchema),
-    // Add an explicit verified-link allowlist after the repository audit, not arbitrary URLs.
-    githubUrl: z.never().optional(),
+    githubUrl: verifiedProjectUrlSchema.optional(),
     demoUrl: z.never().optional(),
     public: z.literal(true),
   })
-  .strict();
+  .strict()
+  .refine(
+    ({ slug, githubUrl }) =>
+      githubUrl === undefined || githubUrl === `https://github.com/no0vie/${slug}`,
+    { message: 'GitHub URL must match the audited project slug', path: ['githubUrl'] },
+  );
 export type Project = z.infer<typeof projectSchema>;
+
+export const skillGroupSchema = z
+  .object({
+    id: z.enum([
+      'core-current',
+      'architecture-state',
+      'testing-tooling',
+      'backend-data',
+      'prior-specialized',
+    ]),
+    label: localizedSchema,
+    skills: z.array(textSchema).min(1),
+  })
+  .strict();
+export type SkillGroup = z.infer<typeof skillGroupSchema>;
 
 export const contentSchema = z
   .object({

@@ -6,5 +6,6 @@ export default defineConfig({
   base: publishingConfig().base,
   plugins: [resumeDev()],
   build: { sourcemap: false },
+  optimizeDeps: { entries: ['index.html'] },
   test: { include: ['tests/**/*.test.ts', 'scripts/**/*.test.ts'] },
 });
