@@ -1,0 +1,145 @@
+import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+
+for (const locale of ['ru', 'en']) {
+  for (const route of [locale, `${locale}/projects`]) {
+    test(`${route}: static content, hydration and accessibility`, async ({ page }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+      });
+      expect((await page.goto(route))?.status()).toBe(200);
+      await expect(page.locator('h1')).toBeVisible();
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      expect(errors).toEqual([]);
+      await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+    });
+  }
+  test(`${locale}: complete without JavaScript, print and download`, async ({
+    browser,
+    baseURL,
+    request,
+  }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+    const page = await context.newPage();
+    await page.goto(locale);
+    await expect(page.locator('.experience-card')).toHaveCount(3);
+    const href = await page.locator('a[download]').getAttribute('href');
+    const pdf = await request.get(href!);
+    expect(pdf.status()).toBe(200);
+    expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
+    await page.emulateMedia({ media: 'print' });
+    await expect(page.locator('.site-header')).toBeHidden();
+    await expect(page.locator('#education')).toBeVisible();
+    await page.emulateMedia({ media: 'screen' });
+    await page.goto(`${locale}/projects`);
+    await expect(page.locator('.empty-state')).toBeVisible();
+    await context.close();
+  });
+}
+
+test('locale preserves projects route; theme persists; anchors and keyboard', async ({ page }) => {
+  await page.goto('en/projects');
+  await page.getByRole('link', { name: 'RU — Переключить на русский' }).click();
+  await expect(page).toHaveURL(/\/ru\/projects\/?$/);
+  await page.getByRole('link', { name: 'EN — Switch to English' }).click();
+  await page.getByRole('button', { name: 'Theme: System', exact: true }).click();
+  await page.getByRole('button', { name: 'Theme: Light', exact: true }).click();
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.getByRole('link', { name: 'Resume', exact: true }).click();
+  await page.getByRole('link', { name: 'Experience', exact: true }).click();
+  await expect(page).toHaveURL(/#experience$/);
+  await page.goto('en');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
+});
+
+for (const width of [320, 375, 768, 1280]) {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`${width}px ${colorScheme}: responsive and reduced motion`, async ({ page }, info) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' });
+      await page.goto('en');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+        true,
+      );
+      expect(
+        await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches),
+      ).toBe(true);
+      expect(
+        await page.evaluate(
+          () =>
+            document.getAnimations().filter((animation) => animation.playState === 'running')
+              .length,
+        ),
+      ).toBe(0);
+      await page.screenshot({
+        path: info.outputPath(`resume-${width}-${colorScheme}.png`),
+        fullPage: true,
+      });
+      const menu = page.getByRole('button', { name: /Menu/ });
+      if (await menu.isVisible()) await menu.click();
+      await page
+        .getByRole('navigation', { name: 'Main navigation' })
+        .getByRole('link', { name: 'Projects', exact: true })
+        .click();
+      await expect(page.locator('h1')).toHaveText('Projects');
+    });
+  }
+}
+
+test('unknown routes return genuine 404, never the resume shell', async ({ page }) => {
+  expect((await page.goto('en/projects/missing'))?.status()).toBe(404);
+  await expect(page.locator('h1')).toHaveText('Страница не найдена');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+});
+
+test('theme is applied before the client bundle runs', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
+  await page.route('**/assets/*.js', (route) => route.abort());
+  await page.goto('en');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('.experience-card')).toHaveCount(3);
+});
+
+test('published internal links and SEO assets exist', async ({ page, request }) => {
+  for (const path of ['ru', 'en', 'ru/projects', 'en/projects']) {
+    await page.goto(path);
+    const links = await page
+      .locator('a[href]')
+      .evaluateAll((anchors) => anchors.map((anchor) => (anchor as HTMLAnchorElement).href));
+    for (const link of links) {
+      if (new URL(link).origin !== new URL(page.url()).origin) continue;
+      expect((await request.get(link)).status(), link).toBe(200);
+      if (new URL(link).hash) await expect(page.locator(new URL(link).hash)).toHaveCount(1);
+    }
+  }
+  for (const path of ['og-ru.png', 'og-en.png', 'favicon.svg', 'robots.txt', 'sitemap.xml'])
+    expect((await request.get(path)).status()).toBe(200);
+  await page.goto('en');
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og-en\.png$/);
+  const structuredData: unknown = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
+  );
+  expect(structuredData).toMatchObject({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Eugene Novikov',
+  });
+});
+
+test('root defaults to Russian and honors explicit saved English', async ({ page }) => {
+  await page.goto('./');
+  await expect(page).toHaveURL(/\/ru\/?$/);
+  await page.evaluate(() => localStorage.setItem('locale', 'en'));
+  await page.goto('./');
+  await expect(page).toHaveURL(/\/en\/?$/);
+});
