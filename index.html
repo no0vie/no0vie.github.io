@@ -1,66 +1,19 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html lang="ru">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eugene Novikov | no_0vie</title>
-    <link rel="stylesheet" href="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.min.css">
-  </head>
-  <body>
-    <div class="top-bar">
-      <div class="row">
-        <div class="top-bar-left">
-          <ul class="dropdown menu" data-dropdown-menu>
-            <li class="menu-text">Eugene Novikov</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <br>
-
-    <div class="row">
-      <div class="medium-6 columns">
-        <img class="thumbnail" src="https://placehold.it/650x350">
-      </div>
-      <div class="medium-6 large-5 columns">
-        <h3>Welcome!</h3>
-        <p>
-            There are some projects. 
-        </p>
-      </div>
-    </div>
-
-    <div class="column row">
-      <hr>
-      <div class="row medium-up-3 large-up-5">
-        <div class="column">
-          <img class="thumbnail" src="https://placehold.it/350x200">
-          <h5>Some Product</h5>
-          <p>In condimentum facilisis porta. Sed nec diam eu diam mattis viverra. Nulla fringilla, orci ac euismod semper, magna diam.</p>
-          <a href="#" class="button primary tiny expanded">DEMO</a>
-          <a href="#" class="button secondary tiny expanded">REPO</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="row column">
-      <hr>
-      <ul class="menu">
-        <li>Eugene Novikov</li>
-        <li class="float-right">Copyright 2024</li>
-      </ul>
-    </div>
-
-
-
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script>
-      $(document).foundation();
+      try {
+        var theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
     </script>
+    <title>Евгений Новиков — Резюме</title>
+    <!--seo-->
+  </head>
+  <body data-page="">
+    <div id="root"><!--app--></div>
+    <script type="module" src="/src/client.tsx"></script>
   </body>
 </html>
-
-
-

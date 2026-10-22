@@ -1,0 +1,142 @@
+@page {
+  size: A4;
+  margin: 15mm 16mm;
+}
+@media print {
+  :root {
+    color-scheme: light !important;
+    --background: #fff !important;
+    --surface: #fff !important;
+    --text: #000 !important;
+    --muted: #333 !important;
+    --border: #ccc !important;
+    --accent: #000 !important;
+    --tint: #fff !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 10pt !important;
+    line-height: 1.45 !important;
+  }
+  .site-header,
+  .skip-link,
+  .section-navigation,
+  .hero .button,
+  .site-footer {
+    display: none !important;
+  }
+  .main-content {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .hero {
+    padding: 0 0 6mm !important;
+  }
+  .hero h1 {
+    font-size: 32pt !important;
+  }
+  .eyebrow {
+    font-size: 10pt !important;
+    margin-bottom: 3mm !important;
+  }
+  .hero-bottom {
+    margin-top: 3mm !important;
+  }
+  .hero-context {
+    font-size: 10pt !important;
+  }
+  .resume-section {
+    display: block !important;
+    padding: 6mm 0 !important;
+  }
+  h2 {
+    font-size: 13pt !important;
+    margin-bottom: 3mm !important;
+  }
+  h3 {
+    font-size: 12pt !important;
+  }
+  h1,
+  h2,
+  h3,
+  .experience-heading,
+  .employer {
+    break-after: avoid;
+  }
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+  .lead,
+  .education-copy {
+    font-size: 10pt !important;
+  }
+  .highlights-section {
+    padding: 5mm 0 !important;
+  }
+  .highlights {
+    display: block !important;
+    list-style: disc !important;
+    padding-left: 5mm !important;
+  }
+  .highlights li {
+    display: list-item !important;
+    padding: 0 !important;
+    margin-bottom: 2mm;
+    border: 0 !important;
+    background: none !important;
+  }
+  .highlights p {
+    font-size: 10pt !important;
+  }
+  .highlight-number {
+    display: none !important;
+  }
+  .experience-card + .experience-card {
+    margin-top: 6mm !important;
+    padding-top: 5mm !important;
+  }
+  .experience-heading {
+    display: block !important;
+  }
+  .employer,
+  .dates {
+    font-size: 9pt !important;
+  }
+  .overview {
+    margin-top: 3mm !important;
+  }
+  .achievements {
+    margin: 3mm 0 !important;
+  }
+  .achievements li {
+    margin-bottom: 2mm !important;
+    break-inside: avoid;
+  }
+  .tags {
+    gap: 1.5mm !important;
+  }
+  .tags li {
+    font-size: 8pt !important;
+    padding: 1mm 2mm !important;
+    break-inside: avoid;
+  }
+  a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+  .text-link {
+    padding: 0 !important;
+  }
+  .text-link[href^='https://']::after {
+    content: ' (' attr(href) ')';
+    font-weight: 400;
+    font-size: 9pt;
+  }
+  .standalone-page {
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+}
