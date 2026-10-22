@@ -78,7 +78,8 @@ for (const locale of ['ru', 'en']) {
 
 test('copy buttons expose reusable About and employer blocks', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('ru?edit=1');
+  await page.goto('ru');
+  await page.getByRole('button', { name: 'Портрет Евгения Новикова' }).click({ clickCount: 3 });
   const about = page.getByRole('button', { name: 'Скопировать текст о себе' });
   await about.click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
@@ -87,15 +88,15 @@ test('copy buttons expose reusable About and employer blocks', async ({ page, co
   const fullExperience = page
     .locator('.experience-card')
     .first()
-    .getByRole('button', { name: /Скопировать опыт полностью/ });
+    .getByRole('button', { name: 'Скопировать описание опыта работы' });
   await fullExperience.click();
   const experienceBlock = await page.evaluate(() => navigator.clipboard.readText());
-  expect(experienceBlock).toContain('МТС Веб Сервисы');
+  expect(experienceBlock).not.toContain('МТС Веб Сервисы');
   expect(experienceBlock).toContain('1–2 рабочих дня');
   expect(experienceBlock).toContain('положительный коммерческий результат');
   expect(experienceBlock).not.toContain('https://omnichannel.mts.ru/');
   await expect(fullExperience).toHaveClass(/is-copied/);
-  await expect(fullExperience.locator('span[aria-hidden="true"]').first()).toHaveText('Копировать');
+  await expect(fullExperience.locator('svg')).toHaveCount(1);
 });
 
 test('projects spacing stays responsive and stable across locale and theme changes', async ({
@@ -186,7 +187,7 @@ test('locale preserves projects route; theme persists; anchors and keyboard', as
   await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused();
 });
 
-for (const width of [320, 375, 768, 1280]) {
+for (const width of [320, 375, 768, 1024, 1280, 1440]) {
   for (const colorScheme of ['light', 'dark'] as const) {
     test(`${width}px ${colorScheme}: responsive and reduced motion`, async ({ page }, info) => {
       await page.setViewportSize({ width, height: 900 });

@@ -1,34 +1,6 @@
-import React, { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Locale } from '../content';
 import { copy } from './copy';
-
-export function useDelayedHover({ delayMs = 5_000 }: { delayMs?: number } = {}) {
-  const [hoverRevealed, setHoverRevealed] = useState(false);
-  const timer = useRef<number | undefined>(undefined);
-
-  const clearTimer = () => {
-    if (timer.current !== undefined) window.clearTimeout(timer.current);
-    timer.current = undefined;
-  };
-
-  useEffect(() => clearTimer, []);
-
-  return {
-    hoverRevealed,
-    onPointerEnter: (event: React.PointerEvent) => {
-      if (event.pointerType === 'touch') return;
-      clearTimer();
-      timer.current = window.setTimeout(() => {
-        timer.current = undefined;
-        setHoverRevealed(true);
-      }, delayMs);
-    },
-    onPointerLeave: () => {
-      clearTimer();
-      setHoverRevealed(false);
-    },
-  };
-}
 
 interface CopyButtonProps {
   locale: Locale;
@@ -36,68 +8,96 @@ interface CopyButtonProps {
   targetLabel: string;
 }
 
+type ParticleStyle = CSSProperties & {
+  '--particle-angle': string;
+  '--particle-distance': string;
+  '--particle-rotation': string;
+};
+
+const particleStyles: ParticleStyle[] = Array.from({ length: 12 }, (_, index) => ({
+  '--particle-angle': `${index * 30}deg`,
+  '--particle-distance': `${20 + (index % 5) * 4}px`,
+  '--particle-rotation': `${index % 2 === 0 ? 90 : -120}deg`,
+}));
+
+function CopyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="8" y="8" width="11" height="11" rx="2" />
+      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
 export function CopyButton({ locale, text, targetLabel }: CopyButtonProps) {
   const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
   const resetTimer = useRef<number | undefined>(undefined);
+  const runId = useRef(0);
   const t = copy[locale];
+
+  function clearResetTimer() {
+    if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+    resetTimer.current = undefined;
+  }
 
   useEffect(
     () => () => {
-      if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+      runId.current += 1;
+      clearResetTimer();
     },
     [],
   );
 
   async function copyBlock() {
-    if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+    clearResetTimer();
+    const currentRun = ++runId.current;
+    setStatus('idle');
     try {
       await navigator.clipboard.writeText(text);
+      if (currentRun !== runId.current) return;
       setStatus('copied');
-      resetTimer.current = window.setTimeout(() => setStatus('idle'), 2_000);
+      resetTimer.current = window.setTimeout(() => {
+        if (currentRun === runId.current) setStatus('idle');
+        resetTimer.current = undefined;
+      }, 800);
     } catch {
-      setStatus('failed');
+      if (currentRun === runId.current) setStatus('failed');
     }
   }
 
   const feedback = status === 'copied' ? t.copied : status === 'failed' ? t.copyFailed : '';
-  const visibleLabel = status === 'failed' ? t.copyFailed : t.copy;
   return (
     <button
       type="button"
-      className={`copy-button${status === 'copied' ? ' is-copied' : ''}`}
+      className={`copy-button${status === 'copied' ? ' is-copied' : ''}${status === 'failed' ? ' is-failed' : ''}`}
       aria-label={targetLabel}
+      title={targetLabel}
       onClick={() => void copyBlock()}
     >
-      <span aria-hidden="true">{visibleLabel}</span>
-      <span aria-hidden="true"> ⧉</span>
+      <span className="copy-icon" aria-hidden="true">
+        {status === 'copied' ? <CheckIcon /> : <CopyIcon />}
+      </span>
+      {status === 'copied' && (
+        <span className="copy-explosion" aria-hidden="true">
+          <span className="copy-flash" />
+          <span className="copy-particles">
+            {particleStyles.map((style, index) => (
+              <span className="copy-particle" style={style} key={index} />
+            ))}
+          </span>
+        </span>
+      )}
       <span className="visually-hidden" role="status" aria-live="polite">
         {feedback}
       </span>
     </button>
-  );
-}
-
-type CopyableSectionProps = CopyButtonProps & {
-  children: ReactNode;
-  editMode: boolean;
-  className?: string;
-};
-
-export function CopyableSection({
-  children,
-  editMode,
-  className = '',
-  ...buttonProps
-}: CopyableSectionProps) {
-  const hover = useDelayedHover({ delayMs: 5_000 });
-  return (
-    <div
-      className={`copyable-section${editMode || hover.hoverRevealed ? ' is-copy-visible' : ''}${className ? ` ${className}` : ''}`}
-      onPointerEnter={hover.onPointerEnter}
-      onPointerLeave={hover.onPointerLeave}
-    >
-      {children}
-      <CopyButton {...buttonProps} />
-    </div>
   );
 }

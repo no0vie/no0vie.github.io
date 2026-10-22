@@ -53,6 +53,7 @@ html {
   scroll-padding-top: 2rem;
 }
 body {
+  overflow-x: clip;
   margin: 0;
   background: radial-gradient(circle at 85% 8%, var(--glow), transparent 28rem), var(--background);
   color: var(--text);
@@ -684,6 +685,9 @@ button:hover {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+  .copy-explosion {
+    display: none !important;
+  }
 }
 
 .evolution-timeline {
@@ -713,62 +717,126 @@ button:hover {
   gap: 0.75rem;
   margin-top: 2rem;
 }
-.copyable-section {
+.copyable-section,
+.experience-card {
   position: relative;
   min-width: 0;
 }
-.copyable-block {
-  display: grid;
-  gap: 1rem;
-  justify-items: start;
+.copyable-block:has(.copy-button),
+.experience-card:has(.copy-button) .experience-heading {
+  padding-right: 60px;
 }
 .copy-button {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 0;
   right: 0;
-  min-height: 44px;
-  max-width: min(15rem, 75%);
-  padding: 0.4rem 0.75rem;
-  opacity: 0;
-  pointer-events: none;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  place-items: center;
+  overflow: visible;
   color: var(--accent-strong);
   border-color: var(--accent);
+  border-radius: 50%;
   background: var(--accent-soft);
   box-shadow: 0 4px 18px var(--glow);
-  font-size: 0.78rem;
-  font-weight: 650;
+  isolation: isolate;
+}
+.copy-button svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.copy-icon {
+  display: grid;
+  place-items: center;
   transform: scale(1);
-  transform-origin: top right;
-  transition:
-    opacity 150ms ease,
-    transform 180ms ease;
 }
-.copy-button.is-copied {
-  transform: scale(2);
+.copy-button.is-copied .copy-icon {
+  animation: copy-icon-confirm 800ms ease-out both;
 }
-.copyable-section.is-copy-visible > .copy-button,
-.copyable-section:focus-within > .copy-button {
-  opacity: 1;
-  pointer-events: auto;
+.copy-button.is-failed {
+  border-color: currentColor;
 }
-.full-experience-copy {
-  min-height: 44px;
-  margin-top: 1rem;
+.copy-explosion,
+.copy-flash,
+.copy-particles,
+.copy-particle {
+  position: absolute;
+  inset: 50%;
+  pointer-events: none;
 }
-.full-experience-copy .copy-button {
-  left: 0;
-  right: auto;
+.copy-explosion {
+  z-index: -1;
 }
-.highlights .copyable-section,
-.project-card .copyable-section {
-  width: 100%;
+.copy-flash {
+  width: 12px;
+  height: 12px;
+  margin: -6px;
+  border-radius: 50%;
+  background: #f2faff;
+  box-shadow: 0 0 18px 8px #68bbff;
+  animation: copy-flash 650ms ease-out both;
 }
-.project-card .copyable-section {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 1rem;
+.copy-particle {
+  width: 6px;
+  height: 3px;
+  margin: -1.5px -3px;
+  border-radius: 999px;
+  background: #68bbff;
+  transform: rotate(var(--particle-angle)) translateX(0) rotate(0);
+  animation: copy-particle 750ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.copy-particle:nth-child(3n) {
+  background: #f2faff;
+}
+.copy-particle:nth-child(3n + 1) {
+  background: #195ea8;
+}
+@keyframes copy-icon-confirm {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(0.35);
+    opacity: 0.4;
+  }
+  36%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes copy-flash {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes copy-particle {
+  0% {
+    transform: rotate(var(--particle-angle)) translateX(0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--particle-angle)) translateX(var(--particle-distance))
+      rotate(var(--particle-rotation));
+    opacity: 0;
+  }
 }
 
 .project-grid {

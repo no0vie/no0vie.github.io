@@ -1,55 +1,29 @@
-import type { Achievement, CareerItem, Highlight, Locale, Profile, Project } from '../content';
-import type { cases } from '../content/cases';
+import type { CareerItem, Locale, Profile } from '../content';
 
-type CaseStudy = (typeof cases)[number];
-
-const period = (item: CareerItem, locale: Locale) =>
-  item.datePrecision === 'approximate' && item.end
-    ? `${item.start.slice(0, 4)}–${item.end.slice(0, 4)}`
-    : `${item.start} — ${item.end ?? (locale === 'ru' ? 'по настоящее время' : 'present')}`;
+function normalizeClipboardText(value: string): string {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim().replace(/[ \t]+/g, ' '))
+    .filter(Boolean)
+    .join(' ');
+}
 
 export function formatAboutForClipboard(profile: Profile, locale: Locale): string {
-  return profile.about[locale];
-}
-
-export function formatExperienceSummaryForClipboard(item: CareerItem, locale: Locale): string {
-  return item.overview[locale];
-}
-
-export function formatAchievementForClipboard(item: Achievement, locale: Locale): string {
-  return item.text[locale];
-}
-
-export function formatHighlightForClipboard(item: Highlight, locale: Locale): string {
-  return `${item.heading[locale]}\n\n${item.text[locale]}`;
-}
-
-export function formatProjectForClipboard(item: Project, locale: Locale): string {
-  return `${item.title[locale]}\n\n${item.summary[locale]}`;
-}
-
-export function formatCaseSummaryForClipboard(item: CaseStudy, locale: Locale): string {
-  return `${item.title[locale]}\n\n${item.summary[locale]}`;
-}
-
-export function formatCaseSectionForClipboard(
-  item: CaseStudy,
-  section: keyof CaseStudy['sections'],
-  locale: Locale,
-): string {
-  return item.sections[section][locale];
+  return normalizeClipboardText(profile.about[locale]);
 }
 
 export function formatExperienceForClipboard(item: CareerItem, locale: Locale): string {
-  return [
-    `${item.role[locale]} — ${item.employer[locale]}`,
-    period(item, locale),
-    '',
-    item.overview[locale],
-    '',
-    ...item.achievements.map(({ text }) => `• ${text[locale]}`),
-    ...(item.outcome ? ['', item.outcome[locale]] : []),
-    '',
-    `${locale === 'ru' ? 'Технологии' : 'Technologies'}: ${item.technologies.join(', ')}`,
-  ].join('\n');
+  const overview = normalizeClipboardText(item.overview[locale]);
+  const seen = new Set<string>();
+  const bullets = [...item.achievements.map(({ text }) => text[locale]), item.outcome?.[locale]]
+    .filter((value): value is string => Boolean(value))
+    .map(normalizeClipboardText)
+    .filter((value) => {
+      if (!value || seen.has(value)) return false;
+      seen.add(value);
+      return true;
+    })
+    .map((value) => `• ${value}`);
+
+  return [overview, bullets.join('\n')].filter(Boolean).join('\n\n');
 }
