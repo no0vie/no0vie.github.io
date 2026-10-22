@@ -8,7 +8,7 @@ import { serve } from './server';
 import type { App as AppType } from '../src/app/App';
 import type { copy as copyType } from '../src/app/copy';
 import type { cases as casesType } from '../src/content/cases';
-import { profile } from '../src/content';
+import { availability, profile } from '../src/content';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
@@ -93,6 +93,7 @@ try {
 const root = `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${profile.name.ru} / ${profile.name.en}</title><script>var locale='ru';try{if(localStorage.getItem('locale')==='en')locale='en'}catch{}location.replace(${JSON.stringify(config.base)}+locale)</script></head><body><main><h1>${profile.name.ru} / ${profile.name.en}</h1><p>Senior Software Engineer (Frontend-focused)</p><p><a href="${config.base}ru">Резюме на русском</a> · <a href="${config.base}en">Resume in English</a></p></main></body></html>`;
 await writeFile('dist/index.html', root);
 await writeFile('dist/.nojekyll', '');
+await writeFile('dist/availability.json', `${JSON.stringify(availability, null, 2)}\n`);
 await writeFile(
   'dist/robots.txt',
   `User-agent: *\nAllow: /\nSitemap: ${config.url('sitemap.xml')}\n`,
@@ -146,7 +147,9 @@ try {
         },
       );
       await page.emulateMedia({ media: 'print' });
-      await page.evaluate(() => document.fonts.ready);
+      await page
+        .waitForFunction(() => document.fonts.status === 'loaded', undefined, { timeout: 5_000 })
+        .catch(() => undefined);
       const pdf = await page.pdf({
         format: 'A4',
         preferCSSPageSize: true,

@@ -1,17 +1,18 @@
 import { readFile } from 'node:fs/promises';
+import { profile } from '../src/content';
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
 
 const portrait = (await readFile('public/profile.jpg')).toString('base64');
 const content = {
   ru: {
-    name: 'Евгений Новиков',
-    role: 'Senior Software Developer',
+    name: profile.name.ru,
+    role: profile.role.ru,
     detail: 'Frontend · React · TypeScript',
   },
   en: {
-    name: 'Eugene Novikov',
-    role: 'Senior Software Developer',
+    name: profile.name.en,
+    role: profile.role.en,
     detail: 'Frontend · React · TypeScript',
   },
 } as const;
