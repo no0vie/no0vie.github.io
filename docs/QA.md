@@ -1,6 +1,6 @@
 # Current QA status
 
-Last updated: 2026-10-22 after the profile introduction redesign.
+Last updated: 2026-10-22 after the microinteractions and copy-tools enhancement.
 
 ## Current automated verification
 
@@ -10,9 +10,9 @@ Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is stat
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `npm run lint`                           | Pass                                                                                                   |
 | `npm run typecheck`                      | Pass                                                                                                   |
-| `npm test`                               | 46 tests passed across 6 files                                                                         |
+| `npm test`                               | 47 tests passed across 6 files                                                                         |
 | `npm run build`                          | Pass outside the terminal OS sandbox; static pages, SEO, `/availability.json` and RU/EN PDFs generated |
-| `npm run test:e2e`                       | 25 passed with Evolution disabled                                                                      |
+| `npm run test:e2e`                       | 29 passed with Evolution disabled                                                                      |
 | `ENABLE_EVOLUTION=true npm run build`    | Pass                                                                                                   |
 | `ENABLE_EVOLUTION=true npm run test:e2e` | 24 passed with Evolution enabled                                                                       |
 
@@ -33,7 +33,10 @@ Automated checks cover:
 - 320/375/768/1280 px layouts without horizontal overflow;
 - Evolution disabled and enabled branches, four employment steps, milestone, keyboard controls and no-JS fallback;
 - PDF download signatures, print visibility and hidden site navigation;
-- the localized portrait, missing-image initials fallback, five contact channels and legacy `#contacts` anchor.
+- the localized portrait, missing-image initials fallback, five contact channels and legacy `#contacts` anchor;
+- continuous five-second hover reveal/reset, immediate keyboard reveal, three portrait activations on touch and 44 px targets;
+- canonical RU/EN clipboard serialization, summary/full experience ordering and localized clipboard failure feedback;
+- copy controls excluded from print, plus responsive light/dark and reduced-motion coverage.
 
 ## Current PDF status
 

@@ -48,18 +48,21 @@ for (const locale of ['ru', 'en']) {
 
 test('copy buttons expose reusable About and employer blocks', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('ru');
-  const buttons = page.locator('.copy-button');
-  await expect(buttons).toHaveCount(5);
-  await buttons.first().click();
+  await page.goto('ru?edit=1');
+  const about = page.getByRole('button', { name: 'Скопировать текст о себе' });
+  await about.click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
     'Разрабатываю программные продукты с 2015 года',
   );
-  await buttons.nth(1).click();
+  const fullExperience = page
+    .locator('.experience-card')
+    .first()
+    .getByRole('button', { name: /Скопировать опыт полностью/ });
+  await fullExperience.click();
   const experienceBlock = await page.evaluate(() => navigator.clipboard.readText());
   expect(experienceBlock).toContain('МТС Web Services');
   expect(experienceBlock).toContain('1–2 рабочих дня');
-  await expect(buttons.nth(1)).toHaveAccessibleName(/Скопировано/);
+  await expect(fullExperience).toContainText('Скопировано');
 });
 
 test('locale preserves projects route; theme persists; anchors and keyboard', async ({ page }) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   availability,
   careerMilestones,
@@ -13,40 +13,57 @@ import {
 import { cases } from '../content/cases';
 import { copy } from './copy';
 import { basePath, localePath, pageKind, pdfPath } from './routes';
-import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
+import { CopyableSection } from './copy-tools';
+import {
+  formatAboutForClipboard,
+  formatAchievementForClipboard,
+  formatCaseSectionForClipboard,
+  formatCaseSummaryForClipboard,
+  formatExperienceForClipboard,
+  formatExperienceSummaryForClipboard,
+  formatHighlightForClipboard,
+  formatProjectForClipboard,
+} from './resume-text';
 
 type Theme = 'system' | 'light' | 'dark';
 const themes: Theme[] = ['system', 'light', 'dark'];
 
-function CopyButton({ locale, text }: { locale: Locale; text: string }) {
-  const [status, setStatus] = useState<'idle' | 'copied' | 'failed'>('idle');
-  const t = copy[locale];
-
-  async function copyBlock() {
-    try {
-      await navigator.clipboard.writeText(text);
-      setStatus('copied');
-      window.setTimeout(() => setStatus('idle'), 2000);
-    } catch {
-      setStatus('failed');
-    }
-  }
-
-  const label = status === 'copied' ? t.copied : status === 'failed' ? t.copyFailed : t.copy;
-  return (
-    <button type="button" className="copy-button" onClick={() => void copyBlock()}>
-      {label}
-      <span aria-hidden="true"> ⧉</span>
-    </button>
-  );
-}
-
-function ProfilePortrait({ locale }: { locale: Locale }) {
+function ProfilePortrait({
+  locale,
+  onTripleActivate,
+}: {
+  locale: Locale;
+  onTripleActivate: () => void;
+}) {
   const [failed, setFailed] = useState(false);
+  const activationCount = useRef(0);
+  const resetTimer = useRef<number | undefined>(undefined);
   const alt = locale === 'ru' ? 'Портрет Евгения Новикова' : 'Portrait of Eugene Novikov';
 
+  useEffect(
+    () => () => {
+      if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+    },
+    [],
+  );
+
+  function activate() {
+    activationCount.current += 1;
+    if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+    if (activationCount.current === 3) {
+      activationCount.current = 0;
+      resetTimer.current = undefined;
+      onTripleActivate();
+      return;
+    }
+    resetTimer.current = window.setTimeout(() => {
+      activationCount.current = 0;
+      resetTimer.current = undefined;
+    }, 1_500);
+  }
+
   return (
-    <div className="profile-portrait">
+    <button type="button" className="profile-portrait" aria-label={alt} onClick={activate}>
       {failed ? (
         <span className="profile-initials" role="img" aria-label={alt}>
           {locale === 'ru' ? 'ЕН' : 'EN'}
@@ -60,7 +77,7 @@ function ProfilePortrait({ locale }: { locale: Locale }) {
           onError={() => setFailed(true)}
         />
       )}
-    </div>
+    </button>
   );
 }
 
@@ -116,7 +133,7 @@ function ContactLinks({ locale }: { locale: Locale }) {
   );
 }
 
-function ProjectCards({ locale }: { locale: Locale }) {
+function ProjectCards({ locale, editMode }: { locale: Locale; editMode: boolean }) {
   const t = copy[locale];
   const stageLabel = {
     released: t.released,
@@ -127,23 +144,30 @@ function ProjectCards({ locale }: { locale: Locale }) {
     <div className="project-grid">
       {projects.map((project) => (
         <article className="project-card" key={project.slug}>
-          <div className="project-heading">
-            <h3>{project.title[locale]}</h3>
-            <span className={`stage stage-${project.stage}`}>{stageLabel[project.stage]}</span>
-          </div>
-          <p>{project.summary[locale]}</p>
-          {project.tech.length > 0 && (
-            <ul className="tags" aria-label={t.skills}>
-              {project.tech.map((technology) => (
-                <li key={technology}>{technology}</li>
-              ))}
-            </ul>
-          )}
-          {project.githubUrl && (
-            <a className="text-link" href={project.githubUrl} rel="noopener noreferrer">
-              {t.github} <span aria-hidden="true">↗</span>
-            </a>
-          )}
+          <CopyableSection
+            editMode={editMode}
+            locale={locale}
+            text={formatProjectForClipboard(project, locale)}
+            targetLabel={`${t.copyProject}: ${project.title[locale]}`}
+          >
+            <div className="project-heading">
+              <h3>{project.title[locale]}</h3>
+              <span className={`stage stage-${project.stage}`}>{stageLabel[project.stage]}</span>
+            </div>
+            <p>{project.summary[locale]}</p>
+            {project.tech.length > 0 && (
+              <ul className="tags" aria-label={t.skills}>
+                {project.tech.map((technology) => (
+                  <li key={technology}>{technology}</li>
+                ))}
+              </ul>
+            )}
+            {project.githubUrl && (
+              <a className="text-link" href={project.githubUrl} rel="noopener noreferrer">
+                {t.github} <span aria-hidden="true">↗</span>
+              </a>
+            )}
+          </CopyableSection>
         </article>
       ))}
     </div>
@@ -162,6 +186,10 @@ function ThemeButton({ locale }: { locale: Locale }) {
     } catch {
       /* Theme selection still works when storage is unavailable. */
     }
+    const frame = window.requestAnimationFrame(() =>
+      document.documentElement.classList.add('theme-transitions-ready'),
+    );
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   function cycleTheme() {
@@ -227,6 +255,13 @@ export function App({
   const kind = pageKind(page, enableEvolution);
   const otherLocale = locale === 'ru' ? 'en' : 'ru';
   const [menuOpen, setMenuOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setEditMode(new URLSearchParams(window.location.search).get('edit') === '1');
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
   useEffect(() => {
     if (kind === 'evolution')
       void import('./evolution').then(({ enhanceEvolution }) => enhanceEvolution());
@@ -335,13 +370,18 @@ export function App({
               )}
             </nav>
             <section className="profile-section" id="about" aria-labelledby="about-title">
-              <ProfilePortrait locale={locale} />
+              <ProfilePortrait locale={locale} onTripleActivate={() => setEditMode(true)} />
               <div className="profile-content">
                 <h2 id="about-title">{t.about}</h2>
-                <div className="copyable-block">
+                <CopyableSection
+                  className="copyable-block"
+                  editMode={editMode}
+                  locale={locale}
+                  text={formatAboutForClipboard(profile, locale)}
+                  targetLabel={t.copyAbout}
+                >
                   <p className="lead">{profile.about[locale]}</p>
-                  <CopyButton locale={locale} text={formatAboutForClipboard(profile, locale)} />
-                </div>
+                </CopyableSection>
                 <ContactLinks locale={locale} />
               </div>
             </section>
@@ -350,13 +390,20 @@ export function App({
               <ol className="highlights">
                 {highlights.map((item, index) => (
                   <li key={item.id}>
-                    <span className="highlight-number" aria-hidden="true">
-                      0{index + 1}
-                    </span>
-                    <div>
-                      <h3>{item.heading[locale]}</h3>
-                      <p>{item.text[locale]}</p>
-                    </div>
+                    <CopyableSection
+                      editMode={editMode}
+                      locale={locale}
+                      text={formatHighlightForClipboard(item, locale)}
+                      targetLabel={`${t.copyHighlight}: ${item.heading[locale]}`}
+                    >
+                      <span className="highlight-number" aria-hidden="true">
+                        0{index + 1}
+                      </span>
+                      <div>
+                        <h3>{item.heading[locale]}</h3>
+                        <p>{item.text[locale]}</p>
+                      </div>
+                    </CopyableSection>
                   </li>
                 ))}
               </ol>
@@ -379,10 +426,26 @@ export function App({
                         <ExperiencePeriod item={item} locale={locale} />
                       </p>
                     </div>
-                    <p className="overview">{item.overview[locale]}</p>
+                    <CopyableSection
+                      editMode={editMode}
+                      locale={locale}
+                      text={formatExperienceSummaryForClipboard(item, locale)}
+                      targetLabel={`${t.copyExperienceSummary}: ${item.employer[locale]}`}
+                    >
+                      <p className="overview">{item.overview[locale]}</p>
+                    </CopyableSection>
                     <ul className="achievements">
-                      {item.achievements.map((item) => (
-                        <li key={item.id}>{item.text[locale]}</li>
+                      {item.achievements.map((achievement) => (
+                        <li key={achievement.id}>
+                          <CopyableSection
+                            editMode={editMode}
+                            locale={locale}
+                            text={formatAchievementForClipboard(achievement, locale)}
+                            targetLabel={`${t.copyAchievement}: ${item.employer[locale]}`}
+                          >
+                            {achievement.text[locale]}
+                          </CopyableSection>
+                        </li>
                       ))}
                     </ul>
                     <ul className="tags" aria-label={t.skills}>
@@ -390,7 +453,15 @@ export function App({
                         <li key={technology}>{technology}</li>
                       ))}
                     </ul>
-                    <CopyButton locale={locale} text={formatExperienceForClipboard(item, locale)} />
+                    <CopyableSection
+                      className="full-experience-copy"
+                      editMode={editMode}
+                      locale={locale}
+                      text={formatExperienceForClipboard(item, locale)}
+                      targetLabel={`${t.copyFullExperience}: ${item.employer[locale]}`}
+                    >
+                      <span className="visually-hidden">{item.employer[locale]}</span>
+                    </CopyableSection>
                   </article>
                 ))}
               </div>
@@ -400,12 +471,19 @@ export function App({
               <div>
                 {cases.map((item) => (
                   <article key={item.slug}>
-                    <h3>
-                      <a className="text-link" href={localePath(locale, `cases/${item.slug}`)}>
-                        {item.title[locale]}
-                      </a>
-                    </h3>
-                    <p>{item.summary[locale]}</p>
+                    <CopyableSection
+                      editMode={editMode}
+                      locale={locale}
+                      text={formatCaseSummaryForClipboard(item, locale)}
+                      targetLabel={`${t.copyCase}: ${item.title[locale]}`}
+                    >
+                      <h3>
+                        <a className="text-link" href={localePath(locale, `cases/${item.slug}`)}>
+                          {item.title[locale]}
+                        </a>
+                      </h3>
+                      <p>{item.summary[locale]}</p>
+                    </CopyableSection>
                   </article>
                 ))}
               </div>
@@ -413,7 +491,7 @@ export function App({
             <section className="resume-section" id="projects" aria-labelledby="projects-title">
               <h2 id="projects-title">{t.projects}</h2>
               <div>
-                <ProjectCards locale={locale} />
+                <ProjectCards locale={locale} editMode={editMode} />
                 <a className="text-link all-projects-link" href={localePath(locale, 'projects')}>
                   {t.projectsDetail}
                 </a>
@@ -447,7 +525,14 @@ export function App({
                 <React.Fragment key={item.slug}>
                   <p className="eyebrow">{t.cases}</p>
                   <h1>{item.title[locale]}</h1>
-                  <p className="overview">{item.summary[locale]}</p>
+                  <CopyableSection
+                    editMode={editMode}
+                    locale={locale}
+                    text={formatCaseSummaryForClipboard(item, locale)}
+                    targetLabel={`${t.copyCase}: ${item.title[locale]}`}
+                  >
+                    <p className="overview">{item.summary[locale]}</p>
+                  </CopyableSection>
                   {Object.entries(item.sections).map(([id, text]) => (
                     <section
                       className="resume-section"
@@ -456,7 +541,18 @@ export function App({
                       aria-labelledby={`${id}-title`}
                     >
                       <h2 id={`${id}-title`}>{t[id as keyof typeof item.sections]}</h2>
-                      <p>{text[locale]}</p>
+                      <CopyableSection
+                        editMode={editMode}
+                        locale={locale}
+                        text={formatCaseSectionForClipboard(
+                          item,
+                          id as keyof typeof item.sections,
+                          locale,
+                        )}
+                        targetLabel={`${t.copyCaseSection}: ${t[id as keyof typeof item.sections]}`}
+                      >
+                        <p>{text[locale]}</p>
+                      </CopyableSection>
                     </section>
                   ))}
                 </React.Fragment>
@@ -525,7 +621,7 @@ export function App({
             {kind === 'projects' ? (
               <>
                 <p className="projects-intro">{t.emptyDetail}</p>
-                <ProjectCards locale={locale} />
+                <ProjectCards locale={locale} editMode={editMode} />
               </>
             ) : (
               <div className="empty-state">

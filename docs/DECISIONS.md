@@ -66,3 +66,11 @@
 - One-time task instructions and completed migration audits are removed after their durable decisions and verification boundaries have been moved into `docs/DECISIONS.md` and `docs/QA.md`.
 - `docs/QA.md` keeps current reproducible results first and labels older Lighthouse evidence as historical. Recruiter-readiness follow-ups now live in QA instead of a separate stale audit.
 - `README.md` remains operational documentation; `docs/CONTENT_POLICY.md` remains the publication/privacy policy; `.agents/skills/career-update/SKILL.md` remains the reusable career-editing workflow.
+
+## Microinteractions and copy tools (2026-10-22)
+
+- Copy controls are progressive client enhancements over complete static resume content. Normal pointer use requires five seconds of continuous hover; keyboard focus and explicit copy mode reveal controls immediately.
+- `?edit=1` enables copy mode for the current page without implying authentication or exposing additional content. The visible utility toggle was removed; three consecutive portrait activations enable the same client-side mode, which remains off by default.
+- Clipboard text is serialized from the validated localized content model. About, highlights, individual achievements, experience summaries/full entries, case summaries/sections and project descriptions are explicit targets; navigation and decorative numbering are excluded.
+- CSS-only opacity, color, border, shadow and 1–2 px contact movement provide restrained motion. Reduced-motion preferences disable transitions, and initial theme transitions are enabled only after hydration.
+- Copy UI is absolutely overlaid to avoid content reflow and is omitted from print/PDF. The portrait trigger uses a 1.5-second sequence timeout and supports pointer, touch and keyboard activation. No career text, dates, claims, links or Spore Evolution behavior changed.
