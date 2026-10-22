@@ -3,12 +3,13 @@ import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
-import { publishingConfig, normalizePdf } from './publishing';
+import { publishingConfig, normalizePdf, validatePdf } from './publishing';
 import { serve } from './server';
 import type { App as AppType } from '../src/app/App';
 import type { copy as copyType } from '../src/app/copy';
 import type { cases as casesType } from '../src/content/cases';
 import { availability, profile } from '../src/content';
+import { pdfFileName } from '../src/app/routes';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
@@ -116,7 +117,7 @@ try {
     void browser.close();
   }, 90_000);
   try {
-    for (const locale of ['ru', 'en']) {
+    for (const locale of ['ru', 'en'] as const) {
       const page = await browser.newPage({
         locale,
         timezoneId: 'UTC',
@@ -156,9 +157,13 @@ try {
         printBackground: true,
         tagged: true,
       });
-      if (pdf.length < 1000 || !pdf.subarray(0, 5).equals(Buffer.from('%PDF-')))
-        throw new Error(`Invalid ${locale} PDF`);
-      await writeFile(`dist/downloads/resume-${locale}.pdf`, normalizePdf(pdf));
+      const normalizedPdf = normalizePdf(pdf);
+      try {
+        validatePdf(normalizedPdf);
+      } catch (error) {
+        throw new Error(`Invalid ${locale} PDF`, { cause: error });
+      }
+      await writeFile(`dist/downloads/${pdfFileName(locale)}`, normalizedPdf);
       await page.close();
     }
   } finally {

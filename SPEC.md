@@ -209,7 +209,7 @@ GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https:/
 
 ## 9. Export and SEO
 
-- PDF in RU/EN generated deterministically during CI/build using Playwright print-to-PDF from print route or static HTML. Bundle artifacts under `/downloads/resume-ru.pdf` and `/downloads/resume-en.pdf`; no remote print service.
+- PDF in RU/EN generated deterministically during CI/build using Playwright print-to-PDF from print route or static HTML. Bundle artifacts use `/downloads/eugene-novikov-sse-{updated}-{ru|en}.pdf`, where `updated` is the canonical application content-update date; no remote print service.
 - PDF: selectable text, A4, correct page breaks, no header navigation, no animation, no clipped content, no blank pages, links active. Print should preserve semantic order and not require JS interaction.
 - Optional Markdown and TXT downloads from same canonical content; do not maintain duplicated text files manually.
 - Locale-specific title/description, OpenGraph images, canonical URLs, hreflang ru/en, sitemap.xml, robots.txt, structured data Person/Occupation only with accurate facts.

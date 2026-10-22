@@ -12,7 +12,7 @@ import {
 } from '../content';
 import { cases } from '../content/cases';
 import { copy } from './copy';
-import { basePath, localePath, pageKind, pdfPath } from './routes';
+import { basePath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
 import { CopyableSection } from './copy-tools';
 import {
   formatAboutForClipboard,
@@ -362,7 +362,7 @@ export function App({
                 <div>
                   <p className="hero-context">React / TypeScript / Frontend</p>
                 </div>
-                <a className="button primary" href={pdfPath(locale)} download>
+                <a className="button primary" href={pdfPath(locale)} download={pdfFileName(locale)}>
                   {t.download}
                   <span aria-hidden="true"> ↓</span>
                 </a>

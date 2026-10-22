@@ -32,14 +32,24 @@ for (const locale of ['ru', 'en']) {
     await page.goto(locale);
     await expect(page.locator('.experience-card')).toHaveCount(4);
     await expect(page.locator('.experience-card').last()).toContainText('2015–2016');
-    const href = await page.locator('a[download]').getAttribute('href');
+    const downloadLink = page.locator('a[download]');
+    const href = await downloadLink.getAttribute('href');
+    await expect(downloadLink).toHaveAttribute(
+      'download',
+      `eugene-novikov-sse-2026-10-22-${locale}.pdf`,
+    );
     const pdf = await request.get(href!);
     expect(pdf.status()).toBe(200);
+    expect(pdf.headers()['content-type']).toContain('application/pdf');
     expect((await pdf.body()).subarray(0, 5).toString()).toBe('%PDF-');
+    await page.emulateMedia({ media: 'screen' });
+    const downloadPromise = page.waitForEvent('download');
+    await downloadLink.click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(`eugene-novikov-sse-2026-10-22-${locale}.pdf`);
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.site-header')).toBeHidden();
     await expect(page.locator('#education')).toBeVisible();
-    await page.emulateMedia({ media: 'screen' });
     await page.goto(`${locale}/projects`);
     await expect(page.locator('.project-card')).toHaveCount(4);
     await context.close();

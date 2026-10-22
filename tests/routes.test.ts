@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { basePath, localePath, pageKind, pdfPath } from '../src/app/routes';
+import { basePath, localePath, pageKind, pdfFileName, pdfPath } from '../src/app/routes';
 import { App } from '../src/app/App';
 import { availability, experience, highlights, profile } from '../src/content';
 
@@ -24,9 +24,13 @@ describe('static page routes', () => {
     for (const page of ['unknown', 'projects/missing', 'evolution', 'cases/example'])
       expect(pageKind(page)).toBe('not-found');
   });
-  it('links to locale-specific PDFs under the deployment base', () => {
-    expect(pdfPath('ru', '/career/')).toBe('/career/downloads/resume-ru.pdf');
-    expect(pdfPath('en', '/')).toBe('/downloads/resume-en.pdf');
+  it('links to dated locale-specific PDFs under the deployment base', () => {
+    expect(pdfFileName('ru')).toBe('eugene-novikov-sse-2026-10-22-ru.pdf');
+    expect(pdfFileName('en')).toBe('eugene-novikov-sse-2026-10-22-en.pdf');
+    expect(pdfPath('ru', '/career/')).toBe(
+      '/career/downloads/eugene-novikov-sse-2026-10-22-ru.pdf',
+    );
+    expect(pdfPath('en', '/')).toBe('/downloads/eugene-novikov-sse-2026-10-22-en.pdf');
   });
 });
 
@@ -48,7 +52,8 @@ describe('server-rendered resume', () => {
       expect(html).toContain(availability.label[locale]);
       expect(html).toContain('class="availability-status"');
       expect(html).toContain('https://wa.me/qr/XFZZQSNXJCSBL1');
-      expect(html).toContain(`downloads/resume-${locale}.pdf`);
+      expect(html).toContain(`downloads/eugene-novikov-sse-2026-10-22-${locale}.pdf`);
+      expect(html).toContain(`download="eugene-novikov-sse-2026-10-22-${locale}.pdf"`);
       expect(html).toContain('id="main"');
       expect(html).not.toContain('<details');
     },

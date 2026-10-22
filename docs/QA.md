@@ -10,7 +10,7 @@ Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is stat
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `npm run lint`                           | Pass                                                                                                   |
 | `npm run typecheck`                      | Pass                                                                                                   |
-| `npm test`                               | 47 tests passed across 6 files                                                                         |
+| `npm test`                               | 49 tests passed across 6 files                                                                         |
 | `npm run build`                          | Pass outside the terminal OS sandbox; static pages, SEO, `/availability.json` and RU/EN PDFs generated |
 | `npm run test:e2e`                       | 31 passed with Evolution disabled                                                                      |
 | `ENABLE_EVOLUTION=true npm run build`    | Pass                                                                                                   |
@@ -32,7 +32,7 @@ Automated checks cover:
 - keyboard navigation, skip links, axe checks and reduced motion;
 - 320/375/768/1280 px layouts without horizontal overflow;
 - Evolution disabled and enabled branches, four employment steps, milestone, keyboard controls and no-JS fallback;
-- PDF download signatures, print visibility and hidden site navigation;
+- PDF HTTP status, `application/pdf` MIME, `%PDF-` signatures, dated suggested filenames, print visibility and hidden site navigation;
 - the localized portrait, missing-image initials fallback, five contact channels and legacy `#contacts` anchor;
 - continuous five-second hover reveal/reset, immediate keyboard reveal, three portrait activations on touch and 44 px targets;
 - canonical RU/EN clipboard serialization, summary/full experience ordering and localized clipboard failure feedback;
@@ -48,7 +48,7 @@ The latest generated files reported by macOS metadata:
 | RU  |     5 | 489,446 bytes |
 | EN  |     4 | 437,913 bytes |
 
-The files are generated from the same server-rendered resume used by the locale pages. E2E verifies successful downloads, `%PDF-` signatures, print content and hidden navigation.
+The files are generated from the same server-rendered resume used by the locale pages. Build validation checks the final normalized artifact’s header, size, trailer, `%%EOF` and `startxref`; E2E verifies successful downloads, MIME, `%PDF-` signatures, suggested filenames, print content and hidden navigation.
 
 This iteration did not repeat independent text/link extraction or page-by-page rendered visual inspection because `pypdf`, PyMuPDF, `pdfinfo` and `pdftotext` were unavailable. The previous visual review predates v4 and must not be treated as proof of current pagination quality.
 
