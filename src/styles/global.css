@@ -249,6 +249,15 @@ button:hover {
 .accent {
   color: var(--accent);
 }
+.hero-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.hero-title-row h1 {
+  min-width: 0;
+}
 .hero-bottom {
   display: flex;
   justify-content: space-between;
@@ -261,16 +270,62 @@ button:hover {
   font-size: 1.05rem;
 }
 .availability-status {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 0.45rem;
-  margin-top: 0.65rem;
+  max-width: 19rem;
+  margin: 0.55rem 0 0;
+  padding: 0.55rem 0.85rem;
+  overflow: hidden;
   color: var(--accent-strong);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.85rem;
   font-weight: 700;
+  line-height: 1.25;
 }
-.availability-status span {
+.availability-dot,
+.availability-label {
+  position: relative;
+  z-index: 1;
+}
+.availability-dot {
   color: var(--accent);
   font-size: 0.7em;
+}
+.availability-status[data-animated='true']::before {
+  position: absolute;
+  z-index: 0;
+  inset: -70% auto -70% -35%;
+  width: 55%;
+  content: '';
+  background: linear-gradient(105deg, #f2faff 0%, #68bbff 50%, #195ea8 100%);
+  opacity: 0.72;
+  transform: translateX(-220%) skewX(-18deg);
+  animation: availability-ribbon-sweep 6s ease-in-out infinite;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .availability-status[data-animated='true']::before {
+    opacity: 0.92;
+  }
+}
+:root[data-theme='dark'] .availability-status[data-animated='true']::before {
+  opacity: 0.92;
+}
+@keyframes availability-ribbon-sweep {
+  0% {
+    transform: translateX(-220%) skewX(-18deg);
+  }
+  40% {
+    transform: translateX(520%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(520%) skewX(-18deg);
+  }
 }
 .section-navigation {
   display: flex;
@@ -562,6 +617,13 @@ button:hover {
   .hero {
     padding-top: 3.5rem;
   }
+  .hero-title-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .availability-status {
+    margin-top: 0;
+  }
   .hero-bottom {
     align-items: flex-start;
     flex-direction: column;
@@ -676,7 +738,14 @@ button:hover {
   box-shadow: 0 4px 18px var(--glow);
   font-size: 0.78rem;
   font-weight: 650;
-  transition: opacity 150ms ease;
+  transform: scale(1);
+  transform-origin: top right;
+  transition:
+    opacity 150ms ease,
+    transform 180ms ease;
+}
+.copy-button.is-copied {
+  transform: scale(2);
 }
 .copyable-section.is-copy-visible > .copy-button,
 .copyable-section:focus-within > .copy-button {

@@ -37,6 +37,15 @@
   .hero h1 {
     font-size: 32pt !important;
   }
+  .hero-title-row {
+    align-items: flex-start !important;
+  }
+  .availability-status {
+    animation: none !important;
+  }
+  .availability-status::before {
+    display: none !important;
+  }
   .eyebrow {
     font-size: 10pt !important;
     margin-bottom: 3mm !important;

@@ -62,7 +62,8 @@ test('copy buttons expose reusable About and employer blocks', async ({ page, co
   const experienceBlock = await page.evaluate(() => navigator.clipboard.readText());
   expect(experienceBlock).toContain('МТС Web Services');
   expect(experienceBlock).toContain('1–2 рабочих дня');
-  await expect(fullExperience).toContainText('Скопировано');
+  await expect(fullExperience).toHaveClass(/is-copied/);
+  await expect(fullExperience.locator('span[aria-hidden="true"]').first()).toHaveText('Копировать');
 });
 
 test('locale preserves projects route; theme persists; anchors and keyboard', async ({ page }) => {

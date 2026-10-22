@@ -341,18 +341,26 @@ export function App({
           <>
             <section className="hero" aria-labelledby="resume-title">
               <p className="eyebrow">{profile.role[locale]}</p>
-              <h1 id="resume-title">
-                {profile.name[locale]}
-                <span className="accent" aria-hidden="true">
-                  .
-                </span>
-              </h1>
+              <div className="hero-title-row">
+                <h1 id="resume-title">
+                  {profile.name[locale]}
+                  <span className="accent" aria-hidden="true">
+                    .
+                  </span>
+                </h1>
+                <p
+                  className="availability-status"
+                  data-animated={availability.status === 'available' ? 'true' : undefined}
+                >
+                  <span className="availability-dot" aria-hidden="true">
+                    ●
+                  </span>
+                  <span className="availability-label">{availability.label[locale]}</span>
+                </p>
+              </div>
               <div className="hero-bottom">
                 <div>
                   <p className="hero-context">React / TypeScript / Frontend</p>
-                  <p className="availability-status">
-                    <span aria-hidden="true">●</span> {availability.label[locale]}
-                  </p>
                 </div>
                 <a className="button primary" href={pdfPath(locale)} download>
                   {t.download}

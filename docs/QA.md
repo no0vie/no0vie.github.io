@@ -12,7 +12,7 @@ Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is stat
 | `npm run typecheck`                      | Pass                                                                                                   |
 | `npm test`                               | 47 tests passed across 6 files                                                                         |
 | `npm run build`                          | Pass outside the terminal OS sandbox; static pages, SEO, `/availability.json` and RU/EN PDFs generated |
-| `npm run test:e2e`                       | 29 passed with Evolution disabled                                                                      |
+| `npm run test:e2e`                       | 31 passed with Evolution disabled                                                                      |
 | `ENABLE_EVOLUTION=true npm run build`    | Pass                                                                                                   |
 | `ENABLE_EVOLUTION=true npm run test:e2e` | 24 passed with Evolution enabled                                                                       |
 
@@ -36,7 +36,8 @@ Automated checks cover:
 - the localized portrait, missing-image initials fallback, five contact channels and legacy `#contacts` anchor;
 - continuous five-second hover reveal/reset, immediate keyboard reveal, three portrait activations on touch and 44 px targets;
 - canonical RU/EN clipboard serialization, summary/full experience ordering and localized clipboard failure feedback;
-- copy controls excluded from print, plus responsive light/dark and reduced-motion coverage.
+- copy controls excluded from print, plus responsive light/dark and reduced-motion coverage;
+- scale-only visual copy confirmation and the availability Ribbon Sweep placement, six-second cycle, reduced-motion and print behavior.
 
 ## Current PDF status
 

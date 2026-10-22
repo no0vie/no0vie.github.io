@@ -60,14 +60,15 @@ export function CopyButton({ locale, text, targetLabel }: CopyButtonProps) {
   }
 
   const feedback = status === 'copied' ? t.copied : status === 'failed' ? t.copyFailed : '';
+  const visibleLabel = status === 'failed' ? t.copyFailed : t.copy;
   return (
     <button
       type="button"
-      className="copy-button"
+      className={`copy-button${status === 'copied' ? ' is-copied' : ''}`}
       aria-label={targetLabel}
       onClick={() => void copyBlock()}
     >
-      <span aria-hidden="true">{feedback || t.copy}</span>
+      <span aria-hidden="true">{visibleLabel}</span>
       <span aria-hidden="true"> ⧉</span>
       <span className="visually-hidden" role="status" aria-live="polite">
         {feedback}

@@ -56,7 +56,9 @@ test('copy uses canonical localized text and reports clipboard success and failu
   expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
     /^Development for OMNI and ORP:/m,
   );
-  await expect(summary).toContainText('Copied');
+  await expect(summary).toHaveClass(/is-copied/);
+  await expect(summary).toHaveCSS('transform', 'matrix(2, 0, 0, 2, 0, 0)');
+  await expect(summary.locator('span[aria-hidden="true"]').first()).toHaveText('Copy');
 
   await full.click();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
