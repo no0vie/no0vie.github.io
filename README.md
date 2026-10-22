@@ -41,7 +41,7 @@ PDF rendering uses a temporary loopback server, JavaScript disabled, UTC, a fixe
 
 ## Content editing
 
-Canonical public content lives in `src/content/seed.ts`; schemas and publication checks are in `src/content/schema.ts`, validated by `src/content/index.ts`. Employment records carry explicit date precision; non-employment transitions use typed career milestones and do not increase experience duration. UI translations live in `src/app/copy.ts`. Skill categories live in `src/content/skills.ts`; reusable clipboard formatting is isolated in `src/app/resume-text.ts`.
+Canonical public content lives in `src/content/seed.ts`; schemas and publication checks are in `src/content/schema.ts`, validated by `src/content/index.ts`. Employment records carry explicit date precision; non-employment transitions use typed career milestones and do not increase experience duration. UI translations live in `src/app/copy.ts`. Skill categories live in `src/content/skills.ts`; reusable clipboard formatting is isolated in `src/app/resume-text.ts`. The profile introduction uses the approved `public/profile.jpg`; replace that file with another authentic square-or-portrait image when needed, keeping the filename stable. CSS crops it to 4:5, and `--portrait-position` in `src/styles/global.css` controls the focal point; an initials avatar appears if the image cannot load.
 
 1. Edit both languages together, preserving factual parity and the evidence/publication policy in `SPEC.md` and `docs/CONTENT_POLICY.md`.
 2. Do not add private notes, contact details without approval, unapproved metrics or guessed links to public source files. SSR is not a privacy boundary: imported content can also enter client bundles.

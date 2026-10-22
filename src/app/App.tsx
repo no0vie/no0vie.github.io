@@ -12,7 +12,7 @@ import {
 } from '../content';
 import { cases } from '../content/cases';
 import { copy } from './copy';
-import { localePath, pageKind, pdfPath } from './routes';
+import { basePath, localePath, pageKind, pdfPath } from './routes';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 
 type Theme = 'system' | 'light' | 'dark';
@@ -38,6 +38,81 @@ function CopyButton({ locale, text }: { locale: Locale; text: string }) {
       {label}
       <span aria-hidden="true"> ⧉</span>
     </button>
+  );
+}
+
+function ProfilePortrait({ locale }: { locale: Locale }) {
+  const [failed, setFailed] = useState(false);
+  const alt = locale === 'ru' ? 'Портрет Евгения Новикова' : 'Portrait of Eugene Novikov';
+
+  return (
+    <div className="profile-portrait">
+      {failed ? (
+        <span className="profile-initials" role="img" aria-label={alt}>
+          {locale === 'ru' ? 'ЕН' : 'EN'}
+        </span>
+      ) : (
+        <img
+          src={basePath('profile.jpg')}
+          width="640"
+          height="640"
+          alt={alt}
+          onError={() => setFailed(true)}
+        />
+      )}
+    </div>
+  );
+}
+
+function ContactIcon({ service }: { service: 'email' | 'telegram' | 'whatsapp' | 'github' }) {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+      {service === 'email' ? (
+        <path d="M3.5 6.5h17v11h-17zM4 7l8 6 8-6" />
+      ) : service === 'telegram' ? (
+        <path d="M3 11.5 21 4l-3.5 16-6-5-3 3 .5-4 8-7-10 6z" />
+      ) : service === 'whatsapp' ? (
+        <path d="M12 3a8.5 8.5 0 0 0-7.3 12.9L4 21l5-1.4A8.5 8.5 0 1 0 12 3zm-3 5.5c.5 3 2.5 5 5.5 6l1.5-1 2 1.5c-.5 2-2 2.5-3.5 2-4-1-6.5-3.5-7.5-7.5-.5-1.5 0-3 2-3.5l1.5 2z" />
+      ) : (
+        <path d="M12 3a9 9 0 0 0-3 17.5v-2c-2 .4-2.5-.8-2.5-.8-.3-.9-.8-1.1-.8-1.1-.7-.5 0-.5 0-.5.8 0 1.2.8 1.2.8.7 1.2 1.8.9 2.2.7.1-.5.3-.9.5-1.1-1.7-.2-3.5-.9-3.5-4a3.2 3.2 0 0 1 .8-2.2c-.1-.2-.4-1 .1-2.2 0 0 .7-.2 2.3.8a8 8 0 0 1 4.2 0c1.6-1 2.3-.8 2.3-.8.5 1.2.2 2 .1 2.2.6.6.8 1.4.8 2.2 0 3.1-1.8 3.8-3.5 4 .3.2.5.7.5 1.4v2.6A9 9 0 0 0 12 3z" />
+      )}
+    </svg>
+  );
+}
+
+function ContactLinks({ locale }: { locale: Locale }) {
+  const links = [
+    { label: 'Gmail', href: `mailto:${profile.contacts.emails[0]}`, icon: 'email' },
+    {
+      label: locale === 'ru' ? 'Яндекс Почта' : 'Yandex Mail',
+      href: `mailto:${profile.contacts.emails[1]}`,
+      icon: 'email',
+    },
+    { label: 'Telegram', href: profile.contacts.telegram, icon: 'telegram' },
+    { label: 'WhatsApp', href: profile.contacts.whatsapp, icon: 'whatsapp' },
+    { label: 'GitHub', href: profile.github, icon: 'github' },
+  ] as const;
+
+  return (
+    <div className="profile-contacts" id="contacts" aria-labelledby="contacts-title">
+      <h3 id="contacts-title" className="visually-hidden">
+        {copy[locale].contact}
+      </h3>
+      <ul className="contact-chips">
+        {links.map((link) => (
+          <li key={link.label}>
+            <a
+              className="contact-chip"
+              href={link.href}
+              rel={link.href.startsWith('https://') ? 'noopener noreferrer' : undefined}
+            >
+              <ContactIcon service={link.icon} />
+              <span>{link.label}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -259,15 +334,15 @@ export function App({
                 ),
               )}
             </nav>
-            <section
-              className="resume-section about-section"
-              id="about"
-              aria-labelledby="about-title"
-            >
-              <h2 id="about-title">{t.about}</h2>
-              <div className="copyable-block">
-                <p className="lead">{profile.about[locale]}</p>
-                <CopyButton locale={locale} text={formatAboutForClipboard(profile, locale)} />
+            <section className="profile-section" id="about" aria-labelledby="about-title">
+              <ProfilePortrait locale={locale} />
+              <div className="profile-content">
+                <h2 id="about-title">{t.about}</h2>
+                <div className="copyable-block">
+                  <p className="lead">{profile.about[locale]}</p>
+                  <CopyButton locale={locale} text={formatAboutForClipboard(profile, locale)} />
+                </div>
+                <ContactLinks locale={locale} />
               </div>
             </section>
             <section className="highlights-section" aria-labelledby="highlights-title">
@@ -362,42 +437,6 @@ export function App({
             <section className="resume-section" id="education" aria-labelledby="education-title">
               <h2 id="education-title">{t.education}</h2>
               <p className="education-copy">{profile.education[locale]}</p>
-            </section>
-            <section className="resume-section" aria-labelledby="contact-title">
-              <h2 id="contact-title">{t.contact}</h2>
-              <ul className="contact-list">
-                {profile.contacts.emails.map((email) => (
-                  <li key={email}>
-                    <a className="text-link" href={`mailto:${email}`}>
-                      {email}
-                    </a>
-                  </li>
-                ))}
-                <li>
-                  <a
-                    className="text-link"
-                    href={profile.contacts.telegram}
-                    rel="noopener noreferrer"
-                  >
-                    Telegram · @no_0vie <span aria-hidden="true">↗</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    className="text-link"
-                    href={profile.contacts.whatsapp}
-                    rel="noopener noreferrer"
-                  >
-                    {t.whatsapp} <span aria-hidden="true">↗</span>
-                  </a>
-                </li>
-
-                <li>
-                  <a className="text-link" href={profile.github} rel="noopener noreferrer">
-                    GitHub · no0vie <span aria-hidden="true">↗</span>
-                  </a>
-                </li>
-              </ul>
             </section>
           </>
         ) : kind === 'case' ? (
@@ -502,19 +541,11 @@ export function App({
       <footer className="site-footer">
         <div>
           <span>{profile.name[locale]} · </span>
-          <a href={`mailto:${profile.contacts.emails[0]}`}>{profile.contacts.emails[0]}</a>
-          <span> · </span>
-          <a href={profile.contacts.telegram} rel="noopener noreferrer">
-            Telegram
-          </a>
-          <span> · </span>
-          <a href={profile.contacts.whatsapp} rel="noopener noreferrer">
-            {t.whatsapp}
-          </a>
-
-          <span> · </span>
-          <a href={profile.github} rel="noopener noreferrer">
-            GitHub
+          <a
+            className="footer-contact-link"
+            href={kind === 'resume' ? '#contacts' : `${localePath(locale)}#contacts`}
+          >
+            {t.contact}
           </a>
           <p>{t.footer}</p>
         </div>

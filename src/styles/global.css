@@ -13,6 +13,7 @@
   --tint: #eaf3ff;
   --inverse: #ffffff;
   --glow: rgba(41, 128, 255, 0.2);
+  --portrait-position: 50% 32%;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 @media (prefers-color-scheme: dark) {
@@ -288,6 +289,57 @@ button:hover {
   padding-top: 0.25rem;
   color: var(--muted);
 }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.profile-section {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  padding-block: 3.5rem;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 1rem;
+}
+.profile-portrait {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--accent-soft);
+  box-shadow: 0 18px 45px rgba(16, 38, 74, 0.14);
+}
+.profile-portrait img,
+.profile-initials {
+  width: 100%;
+  height: 100%;
+}
+.profile-portrait img {
+  display: block;
+  object-fit: cover;
+  object-position: var(--portrait-position);
+}
+.profile-initials {
+  display: grid;
+  place-items: center;
+  color: var(--accent-strong);
+  font-family: Georgia, serif;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+}
+.profile-content {
+  min-width: 0;
+}
+.profile-content > h2 {
+  margin-bottom: 1rem;
+  color: var(--muted);
+}
 .lead {
   font-size: clamp(1.15rem, 2.2vw, 1.4rem);
   line-height: 1.65;
@@ -490,6 +542,14 @@ button:hover {
     align-items: flex-start;
     flex-direction: column;
   }
+  .profile-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding-block: 2.5rem;
+  }
+  .profile-portrait {
+    width: clamp(112px, 36vw, 160px);
+  }
   .resume-section {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem;
@@ -637,12 +697,50 @@ button:hover {
   color: var(--accent-strong);
   font-size: 0.9rem;
 }
-.contact-list {
-  display: grid;
-  gap: 0.25rem;
+.profile-contacts {
+  margin-top: 1.75rem;
+  scroll-margin-top: 1rem;
+}
+.contact-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
   padding: 0;
   margin: 0;
   list-style: none;
+}
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+.contact-chip svg {
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.contact-chip:hover,
+.contact-chip:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  transform: translateY(-2px);
 }
 @media (max-width: 760px) {
   .project-grid {

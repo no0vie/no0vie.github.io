@@ -31,8 +31,8 @@ export const seedContent = {
       'Senior Software Engineer (Frontend-focused)',
     ),
     about: localized(
-      'Разрабатываю программные продукты с 2015 года: от ПО для информационных табло и корпоративных бизнес-приложений до оформления заказов и платформ управления коммуникациями. Беру ответственность за архитектуру фронтенда и продуктовые сценарии, участвую в дежурствах и расследовании инцидентов, провожу ревью кода и помогаю коллегам расти.',
-      'I have built software products since 2015, from software for information displays and corporate business applications to checkout and communication-management platforms. I take ownership of frontend architecture and product flows, participate in production on-call and incident investigation, review code, and mentor colleagues.',
+      'Разрабатываю программные продукты с 2015 года — от ПО для информационных табло до крупных веб-платформ. Проектирую расширяемую архитектуру фронтенда, улучшаю продуктовые сценарии и участвую в обеспечении надёжности production-систем. Провожу код-ревью и помогаю коллегам развиваться.',
+      'I have been building software since 2015, from digital signage applications to large-scale web platforms. I design extensible frontend architectures, improve product workflows, and help keep production systems reliable. I review code and mentor fellow engineers.',
     ),
     education: localized(
       'Ярославский государственный университет им. П. Г. Демидова. Бакалавр по направлению «Прикладная математика и информатика», 2018. Английский — B1 (самооценка): читаю техническую документацию и уверенно общаюсь по рабочим вопросам.',

@@ -11,6 +11,25 @@ it('recognizes only the published case and explicitly enabled evolution', () => 
   expect(pageKind('evolution', true)).toBe('evolution');
 });
 for (const locale of ['ru', 'en'] as const) {
+  it(`${locale}: renders one profile introduction with portrait and five contact channels`, () => {
+    const html = renderToStaticMarkup(createElement(App, { locale, page: '' }));
+    const portraitAlt = locale === 'ru' ? 'Портрет Евгения Новикова' : 'Portrait of Eugene Novikov';
+
+    expect(html).toContain('class="profile-section"');
+    expect(html).toContain(`alt="${portraitAlt}"`);
+    expect(html).toContain('id="about"');
+    expect(html).toContain('id="contacts"');
+    expect(html.match(/class="contact-chip"/g)).toHaveLength(5);
+    expect(html.match(/mailto:eugene\.malin765@gmail\.com/g)).toHaveLength(1);
+    expect(html.match(/mailto:evgeniys-nov@yandex\.ru/g)).toHaveLength(1);
+    expect(html.match(/https:\/\/t\.me\/no_0vie/g)).toHaveLength(1);
+    expect(html.match(/https:\/\/wa\.me\/qr\/XFZZQSNXJCSBL1/g)).toHaveLength(1);
+    expect(html.match(/class="contact-chip" href="https:\/\/github\.com\/no0vie"/g)).toHaveLength(
+      1,
+    );
+    expect(html).toContain('class="footer-contact-link" href="#contacts"');
+  });
+
   it(`${locale}: links the case from the resume and renders its complete static narrative`, () => {
     const resume = renderToStaticMarkup(createElement(App, { locale, page: '' }));
     expect(resume).toContain(`/${locale}/cases/campaign-wizard`);

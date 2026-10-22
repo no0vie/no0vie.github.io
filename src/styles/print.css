@@ -51,6 +51,45 @@
     display: block !important;
     padding: 6mm 0 !important;
   }
+  .profile-section {
+    display: grid !important;
+    grid-template-columns: 30mm 1fr !important;
+    align-items: start !important;
+    gap: 6mm !important;
+    padding: 5mm 0 !important;
+  }
+  .profile-portrait {
+    width: 30mm !important;
+    border-radius: 4mm !important;
+    box-shadow: none !important;
+  }
+  .profile-content > h2 {
+    margin-bottom: 2mm !important;
+  }
+  .profile-contacts {
+    margin-top: 3mm !important;
+  }
+  .contact-chips {
+    display: block !important;
+  }
+  .contact-chips li {
+    display: inline !important;
+  }
+  .contact-chip {
+    display: inline !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    font-size: 8.5pt !important;
+    font-weight: 400 !important;
+  }
+  .contact-chip svg {
+    display: none !important;
+  }
+  .contact-chip::after {
+    content: ' (' attr(href) ') · ';
+  }
   h2 {
     font-size: 13pt !important;
     margin-bottom: 3mm !important;

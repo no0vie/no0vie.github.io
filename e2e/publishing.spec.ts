@@ -136,7 +136,9 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
     for (const link of links) {
       if (new URL(link).origin !== new URL(page.url()).origin) continue;
       expect((await request.get(link)).status(), link).toBe(200);
-      if (new URL(link).hash) await expect(page.locator(new URL(link).hash)).toHaveCount(1);
+      const target = new URL(link);
+      if (target.hash && target.pathname === new URL(page.url()).pathname)
+        await expect(page.locator(target.hash)).toHaveCount(1);
     }
   }
   for (const path of ['og-ru.png', 'og-en.png', 'favicon.svg', 'robots.txt', 'sitemap.xml'])
@@ -149,10 +151,14 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
     'content',
     'summary_large_image',
   );
+  await expect(page.locator('#contacts').getByRole('link', { name: 'Gmail' })).toHaveAttribute(
+    'href',
+    'mailto:eugene.malin765@gmail.com',
+  );
   await expect(
-    page.locator('#main').getByRole('link', { name: 'eugene.malin765@gmail.com' }),
-  ).toHaveAttribute('href', 'mailto:eugene.malin765@gmail.com');
-  await expect(page.getByRole('link', { name: /Telegram · @no_0vie/ })).toHaveAttribute(
+    page.locator('#contacts').getByRole('link', { name: 'Yandex Mail' }),
+  ).toHaveAttribute('href', 'mailto:evgeniys-nov@yandex.ru');
+  await expect(page.locator('#contacts').getByRole('link', { name: 'Telegram' })).toHaveAttribute(
     'href',
     'https://t.me/no_0vie',
   );
@@ -180,6 +186,17 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
     '@type': 'Person',
     name: 'Eugene Novikov',
   });
+});
+
+test('profile keeps the legacy contact anchor and falls back to localized initials', async ({
+  page,
+}) => {
+  await page.goto('en#contacts');
+  await page.locator('.profile-portrait img').dispatchEvent('error');
+
+  await expect(page.locator('#contacts')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Portrait of Eugene Novikov' })).toHaveText('EN');
+  await expect(page.locator('.contact-chip')).toHaveCount(5);
 });
 
 test('root defaults to Russian and honors explicit saved English', async ({ page }) => {

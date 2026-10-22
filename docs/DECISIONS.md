@@ -53,6 +53,13 @@
 - Evolution remains optional but now follows FRUCT → Tensor → Yandex Market → MTS, with the scholarship milestone between FRUCT and Tensor.
 - HH OAuth/scraping, backend status synchronization and external profile publication remain explicitly out of scope.
 
+## Profile introduction redesign (2026-10-22)
+
+- Keep the established name/role hero, single canonical availability badge and PDF action. The About area directly below navigation now combines the owner-provided portrait, concise approved bilingual introduction and five compact contact chips.
+- Reuse `public/profile.jpg`, already approved for social cards, with a CSS focal-position token and an initials fallback on load failure. No synthetic likeness or additional image dependency is introduced.
+- `#about` remains the section entry point and nested `#contacts` preserves legacy links. The former standalone contact section is removed; the footer links to `#contacts` instead of duplicating contact records.
+- Contact URLs remain sourced only from the validated profile record. Visible labels identify Gmail, Yandex Mail, Telegram, WhatsApp and GitHub without exposing a phone number.
+
 ## Documentation consolidation (2026-10-22)
 
 - `SPEC.md` is the single current product and public-fact specification and incorporates Portfolio Update v4. New updates must revise it rather than add another competing current spec.

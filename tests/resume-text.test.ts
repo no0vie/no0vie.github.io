@@ -8,7 +8,7 @@ describe('resume clipboard blocks', () => {
       'Разрабатываю программные продукты с 2015 года',
     );
     expect(formatAboutForClipboard(profile, 'en')).toContain(
-      'I have built software products since 2015',
+      'I have been building software since 2015',
     );
   });
 
