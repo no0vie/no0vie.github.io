@@ -2,12 +2,16 @@
   "name": "career-site",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
+    "assets:og": "tsx scripts/generate-og.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "tsx scripts/build.ts",

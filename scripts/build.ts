@@ -54,7 +54,8 @@ try {
         '@type': 'Person',
         name: profile.name[locale],
         url: config.url(locale),
-        sameAs: [profile.github],
+        email: `mailto:${profile.contacts.emails[0]}`,
+        sameAs: [profile.github, profile.contacts.telegram, profile.hhUrl],
         hasOccupation: { '@type': 'Occupation', name: profile.role[locale] },
         alumniOf: {
           '@type': 'EducationalOrganization',
@@ -68,7 +69,7 @@ try {
         `<meta name="description" content="${escape(description)}"><link rel="icon" href="${config.base}favicon.svg">` +
         (page === '404'
           ? '<meta name="robots" content="noindex">'
-          : `<link rel="canonical" href="${config.url(path)}">${['ru', 'en'].map((lang) => `<link rel="alternate" hreflang="${lang}" href="${config.url(`${lang}${page ? `/${page}` : ''}`)}">`).join('')}<link rel="alternate" hreflang="x-default" href="${config.url(`ru${page ? `/${page}` : ''}`)}"><meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${config.url(path)}"><meta property="og:locale" content="${locale === 'ru' ? 'ru_RU' : 'en_US'}"><meta property="og:image" content="${config.url(`og-${locale}.png`)}"><script type="application/ld+json">${structuredData}</script>`);
+          : `<link rel="canonical" href="${config.url(path)}">${['ru', 'en'].map((lang) => `<link rel="alternate" hreflang="${lang}" href="${config.url(`${lang}${page ? `/${page}` : ''}`)}">`).join('')}<link rel="alternate" hreflang="x-default" href="${config.url(`ru${page ? `/${page}` : ''}`)}"><meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${config.url(path)}"><meta property="og:locale" content="${locale === 'ru' ? 'ru_RU' : 'en_US'}"><meta property="og:image" content="${config.url(`og-${locale}.png`)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${escape(`${profile.name[locale]} — ${profile.role[locale]}`)}"><meta name="twitter:card" content="summary_large_image"><script type="application/ld+json">${structuredData}</script>`);
       const html = template
         .replace('lang="ru"', `lang="${locale}"`)
         .replace('data-page=""', `data-page="${page}" data-evolution="${enableEvolution}"`)
