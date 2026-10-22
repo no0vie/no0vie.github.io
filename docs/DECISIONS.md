@@ -8,7 +8,7 @@
 - Generate complete static HTML for each known localized route, with small client enhancement. GitHub Pages serves directory index files; unknown paths use a real 404 page. Support configurable base path.
 - Public data is an allowlisted, runtime-validated source. No private notes or rejected metrics enter the application. Omit numerical performance claims pending explicit approval. Contact email/phone omitted.
 - Use the provided verified career facts only. GitHub project publication status and design reference access remain to be audited; no project cards until verified. No claim of Figma reproduction.
-- English proficiency, experiment results, AI workflow rollout and candidate project stages require owner review; omit from public content.
+- Initial audit withheld English proficiency, contacts and project stages pending owner review. On 2026-10-22 the owner approved two email addresses, Telegram, self-assessed English B1, Pantry and Magic Ball as in-progress repositories, and Riply/Cave Escaper as future Telegram-bot concepts. The unknown A/B outcome and AI workflow rollout remain unpublished.
 - Phase order: content → resume → export/deploy validation → case studies → optional evolution → final QA. Core validation completed before optional work; Evolution remains disabled by default behind `ENABLE_EVOLUTION`.
 
 ## Phases 1–3 — content, resume and publishing
@@ -30,3 +30,16 @@
 - Mobile Lighthouse measurements, screenshot review and PDF review are recorded in `docs/QA.md`.
 - Dependency audit was cleared by upgrading Vitest to the compatible patched 4.1.12 release.
 - Live GitHub Pages behavior and cross-browser rendering remain deployment follow-ups.
+
+## Recruiter content update (2026-10-22)
+
+- Public positioning is `Senior Software Developer` / `Старший разработчик ПО`; this avoids implying formal people management while retaining seniority.
+- The confirmed campaign-wizard extension cycle is published as “typically 1–2 working days, including post-test fixes,” without claiming a multiplier or direct legacy comparison.
+- The outcome-less address-button A/B experiment was removed; general participation in product A/B experiments remains.
+- Pantry and Magic Ball link only to audited owner repositories. Pantry is marked released because its public version is complete, while its evolution into a platform remains explicitly planned; Magic Ball remains in progress. Riply and Cave Escaper have no links and are explicitly marked concepts.
+- The owner approved `eugene.malin765@gmail.com`, `evgeniys-nov@yandex.ru`, `https://t.me/no_0vie`, and the WhatsApp QR URL `https://wa.me/qr/XFZZQSNXJCSBL1`. No phone number is published.
+- About and each employer expose accessible plain-text copy controls for reusing resume content. Copy controls are enhancements and are excluded from print.
+- Skills are grouped by current core, architecture/state, testing/tooling, backend/data and prior specialized experience; no proficiency percentages are used.
+- The visual system uses an original brighter blue-and-white palette inspired only by the requested science-fiction mood. No Star Wolves/InoCo assets, trademarks or interface elements are copied.
+- Purpose-built social cards use the owner-provided portrait and are generated locally with `npm run assets:og`.
+- Availability is stored as typed bilingual content and rendered without an external link or synchronization dependency.
