@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { basePath, localePath, pageKind, pdfPath } from '../src/app/routes';
 import { App } from '../src/app/App';
-import { experience, highlights, profile } from '../src/content';
+import { availability, experience, highlights, profile } from '../src/content';
 
 describe('static page routes', () => {
   it('prefixes local paths for root and project deployments', () => {
@@ -40,11 +40,12 @@ describe('server-rendered resume', () => {
         for (const achievement of item.achievements)
           expect(html).toContain(achievement.text[locale]);
       }
-      for (const highlight of highlights) expect(html).toContain(highlight[locale]);
+      for (const highlight of highlights) {
+        expect(html).toContain(highlight.heading[locale]);
+        expect(html).toContain(highlight.text[locale]);
+      }
       expect(html).toContain(profile.education[locale]);
-      expect(html).toContain(
-        locale === 'ru' ? 'Рассматриваю предложения' : 'Open to opportunities',
-      );
+      expect(html).toContain(availability.label[locale]);
       expect(html).toContain('class="availability-status"');
       expect(html).toContain('https://wa.me/qr/XFZZQSNXJCSBL1');
       expect(html).toContain(`downloads/resume-${locale}.pdf`);

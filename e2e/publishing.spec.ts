@@ -30,7 +30,8 @@ for (const locale of ['ru', 'en']) {
     const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const page = await context.newPage();
     await page.goto(locale);
-    await expect(page.locator('.experience-card')).toHaveCount(3);
+    await expect(page.locator('.experience-card')).toHaveCount(4);
+    await expect(page.locator('.experience-card').last()).toContainText('2015–2016');
     const href = await page.locator('a[download]').getAttribute('href');
     const pdf = await request.get(href!);
     expect(pdf.status()).toBe(200);
@@ -49,10 +50,10 @@ test('copy buttons expose reusable About and employer blocks', async ({ page, co
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('ru');
   const buttons = page.locator('.copy-button');
-  await expect(buttons).toHaveCount(4);
+  await expect(buttons).toHaveCount(5);
   await buttons.first().click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
-    'Разрабатываю программные продукты с 2017 года',
+    'Разрабатываю программные продукты с 2015 года',
   );
   await buttons.nth(1).click();
   const experienceBlock = await page.evaluate(() => navigator.clipboard.readText());
@@ -123,7 +124,7 @@ test('theme is applied before the client bundle runs', async ({ page }) => {
   await page.route('**/assets/*.js', (route) => route.abort());
   await page.goto('en');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('.experience-card')).toHaveCount(3);
+  await expect(page.locator('.experience-card')).toHaveCount(4);
 });
 
 test('published internal links and SEO assets exist', async ({ page, request }) => {
@@ -160,6 +161,13 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
     'https://wa.me/qr/XFZZQSNXJCSBL1',
   );
   await expect(page.locator('.availability-status')).toHaveText(/Open to opportunities/);
+  const availability: unknown = JSON.parse(await (await request.get('availability.json')).text());
+  expect(availability).toEqual({
+    status: 'available',
+    label: { ru: 'Рассматриваю предложения', en: 'Open to opportunities' },
+    updatedAt: '2026-10-22',
+    source: 'manual',
+  });
   await page.goto('en/projects');
   const pantry = page.locator('.project-card').filter({ hasText: 'Pantry' });
   await expect(pantry).toContainText('Released');

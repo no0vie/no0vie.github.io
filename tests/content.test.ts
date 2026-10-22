@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   achievementSchema,
+  availability,
+  availabilitySchema,
+  careerMilestones,
   contentSchema,
   experience,
   experienceSchema,
@@ -23,13 +26,17 @@ const bilingual = { ru: 'Текст', en: 'Text' };
 describe('approved bilingual content', () => {
   it('validates the complete seed content', () => {
     expect(locales).toEqual(['ru', 'en']);
-    expect(validateContent({ profile, experience, highlights, projects })).toEqual({
-      profile,
-      experience,
-      highlights,
-      projects,
-    });
-    expect(experience.map(({ id }) => id)).toEqual(['mts', 'yandex', 'tensor']);
+    expect(
+      validateContent({
+        profile,
+        availability,
+        careerMilestones,
+        experience,
+        highlights,
+        projects,
+      }),
+    ).toEqual({ profile, availability, careerMilestones, experience, highlights, projects });
+    expect(experience.map(({ id }) => id)).toEqual(['mts', 'yandex', 'tensor', 'fruct']);
     expect(projects.map(({ slug }) => slug)).toEqual([
       'pantry',
       'magic-ball',
@@ -68,6 +75,8 @@ describe('approved bilingual content', () => {
     expect(
       contentSchema.safeParse({
         profile,
+        availability,
+        careerMilestones,
         experience,
         highlights,
         projects,
@@ -83,10 +92,13 @@ describe('approved bilingual content', () => {
       whatsapp: 'https://wa.me/qr/XFZZQSNXJCSBL1',
     });
 
-    expect(profile.availability).toEqual({
-      ru: 'Рассматриваю предложения',
-      en: 'Open to opportunities',
+    expect(availability).toEqual({
+      status: 'available',
+      label: { ru: 'Рассматриваю предложения', en: 'Open to opportunities' },
+      updatedAt: '2026-10-22',
+      source: 'manual',
     });
+    expect(availabilitySchema.safeParse(availability).success).toBe(true);
     expect(profileSchema.safeParse({ ...profile, phone: '+123456789' }).success).toBe(false);
     expect(
       profileSchema.safeParse({
@@ -145,6 +157,8 @@ describe('approved bilingual content', () => {
     expect(() =>
       validateContent({
         profile,
+        availability,
+        careerMilestones,
         experience: [...experience, experience[0]],
         highlights,
         projects,
@@ -195,17 +209,42 @@ describe('approved bilingual content', () => {
   it('uses approved recruiter-focused editorial facts and ordering', () => {
     expect(profile.name).toEqual({ ru: 'Евгений Новиков', en: 'Eugene Novikov' });
     expect(profile.role).toEqual({
-      ru: 'Старший разработчик ПО',
-      en: 'Senior Software Developer',
+      ru: 'Старший разработчик ПО (фокус на фронтенде)',
+      en: 'Senior Software Engineer (Frontend-focused)',
     });
-    expect(profile.about.ru).toMatch(/2017|архитектур|продукт|дежур|настав/i);
-    expect(profile.about.en).toMatch(/2017|architect|product|on-call|mentor/i);
+    expect(profile.about.ru).toMatch(/2015|архитектур|продукт|дежур|настав/i);
+    expect(profile.about.en).toMatch(/2015|architect|product|on-call|mentor/i);
     expect(profile.education.ru).toMatch(/B1.*самооцен/i);
     expect(profile.education.en).toMatch(/B1.*self-assessed/i);
     expect(profile.education.en).toMatch(/technical documentation.*communicat/i);
 
     const mts = experience.find(({ id }) => id === 'mts');
-    expect(JSON.stringify([highlights, mts])).toMatch(/1–2 (рабоч|working) (дн|day)/i);
+    const mtsSurfaces = JSON.stringify([highlights[0], mts]);
+    expect(highlights[0]?.heading).toEqual({
+      ru: 'Архитектура, рассчитанная на развитие',
+      en: 'Architecture designed for extensibility',
+    });
+    expect(mtsSurfaces).toMatch(/1–2 (рабоч|working) (дн|day)/i);
+    expect(mtsSurfaces).toMatch(/двухнедельного спринта|two-week sprint/i);
+    expect(mtsSurfaces).toMatch(/существовавшем механизме|existing implementation/i);
+
+    const fruct = experience.find(({ id }) => id === 'fruct');
+    expect(fruct).toMatchObject({
+      start: '2015-07',
+      end: '2016-12',
+      datePrecision: 'approximate',
+    });
+    expect(fruct?.role.ru).toMatch(/внештатная почасовая работа/i);
+    expect(fruct?.role.en).toMatch(/hourly paid contractor/i);
+    expect(JSON.stringify(fruct)).toMatch(/Java|Kotlin|Aurora|Аврора|C\+\+|QML/);
+
+    expect(careerMilestones).toHaveLength(1);
+    expect(careerMilestones[0]).toMatchObject({
+      id: 'tensor-scholarship',
+      afterExperienceId: 'fruct',
+      beforeExperienceId: 'tensor',
+      githubUrl: 'https://github.com/no0vie/tic-tac-toe',
+    });
     const yandexIds = experience
       .find(({ id }) => id === 'yandex')
       ?.achievements.map(({ id }) => id);
@@ -245,7 +284,14 @@ describe('approved bilingual content', () => {
   });
 
   it('keeps confidential and unsupported performance claims out of editorial copy', () => {
-    const copy = JSON.stringify({ profile, highlights, experience, projects });
+    const copy = JSON.stringify({
+      profile,
+      availability,
+      careerMilestones,
+      highlights,
+      experience,
+      projects,
+    });
     expect(copy).not.toMatch(/ROI|payback|окупаемость|10x|10–15%/i);
   });
 });

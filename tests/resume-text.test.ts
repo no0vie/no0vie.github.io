@@ -5,10 +5,10 @@ import { formatAboutForClipboard, formatExperienceForClipboard } from '../src/ap
 describe('resume clipboard blocks', () => {
   it('formats About as plain localized text', () => {
     expect(formatAboutForClipboard(profile, 'ru')).toContain(
-      'Разрабатываю программные продукты с 2017 года',
+      'Разрабатываю программные продукты с 2015 года',
     );
     expect(formatAboutForClipboard(profile, 'en')).toContain(
-      'I have built software products since 2017',
+      'I have built software products since 2015',
     );
   });
 

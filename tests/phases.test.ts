@@ -20,15 +20,19 @@ for (const locale of ['ru', 'en'] as const) {
     expect(html).toContain('id="results"');
     expect(html).toContain('id="lessons"');
     expect(html).toMatch(/1–2 (?:рабочих дн|working day)/i);
+    expect(html).toMatch(/двухнедельного спринта|two-week sprint/i);
     expect(html).not.toContain('404');
   });
-  it(`${locale}: evolution has three static steps only when enabled`, () => {
+  it(`${locale}: evolution has four jobs and a non-employment milestone when enabled`, () => {
     const disabled = renderToStaticMarkup(createElement(App, { locale, page: '' }));
     expect(disabled).not.toContain(`/${locale}/evolution`);
     const html = renderToStaticMarkup(
       createElement(App, { locale, page: 'evolution', enableEvolution: true }),
     );
-    expect(html.match(/class="evolution-step"/g)).toHaveLength(3);
+    expect(html.match(/class="evolution-step"/g)).toHaveLength(4);
+    expect(html.match(/class="career-milestone"/g)).toHaveLength(1);
+    expect(html).toMatch(/dateTime="2015-07">2015<\/time>–<time dateTime="2016-12">2016/);
+    expect(html).toContain('https://github.com/no0vie/tic-tac-toe');
     expect(html).toContain('2017-01');
     expect(html).toContain('2024-05');
   });
@@ -51,6 +55,6 @@ it('allows only complete confirmed public case narratives without extra metrics 
     caseSchema.safeParse({ ...item, sections: { ...item.sections, results: undefined } }).success,
   ).toBe(false);
   expect(JSON.stringify(item)).not.toMatch(/ROI|revenue|payback|выручк|окупаемость|10x|10–15%/i);
-  expect(item.sections.results.en).toMatch(/1–2 working days.*post-test fixes/i);
-  expect(item.sections.results.ru).toMatch(/1–2 рабочих дн.*исправлен.*тестирован/i);
+  expect(item.sections.results.en).toMatch(/1–2 working days.*two-week sprint/i);
+  expect(item.sections.results.ru).toMatch(/1–2 рабочих дн.*двухнедельного спринта/i);
 });
