@@ -642,7 +642,10 @@ export function App({
             </a>
           </section>
         ) : (
-          <section className="standalone-page" aria-labelledby="page-title">
+          <section
+            className={`standalone-page${kind === 'projects' ? ' projects-page' : ''}`}
+            aria-labelledby="page-title"
+          >
             <p className="eyebrow">{kind === 'projects' ? t.projectsDetail : '404'}</p>
             <h1 id="page-title">{kind === 'projects' ? t.projects : t.notFound}</h1>
             {kind === 'projects' ? (

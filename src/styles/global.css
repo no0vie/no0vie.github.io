@@ -774,14 +774,14 @@ button:hover {
 .project-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: clamp(1.25rem, 2vw, 1.5rem);
 }
 .project-card {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   min-width: 0;
-  padding: 1.25rem;
+  padding: clamp(1.5rem, 2vw, 1.75rem);
   border: 1px solid var(--border);
   border-radius: 14px;
   background: linear-gradient(145deg, var(--surface), var(--tint));
@@ -792,6 +792,9 @@ button:hover {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+}
+.project-heading h3 {
+  min-width: 0;
 }
 .project-card p,
 .projects-intro {
@@ -816,6 +819,15 @@ button:hover {
 .all-projects-link,
 .projects-intro {
   margin-top: 1rem;
+}
+.projects-page {
+  padding-block: clamp(4rem, 6vw, 5rem);
+}
+.projects-page .project-grid {
+  margin-top: clamp(2rem, 3vw, 2.5rem);
+}
+.projects-page > .button {
+  margin-top: 2rem;
 }
 .skill-groups {
   display: grid;

@@ -98,6 +98,77 @@ test('copy buttons expose reusable About and employer blocks', async ({ page, co
   await expect(fullExperience.locator('span[aria-hidden="true"]').first()).toHaveText('Копировать');
 });
 
+test('projects spacing stays responsive and stable across locale and theme changes', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('en/projects');
+
+  const assertLayout = async () => {
+    const layout = await page.locator('.projects-page').evaluate((section) => {
+      const styles = getComputedStyle(section);
+      const intro = section.querySelector<HTMLElement>('.projects-intro')!;
+      const grid = section.querySelector<HTMLElement>('.project-grid')!;
+      const back = section.querySelector<HTMLElement>('.button')!;
+      const cards = [...section.querySelectorAll<HTMLElement>('.project-card')];
+      const sourceLinks = [...section.querySelectorAll<HTMLElement>('.project-card .text-link')];
+      const introRect = intro.getBoundingClientRect();
+      const gridRect = grid.getBoundingClientRect();
+      const backRect = back.getBoundingClientRect();
+
+      return {
+        paddingTop: parseFloat(styles.paddingTop),
+        paddingBottom: parseFloat(styles.paddingBottom),
+        introToGrid: gridRect.top - introRect.bottom,
+        gridGap: parseFloat(getComputedStyle(grid).columnGap),
+        cardPadding: parseFloat(getComputedStyle(cards[0]).paddingTop),
+        gridToBack: backRect.top - gridRect.bottom,
+        sourceLinkBottoms: sourceLinks.map((link) => link.getBoundingClientRect().bottom),
+        overflow: document.documentElement.scrollWidth > innerWidth,
+        cardsOverlap: cards.some((card, index) =>
+          cards.slice(index + 1).some((other) => {
+            const a = card.getBoundingClientRect();
+            const b = other.getBoundingClientRect();
+            return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+          }),
+        ),
+      };
+    });
+
+    expect(layout.paddingTop).toBeGreaterThanOrEqual(64);
+    expect(layout.paddingTop).toBeLessThanOrEqual(80);
+    expect(layout.paddingBottom).toBeGreaterThanOrEqual(64);
+    expect(layout.paddingBottom).toBeLessThanOrEqual(80);
+    expect(layout.introToGrid).toBeGreaterThanOrEqual(32);
+    expect(layout.introToGrid).toBeLessThanOrEqual(40);
+    expect(layout.gridGap).toBeGreaterThanOrEqual(20);
+    expect(layout.gridGap).toBeLessThanOrEqual(24);
+    expect(layout.cardPadding).toBeGreaterThanOrEqual(24);
+    expect(layout.cardPadding).toBeLessThanOrEqual(28);
+    expect(layout.gridToBack).toBe(32);
+    expect(
+      Math.max(...layout.sourceLinkBottoms) - Math.min(...layout.sourceLinkBottoms),
+    ).toBeLessThan(1);
+    expect(layout.overflow).toBe(false);
+    expect(layout.cardsOverlap).toBe(false);
+  };
+
+  await assertLayout();
+  await page.getByRole('link', { name: 'RU — Переключить на русский' }).click();
+  await assertLayout();
+  await page.getByRole('button', { name: 'Тема: Системная', exact: true }).click();
+  await assertLayout();
+
+  await page.setViewportSize({ width: 320, height: 900 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const cards = page.locator('.project-card');
+  for (let index = 0; index < (await cards.count()) - 1; index += 1) {
+    const current = await cards.nth(index).boundingBox();
+    const next = await cards.nth(index + 1).boundingBox();
+    expect(current && next && current.y + current.height <= next.y).toBe(true);
+  }
+});
+
 test('locale preserves projects route; theme persists; anchors and keyboard', async ({ page }) => {
   await page.goto('en/projects');
   await page.getByRole('link', { name: 'RU — Переключить на русский' }).click();
