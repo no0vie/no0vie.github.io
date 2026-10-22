@@ -42,14 +42,24 @@ describe('server-rendered resume', () => {
       }
       for (const highlight of highlights) expect(html).toContain(highlight[locale]);
       expect(html).toContain(profile.education[locale]);
+      expect(html).toContain(
+        locale === 'ru' ? 'Рассматриваю предложения' : 'Open to opportunities',
+      );
+      expect(html).toContain('class="availability-status"');
+      expect(html).toContain('https://wa.me/qr/XFZZQSNXJCSBL1');
       expect(html).toContain(`downloads/resume-${locale}.pdf`);
       expect(html).toContain('id="main"');
       expect(html).not.toContain('<details');
     },
   );
-  it('renders an honest empty index and preserves the locale-switch route', () => {
+  it('renders verified projects and preserves the locale-switch route', () => {
     const html = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'projects' }));
-    expect(html).toContain('No verified projects published yet.');
+    expect(html).toContain('Pantry');
+    expect(html).toContain('Magic Ball');
+    expect(html).toContain('https://github.com/no0vie/pantry');
+    expect(html).toContain('The public version is complete');
+    expect(html).toContain('Released');
+    expect(html).toContain('Concept');
     expect(html).toContain('href="/ru/projects"');
   });
   it('renders a localized not-found page with a route home', () => {

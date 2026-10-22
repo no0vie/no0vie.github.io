@@ -19,6 +19,7 @@ for (const locale of ['ru', 'en'] as const) {
     );
     expect(html).toContain('id="results"');
     expect(html).toContain('id="lessons"');
+    expect(html).toMatch(/1–2 (?:рабочих дн|working day)/i);
     expect(html).not.toContain('404');
   });
   it(`${locale}: evolution has three static steps only when enabled`, () => {
@@ -49,5 +50,7 @@ it('allows only complete confirmed public case narratives without extra metrics 
   expect(
     caseSchema.safeParse({ ...item, sections: { ...item.sections, results: undefined } }).success,
   ).toBe(false);
-  expect(JSON.stringify(item)).not.toMatch(/\d|ROI|revenue|payback|выручк|окупаемость/i);
+  expect(JSON.stringify(item)).not.toMatch(/ROI|revenue|payback|выручк|окупаемость|10x|10–15%/i);
+  expect(item.sections.results.en).toMatch(/1–2 working days.*post-test fixes/i);
+  expect(item.sections.results.ru).toMatch(/1–2 рабочих дн.*исправлен.*тестирован/i);
 });

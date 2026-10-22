@@ -40,10 +40,26 @@ for (const locale of ['ru', 'en']) {
     await expect(page.locator('#education')).toBeVisible();
     await page.emulateMedia({ media: 'screen' });
     await page.goto(`${locale}/projects`);
-    await expect(page.locator('.empty-state')).toBeVisible();
+    await expect(page.locator('.project-card')).toHaveCount(4);
     await context.close();
   });
 }
+
+test('copy buttons expose reusable About and employer blocks', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('ru');
+  const buttons = page.locator('.copy-button');
+  await expect(buttons).toHaveCount(4);
+  await buttons.first().click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
+    'Разрабатываю программные продукты с 2017 года',
+  );
+  await buttons.nth(1).click();
+  const experienceBlock = await page.evaluate(() => navigator.clipboard.readText());
+  expect(experienceBlock).toContain('МТС Web Services');
+  expect(experienceBlock).toContain('1–2 рабочих дня');
+  await expect(buttons.nth(1)).toHaveAccessibleName(/Скопировано/);
+});
 
 test('locale preserves projects route; theme persists; anchors and keyboard', async ({ page }) => {
   await page.goto('en/projects');
@@ -126,6 +142,28 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
     expect((await request.get(path)).status()).toBe(200);
   await page.goto('en');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og-en\.png$/);
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    'content',
+    'summary_large_image',
+  );
+  await expect(
+    page.locator('#main').getByRole('link', { name: 'eugene.malin765@gmail.com' }),
+  ).toHaveAttribute('href', 'mailto:eugene.malin765@gmail.com');
+  await expect(page.getByRole('link', { name: /Telegram · @no_0vie/ })).toHaveAttribute(
+    'href',
+    'https://t.me/no_0vie',
+  );
+  await expect(page.getByRole('link', { name: 'WhatsApp' }).first()).toHaveAttribute(
+    'href',
+    'https://wa.me/qr/XFZZQSNXJCSBL1',
+  );
+  await expect(page.locator('.availability-status')).toHaveText(/Open to opportunities/);
+  await page.goto('en/projects');
+  const pantry = page.locator('.project-card').filter({ hasText: 'Pantry' });
+  await expect(pantry).toContainText('Released');
+  await expect(pantry).toContainText('The public version is complete');
   const structuredData: unknown = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
   );
