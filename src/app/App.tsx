@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { experience, highlights, profile, projects, skillGroups, type Locale } from '../content';
+import {
+  availability,
+  careerMilestones,
+  experience,
+  highlights,
+  profile,
+  projects,
+  skillGroups,
+  type CareerItem,
+  type Locale,
+} from '../content';
 import { cases } from '../content/cases';
 import { copy } from './copy';
 import { localePath, pageKind, pdfPath } from './routes';
@@ -111,6 +121,24 @@ function month(value: string, locale: Locale) {
   }).format(new Date(`${value}-01T00:00:00Z`));
 }
 
+function ExperiencePeriod({ item, locale }: { item: CareerItem; locale: Locale }) {
+  if (item.datePrecision === 'approximate' && item.end) {
+    return (
+      <>
+        <time dateTime={item.start}>{item.start.slice(0, 4)}</time>–
+        <time dateTime={item.end}>{item.end.slice(0, 4)}</time>
+      </>
+    );
+  }
+  return (
+    <>
+      <time dateTime={item.start}>{month(item.start, locale)}</time>
+      <span aria-hidden="true"> — </span>
+      {item.end ? <time dateTime={item.end}>{month(item.end, locale)}</time> : copy[locale].present}
+    </>
+  );
+}
+
 export function App({
   locale,
   page,
@@ -213,7 +241,7 @@ export function App({
                 <div>
                   <p className="hero-context">React / TypeScript / Frontend</p>
                   <p className="availability-status">
-                    <span aria-hidden="true">●</span> {profile.availability[locale]}
+                    <span aria-hidden="true">●</span> {availability.label[locale]}
                   </p>
                 </div>
                 <a className="button primary" href={pdfPath(locale)} download>
@@ -246,11 +274,14 @@ export function App({
               <h2 id="highlights-title">{t.highlights}</h2>
               <ol className="highlights">
                 {highlights.map((item, index) => (
-                  <li key={item.en}>
+                  <li key={item.id}>
                     <span className="highlight-number" aria-hidden="true">
                       0{index + 1}
                     </span>
-                    <p>{item[locale]}</p>
+                    <div>
+                      <h3>{item.heading[locale]}</h3>
+                      <p>{item.text[locale]}</p>
+                    </div>
                   </li>
                 ))}
               </ol>
@@ -270,13 +301,7 @@ export function App({
                         <h3 id={`${item.id}-title`}>{item.role[locale]}</h3>
                       </div>
                       <p className="dates">
-                        <time dateTime={item.start}>{month(item.start, locale)}</time>
-                        <span aria-hidden="true"> — </span>
-                        {item.end ? (
-                          <time dateTime={item.end}>{month(item.end, locale)}</time>
-                        ) : (
-                          <span>{t.present}</span>
-                        )}
+                        <ExperiencePeriod item={item} locale={locale} />
                       </p>
                     </div>
                     <p className="overview">{item.overview[locale]}</p>
@@ -412,26 +437,43 @@ export function App({
               ))}
             </div>
             <ol className="evolution-timeline">
-              {[...experience].reverse().map((item) => (
-                <li className="evolution-step" key={item.id} id={`step-${item.id}`} tabIndex={-1}>
-                  <h2>{item.employer[locale]}</h2>
-                  <p>{item.role[locale]}</p>
-                  <p className="dates">
-                    <time dateTime={item.start}>{month(item.start, locale)}</time> —{' '}
-                    {item.end ? (
-                      <time dateTime={item.end}>{month(item.end, locale)}</time>
-                    ) : (
-                      t.present
+              {[...experience].reverse().map((item) => {
+                const milestone = careerMilestones.find(
+                  ({ afterExperienceId }) => afterExperienceId === item.id,
+                );
+                return (
+                  <React.Fragment key={item.id}>
+                    <li className="evolution-step" id={`step-${item.id}`} tabIndex={-1}>
+                      <h2>{item.employer[locale]}</h2>
+                      <p>{item.role[locale]}</p>
+                      <p className="dates">
+                        <ExperiencePeriod item={item} locale={locale} />
+                      </p>
+                      <p>{item.overview[locale]}</p>
+                      <ul>
+                        {item.achievements.map((achievement) => (
+                          <li key={achievement.id}>{achievement.text[locale]}</li>
+                        ))}
+                      </ul>
+                    </li>
+                    {milestone && (
+                      <li className="career-milestone">
+                        <h2>{milestone.title[locale]}</h2>
+                        <p>{milestone.text[locale]}</p>
+                        {milestone.githubUrl && (
+                          <a
+                            className="text-link"
+                            href={milestone.githubUrl}
+                            rel="noopener noreferrer"
+                          >
+                            GitHub · Tic-Tac-Toe <span aria-hidden="true">↗</span>
+                          </a>
+                        )}
+                      </li>
                     )}
-                  </p>
-                  <p>{item.overview[locale]}</p>
-                  <ul>
-                    {item.achievements.map((achievement) => (
-                      <li key={achievement.id}>{achievement.text[locale]}</li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
+                  </React.Fragment>
+                );
+              })}
             </ol>
             <a className="text-link" href={localePath(locale)}>
               {t.back}

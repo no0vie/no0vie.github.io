@@ -8,24 +8,37 @@ const achievement = (id: string, ru: string, en: string): Achievement => ({
   publishable: true,
 });
 
+export const mtsExtensibilityHighlight = {
+  id: 'extensible-architecture',
+  heading: localized(
+    'Архитектура, рассчитанная на развитие',
+    'Architecture designed for extensibility',
+  ),
+  text: localized(
+    'Спроектировал расширяемую архитектуру мастера каскадных кампаний, изолировав логику отдельных каналов и их формы от общего сценария. Благодаря этому добавление нового канала или замена редактора стали занимать 1–2 рабочих дня, включая исправления после тестирования, вместо примерно двухнедельного спринта в существовавшем механизме с аналогичной функциональностью.',
+    'Designed an extensible cascade campaign wizard architecture, separating channel-specific logic and forms from the shared workflow. This reduced the effort required to add a new channel or replace an editor to 1–2 working days, including post-testing fixes, compared with approximately a two-week sprint in the existing implementation of similar functionality.',
+  ),
+} as const;
+
 // Source: SPEC.md §7–8 and the repository's pre-existing public index.html.
 // Remaining editorial TODOs (not public claims): address experiment outcome and
 // AI-assisted testing status. Contacts, English self-assessment and project statuses are owner-approved.
 export const seedContent = {
   profile: {
     name: localized('Евгений Новиков', 'Eugene Novikov'),
-    role: localized('Старший разработчик ПО', 'Senior Software Developer'),
+    role: localized(
+      'Старший разработчик ПО (фокус на фронтенде)',
+      'Senior Software Engineer (Frontend-focused)',
+    ),
     about: localized(
-      'Разрабатываю программные продукты с 2017 года: от корпоративных бизнес-приложений до оформления заказов и платформ управления коммуникациями. Беру ответственность за архитектуру фронтенда и продуктовые сценарии, участвую в дежурствах и расследовании инцидентов, провожу ревью кода и помогаю коллегам расти.',
-      'I have built software products since 2017, from corporate business applications to checkout and communication-management platforms. I take ownership of frontend architecture and product flows, participate in production on-call and incident investigation, review code, and mentor colleagues.',
+      'Разрабатываю программные продукты с 2015 года: от ПО для информационных табло и корпоративных бизнес-приложений до оформления заказов и платформ управления коммуникациями. Беру ответственность за архитектуру фронтенда и продуктовые сценарии, участвую в дежурствах и расследовании инцидентов, провожу ревью кода и помогаю коллегам расти.',
+      'I have built software products since 2015, from software for information displays and corporate business applications to checkout and communication-management platforms. I take ownership of frontend architecture and product flows, participate in production on-call and incident investigation, review code, and mentor colleagues.',
     ),
     education: localized(
       'Ярославский государственный университет им. П. Г. Демидова. Бакалавр по направлению «Прикладная математика и информатика», 2018. Английский — B1 (самооценка): читаю техническую документацию и уверенно общаюсь по рабочим вопросам.',
       'P. G. Demidov Yaroslavl State University. Bachelor’s degree in Applied Mathematics and Informatics, 2018. English — B1 (self-assessed): I read technical documentation and communicate comfortably on work topics.',
     ),
     github: 'https://github.com/no0vie',
-
-    availability: localized('Рассматриваю предложения', 'Open to opportunities'),
     contacts: {
       emails: ['eugene.malin765@gmail.com', 'evgeniys-nov@yandex.ru'],
       telegram: 'https://t.me/no_0vie',
@@ -33,19 +46,43 @@ export const seedContent = {
     },
     updated: '2026-10-22',
   },
+  availability: {
+    status: 'available',
+    label: localized('Рассматриваю предложения', 'Open to opportunities'),
+    updatedAt: '2026-10-22',
+    source: 'manual',
+  },
+  careerMilestones: [
+    {
+      id: 'tensor-scholarship',
+      afterExperienceId: 'fruct',
+      beforeExperienceId: 'tensor',
+      title: localized('Переход в Тензор', 'Transition to Tensor'),
+      text: localized(
+        'В Тензор попал через студенческую стипендиальную программу. К заключительному техническому собеседованию подготовил собственный проект «Крестики-нолики» — один из ранних проектов, сохранившихся на GitHub.',
+        'Joined Tensor through its student scholarship programme. Built a Tic-Tac-Toe project for the final technical interview; the early project is still available on GitHub.',
+      ),
+      githubUrl: 'https://github.com/no0vie/tic-tac-toe',
+    },
+  ],
   highlights: [
-    localized(
-      'Спроектировал расширяемый мастер каскадных кампаний: подключение нового канала или замена формы обычно занимали 1–2 рабочих дня с учётом исправлений после тестирования.',
-      'Designed an extensible cascade campaign wizard where adding a channel or replacing a form typically took 1–2 working days, including post-test fixes.',
-    ),
-    localized(
-      'Участвовал в оптимизации кеширования адресных данных в Memcached, снизившей нагрузку на адресный сервис.',
-      'Contributed to Memcached address-data caching improvements that reduced load on the address service.',
-    ),
-    localized(
-      'Совмещал продуктовую разработку с дежурствами в продакшене, расследованием инцидентов и наставничеством.',
-      'Combined product development with production on-call work, incident investigation, and mentoring.',
-    ),
+    mtsExtensibilityHighlight,
+    {
+      id: 'address-cache',
+      heading: localized('Снижение нагрузки на адресный сервис', 'Reduced address-service load'),
+      text: localized(
+        'Участвовал в оптимизации кеширования адресных данных в Memcached, снизившей нагрузку на адресный сервис.',
+        'Contributed to Memcached address-data caching improvements that reduced load on the address service.',
+      ),
+    },
+    {
+      id: 'production-mentoring',
+      heading: localized('Продукт и эксплуатация', 'Product and operations'),
+      text: localized(
+        'Совмещал продуктовую разработку с дежурствами в продакшене, расследованием инцидентов и наставничеством.',
+        'Combined product development with production on-call work, incident investigation, and mentoring.',
+      ),
+    },
   ],
   experience: [
     {
@@ -53,6 +90,7 @@ export const seedContent = {
       employer: localized('МТС Web Services', 'MTS Web Services'),
       role: localized('Старший разработчик ПО', 'Senior Software Developer'),
       start: '2024-05',
+      datePrecision: 'exact',
       overview: localized(
         'Разработка продуктов OMNI и ORP: интерфейсы управления кампаниями, архитектура фронтенда и инженерные инструменты.',
         'Development for OMNI and ORP: campaign management interfaces, frontend architecture, and engineering tools.',
@@ -70,8 +108,8 @@ export const seedContent = {
         ),
         achievement(
           'extension-cycle',
-          'Подключение нового канала или замена формы обычно занимали 1–2 рабочих дня с учётом исправлений после тестирования.',
-          'Adding a new channel or replacing a form typically took 1–2 working days, including post-test fixes.',
+          mtsExtensibilityHighlight.text.ru,
+          mtsExtensibilityHighlight.text.en,
         ),
         achievement(
           'template-editors',
@@ -108,6 +146,7 @@ export const seedContent = {
       role: localized('Разработчик интерфейсов', 'Interface Developer'),
       start: '2021-03',
       end: '2024-05',
+      datePrecision: 'exact',
       overview: localized(
         'Продуктовая разработка корзины, оформления заказа и управления адресами, включая эксплуатацию сервисов и развитие фронтенд-архитектуры.',
         'Product development for cart, checkout, and address management, alongside production operations and frontend architecture work.',
@@ -169,6 +208,7 @@ export const seedContent = {
       role: localized('Инженер-программист', 'Software Engineer'),
       start: '2017-01',
       end: '2021-03',
+      datePrecision: 'exact',
       overview: localized(
         'Разработка и сопровождение бизнес-приложений для корпоративных и кадровых процессов.',
         'Development and maintenance of business applications for corporate and HR workflows.',
@@ -191,6 +231,43 @@ export const seedContent = {
         ),
       ],
       technologies: ['JavaScript', 'TypeScript', 'WaSaby', 'Less', 'Python', 'PostgreSQL', 'SQL'],
+      caseStudySlugs: [],
+    },
+    {
+      id: 'fruct',
+      employer: localized(
+        'Лаборатория FRUCT, Ярославский государственный университет им. П. Г. Демидова',
+        'FRUCT Laboratory, P. G. Demidov Yaroslavl State University',
+      ),
+      role: localized(
+        'Разработчик ПО (внештатная почасовая работа)',
+        'Software Developer (part-time, hourly paid contractor)',
+      ),
+      start: '2015-07',
+      end: '2016-12',
+      datePrecision: 'approximate',
+      overview: localized(
+        'В рамках оплачиваемой работы в университетской лаборатории разрабатывал ПО для светодиодных информационных табло.',
+        'Worked as an hourly paid software developer in a university laboratory, building software for LED information displays.',
+      ),
+      achievements: [
+        achievement(
+          'glass-factory-display',
+          'Реализовал программное обеспечение для стекольного завода в Гусь-Хрустальном; участвовал в разработке решений для табло АЗС и спортивных табло.',
+          'Implemented software for a glass factory in Gus-Khrustalny and contributed to petrol station and sports display solutions.',
+        ),
+        achievement(
+          'laboratory-collaboration',
+          'Работал с Java и Kotlin, командными коммуникациями в Mattermost и системой учёта задач.',
+          'Used Java and Kotlin and collaborated through Mattermost and a task tracker.',
+        ),
+        achievement(
+          'aurora-hackathon',
+          'Участвовал в хакатоне по созданию приложения для мобильной ОС «Аврора» на C++ и QML.',
+          'Participated in a hackathon developing an application for the Aurora mobile operating system using C++ and QML.',
+        ),
+      ],
+      technologies: ['Java', 'Kotlin'],
       caseStudySlugs: [],
     },
   ],

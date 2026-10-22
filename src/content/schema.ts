@@ -31,8 +31,6 @@ export const profileSchema = z
     about: localizedSchema,
     education: localizedSchema,
     github: z.literal('https://github.com/no0vie'),
-
-    availability: localizedSchema,
     contacts: contactSchema,
     updated: dateSchema,
   })
@@ -49,6 +47,38 @@ export const achievementSchema = z
   .strict();
 export type Achievement = z.infer<typeof achievementSchema>;
 
+export const highlightSchema = z
+  .object({
+    id: idSchema,
+    heading: localizedSchema,
+    text: localizedSchema,
+  })
+  .strict();
+export type Highlight = z.infer<typeof highlightSchema>;
+
+export const availabilitySchema = z
+  .object({
+    status: z.enum(['available', 'selective', 'unavailable', 'unknown']),
+    label: localizedSchema,
+    updatedAt: dateSchema,
+    source: z.enum(['manual', 'hh']),
+    verifiedAt: dateSchema.optional(),
+  })
+  .strict();
+export type Availability = z.infer<typeof availabilitySchema>;
+
+export const careerMilestoneSchema = z
+  .object({
+    id: idSchema,
+    afterExperienceId: idSchema,
+    beforeExperienceId: idSchema,
+    title: localizedSchema,
+    text: localizedSchema,
+    githubUrl: z.literal('https://github.com/no0vie/tic-tac-toe').optional(),
+  })
+  .strict();
+export type CareerMilestone = z.infer<typeof careerMilestoneSchema>;
+
 const uniqueIds = (items: readonly { id: string }[]) =>
   new Set(items.map(({ id }) => id)).size === items.length;
 export const experienceSchema = z
@@ -58,6 +88,7 @@ export const experienceSchema = z
     role: localizedSchema,
     start: monthSchema,
     end: monthSchema.optional(),
+    datePrecision: z.enum(['exact', 'approximate']).default('exact'),
     overview: localizedSchema,
     achievements: z
       .array(achievementSchema)
@@ -116,8 +147,12 @@ export type SkillGroup = z.infer<typeof skillGroupSchema>;
 export const contentSchema = z
   .object({
     profile: profileSchema,
+    availability: availabilitySchema,
+    careerMilestones: z
+      .array(careerMilestoneSchema)
+      .refine(uniqueIds, 'Career milestone IDs must be unique'),
     experience: z.array(experienceSchema).refine(uniqueIds, 'Experience IDs must be unique'),
-    highlights: z.array(localizedSchema),
+    highlights: z.array(highlightSchema).refine(uniqueIds, 'Highlight IDs must be unique'),
     projects: z
       .array(projectSchema)
       .refine(

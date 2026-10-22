@@ -1,7 +1,9 @@
 import type { CareerItem, Locale, Profile } from '../content';
 
 const period = (item: CareerItem, locale: Locale) =>
-  `${item.start} — ${item.end ?? (locale === 'ru' ? 'по настоящее время' : 'present')}`;
+  item.datePrecision === 'approximate' && item.end
+    ? `${item.start.slice(0, 4)}–${item.end.slice(0, 4)}`
+    : `${item.start} — ${item.end ?? (locale === 'ru' ? 'по настоящее время' : 'present')}`;
 
 export function formatAboutForClipboard(profile: Profile, locale: Locale): string {
   return profile.about[locale];
