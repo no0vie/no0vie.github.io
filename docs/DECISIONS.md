@@ -33,8 +33,8 @@
 
 ## Recruiter content update (2026-10-22)
 
-- Public positioning is `Senior Software Developer` / `Старший разработчик ПО`; this avoids implying formal people management while retaining seniority.
-- The confirmed campaign-wizard extension cycle is published as “typically 1–2 working days, including post-test fixes,” without claiming a multiplier or direct legacy comparison.
+- Historical decision, superseded by Portfolio v4: positioning was `Senior Software Developer` / `Старший разработчик ПО` to avoid implying formal people management while retaining seniority.
+- Superseded by Portfolio v4: the campaign-wizard result now preserves the approved causal chain from extensible architecture to 1–2 working days including post-testing fixes, compared approximately with a two-week sprint in an existing implementation of similar functionality. This is not a controlled benchmark or multiplier claim.
 - The outcome-less address-button A/B experiment was removed; general participation in product A/B experiments remains.
 - Pantry and Magic Ball link only to audited owner repositories. Pantry is marked released because its public version is complete, while its evolution into a platform remains explicitly planned; Magic Ball remains in progress. Riply and Cave Escaper have no links and are explicitly marked concepts.
 - The owner approved `eugene.malin765@gmail.com`, `evgeniys-nov@yandex.ru`, `https://t.me/no_0vie`, and the WhatsApp QR URL `https://wa.me/qr/XFZZQSNXJCSBL1`. No phone number is published.
@@ -42,4 +42,13 @@
 - Skills are grouped by current core, architecture/state, testing/tooling, backend/data and prior specialized experience; no proficiency percentages are used.
 - The visual system uses an original brighter blue-and-white palette inspired only by the requested science-fiction mood. No Star Wolves/InoCo assets, trademarks or interface elements are copied.
 - Purpose-built social cards use the owner-provided portrait and are generated locally with `npm run assets:og`.
-- Availability is stored as typed bilingual content and rendered without an external link or synchronization dependency.
+- Availability is stored as a typed manual record and rendered without an external link or synchronization dependency.
+
+## Portfolio update v4 (2026-10-22)
+
+- Added FRUCT as paid hourly external software-development experience with approximate internal dates (`2015-07`–`2016-12`) and public year-only rendering. It precedes Tensor and includes no invented tracker, customer, scale or commercial outcome.
+- Added Tensor scholarship/Tic-Tac-Toe as a typed non-employment milestone. The URL `https://github.com/no0vie/tic-tac-toe` was verified through the public GitHub API and README; the milestone does not affect experience duration or top highlights.
+- Public positioning is now `Senior Software Engineer (Frontend-focused)` with a restrained Russian equivalent, per v4. Official historical job titles remain unchanged.
+- Availability now has `available | selective | unavailable | unknown`, `updatedAt`, `source` and optional `verifiedAt`; the current owner-approved manual value is emitted to `/availability.json` and reused by HTML/PDF.
+- Evolution remains optional but now follows FRUCT → Tensor → Yandex Market → MTS, with the scholarship milestone between FRUCT and Tensor.
+- HH OAuth/scraping, backend status synchronization and external profile publication remain explicitly out of scope.

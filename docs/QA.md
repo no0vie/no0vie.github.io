@@ -41,7 +41,7 @@ These measurements predate the brighter visual scheme and expanded project/conta
 
 Generated and opened **all eight full-page screenshots** using the image reader: RU/EN × 320/1280px × light/dark (900px viewport height). No observed clipping, overlapping sections or broken wrapping; mobile uses a single column, stacked highlights and wrapped technology tags, while desktop preserves the editorial grid. All eight also returned `document.documentElement.scrollWidth <= innerWidth`. Mobile names wrap to two lines. These are manual visual observations, not approved pixel-regression baselines; full-page images are downscaled in the review interface.
 
-Reviewed resume/PDF content retains all three employers, their date ranges, education, restrained shared-architecture/cache claims and honest unpublished-project wording in both languages. No A/B success claim, invented performance percentage, confidential revenue, personal phone/email or unapproved English-level claim was observed in that reviewed content. This is a bounded rendered-content check plus the passing schema tests, not an exhaustive bundle/secrets audit or renewed verification of employer facts.
+This pre-v4 review covered all three employers then published, their date ranges, education, restrained shared-architecture/cache claims and honest unpublished-project wording in both languages. No A/B success claim, invented performance percentage, confidential revenue, personal phone/email or unapproved English-level claim was observed in that reviewed content. This is a bounded rendered-content check plus the passing schema tests, not an exhaustive bundle/secrets audit or renewed verification of employer facts.
 
 ## PDF review — fixed issue and limitations
 
@@ -51,6 +51,17 @@ Inspected `dist/downloads/resume-{ru,en}.pdf` using pypdf 6.21.2 and PyMuPDF 1.2
 - **Fixed after initial review:** case/project PDF link annotations are rewritten before printing to `SITE_URL` + `BASE_PATH`. The rebuilt PDFs contain public `https://no0vie.github.io/...` links and no `localhost` or `127.0.0.1` destinations. GitHub annotations target `https://github.com/no0vie`.
 - **Polish:** the expanded four-page PDFs need a new visual pagination pass and should be tightened if possible.
 - **Extraction discrepancy, not a confirmed encoding defect:** pypdf renders Cyrillic `к` as `ĸ` in extracted text (e.g. `Новиĸов`), whereas PyMuPDF returns 98 Cyrillic `к` characters and no `ĸ`; rendered Russian glyphs look correct. Do not infer broken PDF text from one parser. Actual ATS/viewer copy/search interoperability remains unverified.
+
+## Portfolio update v4 verification — 2026-10-22
+
+- `npm run typecheck`: pass.
+- `npm test`: 44 tests passed across 6 files. Content assertions now require the full RU/EN MTS comparison, FRUCT date precision, the non-employment milestone and structured availability.
+- `npm run lint`: pass after typing the E2E JSON payload as `unknown`.
+- `npm run build`: pass outside the terminal OS sandbox; generated both locale trees, `/availability.json`, and mandatory RU/EN PDFs. Sandboxed Chromium could build HTML but hung in `page.pdf()` until the watchdog; this was an environment limitation, not reported as a successful sandboxed PDF run.
+- `npm run test:e2e`: 24 passed with Evolution disabled.
+- `ENABLE_EVOLUTION=true npm run build && ENABLE_EVOLUTION=true npm run test:e2e`: build pass and 24 E2E tests passed. This covered the four employment steps, scholarship milestone, keyboard navigation, 320px fallback, reduced motion, no-JS content and both locales.
+- Generated PDF metadata inspected with macOS `mdls`: RU is 5 pages / 489,446 bytes; EN is 4 pages / 437,913 bytes. E2E verified valid PDF signatures, successful downloads, print visibility and hidden navigation. `pypdf`, PyMuPDF, `pdfinfo` and `pdftotext` were unavailable, so this iteration did not repeat the prior page-by-page rendered visual review or independent text/link extraction.
+- `npm run format:check` remains blocked only by the owner-provided untracked `CODEX_TASK.md` and `PORTFOLIO_UPDATE_V4.md`; all implementation/documentation files changed in this update were formatted explicitly with Prettier.
 
 ## Evidence and remaining scope
 
