@@ -20,6 +20,26 @@ for (const locale of ['ru', 'en']) {
       ).toEqual([]);
       expect(errors).toEqual([]);
       await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
+      if (route === locale) {
+        const mtsCard = page.locator('.experience-card').first();
+        await expect(mtsCard).toContainText(
+          locale === 'ru' ? 'положительный коммерческий результат' : 'positive commercial outcome',
+        );
+        for (const [label, url] of [
+          ['OMNI', 'https://omnichannel.mts.ru/'],
+          ['ORP', 'https://orp.mts.ru/'],
+          ['CRM Trends', 'https://omnichannel.mts.ru/crmtrends'],
+        ]) {
+          await expect(mtsCard.getByRole('link', { name: new RegExp(label) })).toHaveAttribute(
+            'href',
+            url,
+          );
+          await expect(mtsCard.getByRole('link', { name: new RegExp(label) })).toHaveAttribute(
+            'rel',
+            'noopener noreferrer',
+          );
+        }
+      }
     });
   }
   test(`${locale}: complete without JavaScript, print and download`, async ({
@@ -70,8 +90,10 @@ test('copy buttons expose reusable About and employer blocks', async ({ page, co
     .getByRole('button', { name: /Скопировать опыт полностью/ });
   await fullExperience.click();
   const experienceBlock = await page.evaluate(() => navigator.clipboard.readText());
-  expect(experienceBlock).toContain('МТС Web Services');
+  expect(experienceBlock).toContain('МТС Веб Сервисы');
   expect(experienceBlock).toContain('1–2 рабочих дня');
+  expect(experienceBlock).toContain('положительный коммерческий результат');
+  expect(experienceBlock).not.toContain('https://omnichannel.mts.ru/');
   await expect(fullExperience).toHaveClass(/is-copied/);
   await expect(fullExperience.locator('span[aria-hidden="true"]').first()).toHaveText('Копировать');
 });

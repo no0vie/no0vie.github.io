@@ -44,6 +44,11 @@ describe('approved bilingual content', () => {
       'cave-escaper',
     ]);
     expect(experience.find(({ id }) => id === 'mts')?.caseStudySlugs).toEqual(['campaign-wizard']);
+    expect(experience.find(({ id }) => id === 'mts')?.links).toEqual([
+      { label: 'OMNI', url: 'https://omnichannel.mts.ru/' },
+      { label: 'ORP', url: 'https://orp.mts.ru/' },
+      { label: 'CRM Trends', url: 'https://omnichannel.mts.ru/crmtrends' },
+    ]);
   });
 
   it.each([{ ru: 'Текст' }, { ru: ' ', en: 'Text' }, { ...bilingual, de: 'Text' }])(
@@ -220,13 +225,30 @@ describe('approved bilingual content', () => {
 
     const mts = experience.find(({ id }) => id === 'mts');
     const mtsSurfaces = JSON.stringify([highlights[0], mts]);
+    expect(mts?.employer).toEqual({ ru: 'МТС Веб Сервисы', en: 'MTS Web Services' });
+    expect(mts?.achievements).toHaveLength(5);
+    expect(mts?.outcome).toEqual({
+      ru: 'Мастер каскадных кампаний был реализован в согласованные сроки, оправдал ожидания заказчика и показал положительный коммерческий результат.',
+      en: "The cascade campaign wizard was delivered on schedule, met the customer's expectations, and achieved a positive commercial outcome.",
+    });
     expect(highlights[0]?.heading).toEqual({
       ru: 'Архитектура, рассчитанная на развитие',
       en: 'Architecture designed for extensibility',
     });
     expect(mtsSurfaces).toMatch(/1–2 (рабоч|working) (дн|day)/i);
     expect(mtsSurfaces).toMatch(/двухнедельного спринта|two-week sprint/i);
-    expect(mtsSurfaces).toMatch(/существовавшем механизме|existing implementation/i);
+    expect(mtsSurfaces).toMatch(/прежнем механизме|previous implementation/i);
+    expect(highlights[0]?.text).toEqual({
+      ru: 'Спроектировал расширяемую архитектуру мастера каскадных кампаний, сократив добавление новых каналов и замену редакторов с примерно двух недель до 1–2 рабочих дней.',
+      en: 'Designed an extensible cascade campaign wizard architecture, reducing the effort to add new channels or replace editors from roughly two weeks to 1–2 working days.',
+    });
+
+    const tensor = experience.find(({ id }) => id === 'tensor');
+    expect(JSON.stringify(tensor)).toMatch(
+      /сложные запросы и подзапросы|complex SQL queries and subqueries/i,
+    );
+    expect(JSON.stringify(tensor)).toMatch(/индекс|index/i);
+    expect(JSON.stringify(tensor)).toMatch(/одним из кураторов|one of the mentors/i);
 
     const fruct = experience.find(({ id }) => id === 'fruct');
     expect(fruct).toMatchObject({
@@ -236,7 +258,10 @@ describe('approved bilingual content', () => {
     });
     expect(fruct?.role.ru).toMatch(/внештатная почасовая работа/i);
     expect(fruct?.role.en).toMatch(/hourly paid contractor/i);
-    expect(JSON.stringify(fruct)).toMatch(/Java|Kotlin|Aurora|Аврора|C\+\+|QML/);
+    expect(JSON.stringify(fruct)).toMatch(
+      /Java|Kotlin|Spring Boot|Foundation|Aurora|Аврора|C\+\+|QML/,
+    );
+    expect(JSON.stringify(fruct)).not.toMatch(/Mattermost|task tracker|систем.*уч[её]та задач/i);
 
     expect(careerMilestones).toHaveLength(1);
     expect(careerMilestones[0]).toMatchObject({

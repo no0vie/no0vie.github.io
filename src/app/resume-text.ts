@@ -48,6 +48,7 @@ export function formatExperienceForClipboard(item: CareerItem, locale: Locale): 
     item.overview[locale],
     '',
     ...item.achievements.map(({ text }) => `• ${text[locale]}`),
+    ...(item.outcome ? ['', item.outcome[locale]] : []),
     '',
     `${locale === 'ru' ? 'Технологии' : 'Technologies'}: ${item.technologies.join(', ')}`,
   ].join('\n');

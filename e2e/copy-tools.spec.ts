@@ -54,7 +54,7 @@ test('copy uses canonical localized text and reports clipboard success and failu
 
   await summary.click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(
-    /^Development for OMNI and ORP:/m,
+    /^Developing OMNI and ORP:/m,
   );
   await expect(summary).toHaveClass(/is-copied/);
   await expect(summary).toHaveCSS('transform', 'matrix(2, 0, 0, 2, 0, 0)');

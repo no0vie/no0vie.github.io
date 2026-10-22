@@ -81,6 +81,17 @@ export type CareerMilestone = z.infer<typeof careerMilestoneSchema>;
 
 const uniqueIds = (items: readonly { id: string }[]) =>
   new Set(items.map(({ id }) => id)).size === items.length;
+const experienceLinkSchema = z
+  .object({
+    label: z.enum(['OMNI', 'ORP', 'CRM Trends']),
+    url: z.enum([
+      'https://omnichannel.mts.ru/',
+      'https://orp.mts.ru/',
+      'https://omnichannel.mts.ru/crmtrends',
+    ]),
+  })
+  .strict();
+
 export const experienceSchema = z
   .object({
     id: idSchema,
@@ -90,6 +101,8 @@ export const experienceSchema = z
     end: monthSchema.optional(),
     datePrecision: z.enum(['exact', 'approximate']).default('exact'),
     overview: localizedSchema,
+    outcome: localizedSchema.optional(),
+    links: z.array(experienceLinkSchema).default([]),
     achievements: z
       .array(achievementSchema)
       .min(1)

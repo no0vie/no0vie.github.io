@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { localizedSchema } from './schema';
-import { mtsExtensibilityHighlight } from './seed';
+import { mtsArchitectureAchievement, mtsOutcome } from './seed';
 
 export const caseSchema = z
   .object({
@@ -51,8 +51,8 @@ export const cases = [
         en: 'The shared abstraction covered the contract between the wizard and its channels, rather than every form detail. This boundary preserved channel-specific behavior.',
       },
       results: {
-        ru: `${mtsExtensibilityHighlight.text.ru} Мастер поддерживал SMS, MMS и электронную почту при запуске; позднее SMS и MMS были переведены на новые редакторы шаблонов без существенной переработки архитектуры.`,
-        en: `${mtsExtensibilityHighlight.text.en} The wizard supported SMS, MMS, and email at launch; SMS and MMS were later migrated to newer template editors without major architectural changes.`,
+        ru: `${mtsArchitectureAchievement.ru} SMS и MMS были переведены на новые редакторы шаблонов без существенной переработки общего сценария мастера. ${mtsOutcome.ru}`,
+        en: `${mtsArchitectureAchievement.en} SMS and MMS were migrated to new template editors without major changes to the wizard's shared workflow. ${mtsOutcome.en}`,
       },
       lessons: {
         ru: 'Этот пример иллюстрирует разделение общего контракта и изменяемых деталей: редакторы шаблонов можно заменять, сохраняя архитектуру мастера.',

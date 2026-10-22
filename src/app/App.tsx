@@ -456,6 +456,25 @@ export function App({
                         </li>
                       ))}
                     </ul>
+                    {item.outcome && <p className="overview">{item.outcome[locale]}</p>}
+                    {item.links.length > 0 && (
+                      <p
+                        aria-label={
+                          locale === 'ru'
+                            ? `Ссылки на продукты и работы: ${item.employer[locale]}`
+                            : `Product and related work links: ${item.employer[locale]}`
+                        }
+                      >
+                        {item.links.map((link, index) => (
+                          <React.Fragment key={link.url}>
+                            {index > 0 && <span aria-hidden="true"> · </span>}
+                            <a className="text-link" href={link.url} rel="noopener noreferrer">
+                              {link.label} <span aria-hidden="true">↗</span>
+                            </a>
+                          </React.Fragment>
+                        ))}
+                      </p>
+                    )}
                     <ul className="tags" aria-label={t.skills}>
                       {item.technologies.map((technology) => (
                         <li key={technology}>{technology}</li>

@@ -8,6 +8,16 @@ const achievement = (id: string, ru: string, en: string): Achievement => ({
   publishable: true,
 });
 
+export const mtsArchitectureAchievement = localized(
+  'Спроектировал расширяемую архитектуру мастера каскадных кампаний с единым контрактом каналов и изоляцией их форм и бизнес-логики. Добавление нового канала или замена редактора стали занимать 1–2 рабочих дня, включая исправления после тестирования, вместо примерно двухнедельного спринта в прежнем механизме сопоставимой функциональности.',
+  'Designed an extensible cascade campaign wizard with a shared channel contract and isolated channel-specific forms and business logic. Adding a channel or replacing an editor took 1–2 working days, including fixes after testing, versus approximately a two-week sprint in the previous implementation of comparable functionality.',
+);
+
+export const mtsOutcome = localized(
+  'Мастер каскадных кампаний был реализован в согласованные сроки, оправдал ожидания заказчика и показал положительный коммерческий результат.',
+  "The cascade campaign wizard was delivered on schedule, met the customer's expectations, and achieved a positive commercial outcome.",
+);
+
 export const mtsExtensibilityHighlight = {
   id: 'extensible-architecture',
   heading: localized(
@@ -15,8 +25,8 @@ export const mtsExtensibilityHighlight = {
     'Architecture designed for extensibility',
   ),
   text: localized(
-    'Спроектировал расширяемую архитектуру мастера каскадных кампаний, изолировав логику отдельных каналов и их формы от общего сценария. Благодаря этому добавление нового канала или замена редактора стали занимать 1–2 рабочих дня, включая исправления после тестирования, вместо примерно двухнедельного спринта в существовавшем механизме с аналогичной функциональностью.',
-    'Designed an extensible cascade campaign wizard architecture, separating channel-specific logic and forms from the shared workflow. This reduced the effort required to add a new channel or replace an editor to 1–2 working days, including post-testing fixes, compared with approximately a two-week sprint in the existing implementation of similar functionality.',
+    'Спроектировал расширяемую архитектуру мастера каскадных кампаний, сократив добавление новых каналов и замену редакторов с примерно двух недель до 1–2 рабочих дней.',
+    'Designed an extensible cascade campaign wizard architecture, reducing the effort to add new channels or replace editors from roughly two weeks to 1–2 working days.',
   ),
 } as const;
 
@@ -87,44 +97,45 @@ export const seedContent = {
   experience: [
     {
       id: 'mts',
-      employer: localized('МТС Web Services', 'MTS Web Services'),
+      employer: localized('МТС Веб Сервисы', 'MTS Web Services'),
       role: localized('Старший разработчик ПО', 'Senior Software Developer'),
       start: '2024-05',
       datePrecision: 'exact',
       overview: localized(
-        'Разработка продуктов OMNI и ORP: интерфейсы управления кампаниями, архитектура фронтенда и инженерные инструменты.',
-        'Development for OMNI and ORP: campaign management interfaces, frontend architecture, and engineering tools.',
+        'Разработка продуктов OMNI и ORP: интерфейсы управления коммуникациями и кампаниями, архитектура фронтенда и инженерные инструменты.',
+        'Developing OMNI and ORP: campaign and communications management interfaces, frontend architecture, and engineering tools.',
       ),
+      outcome: mtsOutcome,
+      links: [
+        { label: 'OMNI', url: 'https://omnichannel.mts.ru/' },
+        { label: 'ORP', url: 'https://orp.mts.ru/' },
+        { label: 'CRM Trends', url: 'https://omnichannel.mts.ru/crmtrends' },
+      ],
       achievements: [
         achievement(
           'campaign-wizard',
-          'Отвечал за значительную часть архитектуры и реализации фронтенда мастера каскадных кампаний. На старте мастер поддерживал SMS, MMS и электронную почту.',
-          'Owned a substantial part of the frontend architecture and implementation of a cascade campaign wizard, supporting SMS, MMS, and email at launch.',
-        ),
-        achievement(
-          'channel-contract',
-          'Выделил общий контракт каналов, изолировав состояние, формы и бизнес-правила каждого канала для расширения мастера.',
-          'Established a shared channel contract with isolated per-channel state, forms, and business rules to support extension of the wizard.',
-        ),
-        achievement(
-          'extension-cycle',
-          mtsExtensibilityHighlight.text.ru,
-          mtsExtensibilityHighlight.text.en,
+          mtsArchitectureAchievement.ru,
+          mtsArchitectureAchievement.en,
         ),
         achievement(
           'template-editors',
-          'Перевёл SMS и MMS на новые редакторы шаблонов без существенной переработки архитектуры мастера.',
-          'Migrated SMS and MMS to newer template editors without major changes to the wizard architecture.',
+          'Перевёл SMS и MMS на новые редакторы шаблонов без существенной переработки общего сценария мастера.',
+          "Migrated SMS and MMS to new template editors without major changes to the wizard's shared workflow.",
         ),
         achievement(
           'validation-feedback',
           'Реализовал ограничения пользовательских сценариев, клиентскую валидацию и преобразование ошибок публичного API в понятные сообщения.',
-          'Implemented interaction constraints, client-side validation, and human-readable feedback for public API errors.',
+          'Implemented user-flow constraints, client-side validation, and clear messages for public API errors.',
         ),
         achievement(
           'data-tooling',
           'Использовал Node.js и NestJS для подготовки и преобразования данных; работал над инженерными скриптами и переносимостью развёртывания в Linux.',
-          'Used Node.js and NestJS for data preparation and transformation, and worked on engineering scripts and Linux deployment portability.',
+          'Used Node.js and NestJS for data preparation and transformation; worked on engineering scripts and Linux deployment portability.',
+        ),
+        achievement(
+          'crm-trends-landing',
+          'С использованием ИИ-инструментов разработал лендинг для отраслевого мероприятия за один вечер.',
+          'Built a landing page for an industry event in one evening using AI-assisted development tools.',
         ),
       ],
       technologies: [
@@ -188,6 +199,7 @@ export const seedContent = {
           'Regularly reviewed code and contributed to releases, mentoring, and onboarding.',
         ),
       ],
+      links: [],
       technologies: [
         'React',
         'TypeScript',
@@ -210,26 +222,32 @@ export const seedContent = {
       end: '2021-03',
       datePrecision: 'exact',
       overview: localized(
-        'Разработка и сопровождение бизнес-приложений для корпоративных и кадровых процессов.',
-        'Development and maintenance of business applications for corporate and HR workflows.',
+        'Разработка и сопровождение корпоративных веб-приложений для автоматизации бизнес- и кадровых процессов.',
+        'Developed and maintained enterprise web applications supporting business and HR processes.',
       ),
       achievements: [
         achievement(
           'business-interfaces',
-          'Разрабатывал интерфейсы бизнес-приложений для корпоративных и кадровых процессов.',
-          'Developed business application interfaces for corporate and HR workflows.',
+          'Разрабатывал и развивал интерфейсы корпоративных бизнес-приложений на JavaScript/TypeScript и WaSaby.',
+          'Built and evolved enterprise application interfaces with JavaScript/TypeScript and WaSaby.',
+        ),
+        achievement(
+          'sql-optimization',
+          'Оптимизировал SQL-запросы к PostgreSQL: перерабатывал сложные запросы и подзапросы, создавал индекс для повышения производительности.',
+          'Optimized PostgreSQL queries by rewriting complex SQL queries and subqueries and adding an index to improve performance.',
         ),
         achievement(
           'maintenance',
-          'Сопровождал существующие бизнес-приложения.',
-          'Maintained existing business applications.',
+          'Сопровождал существующие приложения, исправлял ошибки и развивал функциональность.',
+          'Maintained existing applications, fixed bugs, and delivered new functionality.',
         ),
         achievement(
           'tensor-mentoring',
-          'Помогал начинающим разработчикам, в том числе в рамках Tensor Hack.',
-          'Mentored beginner developers, including through Tensor Hack.',
+          'Был одним из кураторов Tensor Hack: помогал начинающим разработчикам с техническими решениями и реализацией проектов.',
+          'Served as one of the mentors at Tensor Hack, helping junior developers with technical decisions and project implementation.',
         ),
       ],
+      links: [],
       technologies: ['JavaScript', 'TypeScript', 'WaSaby', 'Less', 'Python', 'PostgreSQL', 'SQL'],
       caseStudySlugs: [],
     },
@@ -247,19 +265,24 @@ export const seedContent = {
       end: '2016-12',
       datePrecision: 'approximate',
       overview: localized(
-        'В рамках оплачиваемой работы в университетской лаборатории разрабатывал ПО для светодиодных информационных табло.',
-        'Worked as an hourly paid software developer in a university laboratory, building software for LED information displays.',
+        'Разработка систем управления светодиодными информационными табло и несложных веб-интерфейсов для их настройки.',
+        'Developed LED information-display control systems and simple web interfaces for configuring them.',
       ),
       achievements: [
         achievement(
           'glass-factory-display',
-          'Реализовал программное обеспечение для стекольного завода в Гусь-Хрустальном; участвовал в разработке решений для табло АЗС и спортивных табло.',
-          'Implemented software for a glass factory in Gus-Khrustalny and contributed to petrol station and sports display solutions.',
+          'Самостоятельно разработал программное обеспечение для управления информационными табло стекольного завода в Гусь-Хрустальном.',
+          'Independently developed software to control information displays for a glass factory in Gus-Khrustalny.',
         ),
         achievement(
-          'laboratory-collaboration',
-          'Работал с Java и Kotlin, командными коммуникациями в Mattermost и системой учёта задач.',
-          'Used Java and Kotlin and collaborated through Mattermost and a task tracker.',
+          'fuel-sports-displays',
+          'Участвовал в разработке решений для информационных табло АЗС и спортивных объектов.',
+          'Contributed to information-display solutions for fuel stations and sports venues.',
+        ),
+        achievement(
+          'display-web-interface',
+          'Разрабатывал серверную часть на Java и Spring Boot и адаптивные веб-интерфейсы с использованием Foundation.',
+          'Developed Java/Spring Boot backend functionality and responsive web interfaces using Foundation.',
         ),
         achievement(
           'aurora-hackathon',
@@ -267,7 +290,8 @@ export const seedContent = {
           'Participated in a hackathon developing an application for the Aurora mobile operating system using C++ and QML.',
         ),
       ],
-      technologies: ['Java', 'Kotlin'],
+      links: [],
+      technologies: ['Java', 'Kotlin', 'Spring Boot', 'Foundation'],
       caseStudySlugs: [],
     },
   ],

@@ -67,6 +67,14 @@
 - `docs/QA.md` keeps current reproducible results first and labels older Lighthouse evidence as historical. Recruiter-readiness follow-ups now live in QA instead of a separate stale audit.
 - `README.md` remains operational documentation; `docs/CONTENT_POLICY.md` remains the publication/privacy policy; `.agents/skills/career-update/SKILL.md` remains the reusable career-editing workflow.
 
+## Career content revision (2026-10-23)
+
+- Updated the canonical bilingual records for MTS Web Services, Tensor and FRUCT without changing dates, historical role titles, Yandex Market content, visual styling, animation timing or copy-control interaction.
+- The homepage keeps a deliberately shorter MTS architecture highlight. The experience record and campaign-wizard case reuse one full architecture/comparison record, while the qualitative commercial outcome is a separate localized field.
+- Experience links use a strict allowlist for OMNI, ORP and CRM Trends and render as labeled external links with `rel="noopener noreferrer"`. They are active in HTML/PDF and intentionally omitted from clipboard text.
+- Removed the public FRUCT Mattermost/task-tracker detail in favor of the approved Spring Boot/Foundation web-interface work. Tensor now records the approved PostgreSQL query/index work and the limited “one of the mentors/curators” Tensor Hack role.
+- No confidential economics, ROI/payback claim, customer identity, measured speedup or external-profile publication was added.
+
 ## Microinteractions and copy tools (2026-10-22)
 
 - Copy controls are progressive client enhancements over complete static resume content. Normal pointer use requires five seconds of continuous hover; keyboard focus and explicit copy mode reveal controls immediately.

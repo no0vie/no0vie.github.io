@@ -5,6 +5,9 @@ import { basePath, localePath, pageKind, pdfFileName, pdfPath } from '../src/app
 import { App } from '../src/app/App';
 import { availability, experience, highlights, profile } from '../src/content';
 
+const escapedText = (text: string) =>
+  renderToStaticMarkup(createElement('span', null, text)).slice('<span>'.length, -'</span>'.length);
+
 describe('static page routes', () => {
   it('prefixes local paths for root and project deployments', () => {
     expect(basePath('/en/projects', '/')).toBe('/en/projects');
@@ -40,16 +43,16 @@ describe('server-rendered resume', () => {
     (locale) => {
       const html = renderToStaticMarkup(createElement(App, { locale, page: '' }));
       for (const item of experience) {
-        expect(html).toContain(item.employer[locale]);
+        expect(html).toContain(escapedText(item.employer[locale]));
         for (const achievement of item.achievements)
-          expect(html).toContain(achievement.text[locale]);
+          expect(html).toContain(escapedText(achievement.text[locale]));
       }
       for (const highlight of highlights) {
-        expect(html).toContain(highlight.heading[locale]);
-        expect(html).toContain(highlight.text[locale]);
+        expect(html).toContain(escapedText(highlight.heading[locale]));
+        expect(html).toContain(escapedText(highlight.text[locale]));
       }
-      expect(html).toContain(profile.education[locale]);
-      expect(html).toContain(availability.label[locale]);
+      expect(html).toContain(escapedText(profile.education[locale]));
+      expect(html).toContain(escapedText(availability.label[locale]));
       expect(html).toContain('class="availability-status"');
       expect(html).toContain('https://wa.me/qr/XFZZQSNXJCSBL1');
       expect(html).toContain(`downloads/eugene-novikov-sse-2026-10-22-${locale}.pdf`);

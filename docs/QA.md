@@ -1,20 +1,21 @@
 # Current QA status
 
-Last updated: 2026-10-22 after the microinteractions and copy-tools enhancement.
+Last updated: 2026-10-23 after the bilingual career-content revision.
 
 ## Current automated verification
 
 Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is static HTML plus mandatory local RU/EN PDF generation; no remote print service is used.
 
-| Command                                  | Result                                                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `npm run lint`                           | Pass                                                                                                   |
-| `npm run typecheck`                      | Pass                                                                                                   |
-| `npm test`                               | 49 tests passed across 6 files                                                                         |
-| `npm run build`                          | Pass outside the terminal OS sandbox; static pages, SEO, `/availability.json` and RU/EN PDFs generated |
-| `npm run test:e2e`                       | 31 passed with Evolution disabled                                                                      |
-| `ENABLE_EVOLUTION=true npm run build`    | Pass                                                                                                   |
-| `ENABLE_EVOLUTION=true npm run test:e2e` | 24 passed with Evolution enabled                                                                       |
+| Command                                  | Result                                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check`                   | Fails only on pre-existing/input `TASK_SPEC.md`; all changed implementation, test and documentation files pass Prettier |
+| `npm run lint`                           | Pass                                                                                                                    |
+| `npm run typecheck`                      | Pass                                                                                                                    |
+| `npm test`                               | 49 tests passed across 6 files                                                                                          |
+| `npm run build`                          | Pass outside the terminal OS sandbox; static pages, SEO, `/availability.json` and RU/EN PDFs generated                  |
+| `npm run test:e2e`                       | 31 passed with Evolution disabled                                                                                       |
+| `ENABLE_EVOLUTION=true npm run build`    | Pass                                                                                                                    |
+| `ENABLE_EVOLUTION=true npm run test:e2e` | 24 passed with Evolution enabled                                                                                        |
 
 Sandboxed Chromium could build HTML but hung in `page.pdf()` until the build watchdog. The same build completed normally outside the terminal OS sandbox; this is recorded as an environment limitation, not a successful sandboxed PDF run.
 
@@ -35,7 +36,8 @@ Automated checks cover:
 - PDF HTTP status, `application/pdf` MIME, `%PDF-` signatures, dated suggested filenames, print visibility and hidden site navigation;
 - the localized portrait, missing-image initials fallback, five contact channels and legacy `#contacts` anchor;
 - continuous five-second hover reveal/reset, immediate keyboard reveal, three portrait activations on touch and 44 px targets;
-- canonical RU/EN clipboard serialization, summary/full experience ordering and localized clipboard failure feedback;
+- canonical RU/EN clipboard serialization, summary/full experience ordering, the separate MTS outcome and localized clipboard failure feedback;
+- allowlisted OMNI, ORP and CRM Trends links with labeled accessible anchors and `noopener noreferrer`; all three targets responded during the 2026-10-23 point-in-time check;
 - copy controls excluded from print, plus responsive light/dark and reduced-motion coverage;
 - scale-only visual copy confirmation and the availability Ribbon Sweep placement, six-second cycle, reduced-motion and print behavior.
 
@@ -45,8 +47,8 @@ The latest generated files reported by macOS metadata:
 
 | PDF | Pages |          Size |
 | --- | ----: | ------------: |
-| RU  |     5 | 489,446 bytes |
-| EN  |     4 | 437,913 bytes |
+| RU  |     5 | 564,829 bytes |
+| EN  |     4 | 524,031 bytes |
 
 The files are generated from the same server-rendered resume used by the locale pages. Build validation checks the final normalized artifact’s header, size, trailer, `%%EOF` and `startxref`; E2E verifies successful downloads, MIME, `%PDF-` signatures, suggested filenames, print content and hidden navigation.
 

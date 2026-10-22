@@ -49,7 +49,9 @@ describe('resume clipboard blocks', () => {
         expect(block).toContain(item.role[locale]);
         expect(block).toContain(item.overview[locale]);
         expect(block).toContain(`• ${item.achievements[0]?.text[locale]}`);
+        if (item.outcome) expect(block).toContain(item.outcome[locale]);
         expect(block).toContain(item.technologies.join(', '));
+        for (const link of item.links) expect(block).not.toContain(link.url);
         expect(block).not.toMatch(/<[^>]+>/);
       }
     }
