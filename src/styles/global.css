@@ -958,3 +958,399 @@ button:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.evolution-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding-inline: 0.65rem !important;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+}
+.orbit-icon {
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+  fill: currentColor;
+}
+.orbit-ring {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.8;
+  transform-origin: 12px 12px;
+  opacity: 0.62;
+}
+.orbit-ring circle {
+  fill: currentColor;
+  stroke: none;
+}
+.orbit-ring-one {
+  animation: orbit-clockwise 14s linear infinite;
+}
+.orbit-ring-two {
+  animation: orbit-counterclockwise 20s linear infinite;
+}
+.evolution-link:hover .orbit-ring-one,
+.evolution-link:focus-visible .orbit-ring-one {
+  animation-duration: 9s;
+  opacity: 1;
+}
+.evolution-link:hover .orbit-ring-two,
+.evolution-link:focus-visible .orbit-ring-two {
+  animation-duration: 13s;
+  opacity: 1;
+}
+@keyframes orbit-clockwise {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-counterclockwise {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.evolution-page {
+  min-height: 70vh;
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+}
+.evolution-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+.evolution-intro h1 {
+  margin-top: 0.35rem;
+  font-size: clamp(2.8rem, 7vw, 5.8rem);
+  letter-spacing: -0.06em;
+}
+.evolution-lead {
+  max-width: 62ch;
+  margin-top: 1rem;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+}
+.evolution-back {
+  flex: 0 0 auto;
+  min-height: 44px;
+}
+.evolution-layout {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+}
+.evolution-map {
+  position: sticky;
+  min-width: 0;
+  top: 2rem;
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: linear-gradient(145deg, transparent 55%, var(--accent-soft)), var(--surface);
+  box-shadow: 0 24px 70px rgba(16, 38, 74, 0.08);
+}
+.evolution-route-art {
+  position: absolute;
+  inset: 1.5rem 1rem auto;
+  width: calc(100% - 2rem);
+  height: auto;
+}
+.evolution-route-shadow,
+.evolution-route-line {
+  fill: none;
+  stroke-linecap: round;
+}
+.evolution-route-shadow {
+  stroke: var(--border);
+  stroke-width: 12;
+  opacity: 0.45;
+}
+.evolution-route-line {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-dasharray: 1;
+  animation: evolution-line-draw 600ms ease-out both;
+}
+.evolution-swallow {
+  fill: var(--accent-strong);
+  opacity: 0.72;
+}
+@keyframes evolution-line-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+.evolution-tabs {
+  position: relative;
+  min-height: 430px;
+}
+.evolution-node {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(220px, 34%);
+  min-height: 64px;
+  padding: 0.65rem;
+  color: var(--text);
+  border-color: var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 8px 22px rgba(16, 38, 74, 0.1);
+  text-align: left;
+  backdrop-filter: blur(8px);
+}
+.evolution-node:nth-child(1) {
+  left: 4%;
+  top: 72%;
+}
+.evolution-node:nth-child(2) {
+  left: 24%;
+  top: 43%;
+}
+.evolution-node:nth-child(3) {
+  left: 53%;
+  top: 57%;
+}
+.evolution-node:nth-child(4) {
+  right: 4%;
+  top: 13%;
+}
+.evolution-node:hover,
+.evolution-node:focus-visible {
+  transform: scale(1.03);
+}
+.evolution-node[aria-selected='true'] {
+  border-color: var(--accent);
+  outline: 3px solid var(--accent-soft);
+  color: var(--accent-strong);
+}
+.evolution-node-index {
+  display: grid;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.evolution-node-copy,
+.evolution-node-copy strong,
+.evolution-node-copy small {
+  display: block;
+  min-width: 0;
+}
+.evolution-node-copy strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.evolution-node-copy small {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.67rem;
+}
+.evolution-milestone {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0 1.25rem 1.25rem;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+.evolution-milestone > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.evolution-milestone strong {
+  color: var(--text);
+}
+.evolution-milestone p {
+  margin-block: 0.3rem;
+}
+.evolution-milestone a {
+  color: var(--accent-strong);
+}
+.evolution-details {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.evolution-panel {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  animation: evolution-panel-in 240ms ease-out both;
+}
+.evolution-panel + .evolution-panel {
+  margin-top: 1rem;
+}
+.is-enhanced .evolution-panel + .evolution-panel {
+  margin-top: 0;
+}
+@keyframes evolution-panel-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.evolution-counter {
+  float: right;
+  color: var(--accent-strong);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.evolution-panel h2 {
+  margin-top: 0.55rem;
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
+}
+.evolution-panel h3 {
+  margin-top: 1.5rem;
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.evolution-role {
+  margin: 0.35rem 0 1rem;
+  color: var(--muted);
+  font-weight: 650;
+}
+.evolution-capabilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  margin-top: 0.75rem;
+  list-style: none;
+}
+.evolution-capabilities li {
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent-strong);
+  font-size: 0.75rem;
+}
+.evolution-highlights {
+  padding-left: 1.2rem;
+  margin-block: 0.8rem 1.25rem;
+}
+.evolution-highlights li + li {
+  margin-top: 0.65rem;
+}
+.evolution-panel .text-link {
+  margin-top: 1.25rem;
+}
+.evolution-pager[hidden] {
+  display: none;
+}
+.evolution-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.evolution-pager button {
+  min-height: 44px;
+}
+.footer-attribution {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+@media (max-width: 1099px) {
+  .evolution-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .evolution-map {
+    position: relative;
+    top: auto;
+    min-height: 500px;
+  }
+}
+@media (max-width: 760px) {
+  .evolution-link span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .evolution-link {
+    justify-content: center;
+    width: 44px;
+    padding: 0 !important;
+  }
+  .evolution-intro {
+    display: block;
+  }
+  .evolution-back {
+    display: inline-flex;
+    margin-top: 1.25rem;
+  }
+  .evolution-map {
+    min-height: 0;
+    padding: 1rem;
+    overflow: visible;
+  }
+  .evolution-route-art {
+    display: none;
+  }
+  .evolution-tabs {
+    display: grid;
+    min-height: 0;
+    gap: 0.75rem;
+  }
+  .evolution-node,
+  .evolution-node:nth-child(n) {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 64px;
+    overflow: hidden;
+  }
+  .evolution-node::before {
+    content: '';
+    position: absolute;
+    left: 26px;
+    top: 100%;
+    width: 2px;
+    height: 0.75rem;
+    background: var(--border);
+  }
+  .evolution-node:last-child::before {
+    display: none;
+  }
+  .evolution-milestone {
+    margin: 1rem 0 0;
+  }
+  .evolution-panel {
+    padding: 1.1rem;
+  }
+}

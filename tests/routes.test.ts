@@ -21,10 +21,11 @@ describe('static page routes', () => {
     expect(localePath('en', 'projects/missing', '/')).toBe('/en/projects/missing');
     expect(localePath('ru', 'strange?#/name', '/')).toBe('/ru/strange%3F%23/name');
   });
-  it('only recognizes the resume and projects index', () => {
+  it('recognizes the published resume, projects and Evolution routes', () => {
     expect(pageKind('')).toBe('resume');
     expect(pageKind('projects')).toBe('projects');
-    for (const page of ['unknown', 'projects/missing', 'evolution', 'cases/example'])
+    expect(pageKind('evolution', true)).toBe('evolution');
+    for (const page of ['unknown', 'projects/missing', 'cases/example'])
       expect(pageKind(page)).toBe('not-found');
   });
   it('links to dated locale-specific PDFs under the deployment base', () => {

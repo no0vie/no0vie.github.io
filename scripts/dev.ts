@@ -29,7 +29,7 @@ export function resumeDev(): Plugin {
             }
             const locale = parts[0] === 'en' ? 'en' : 'ru';
             const page = parts.slice(1).join('/');
-            const enableEvolution = process.env.ENABLE_EVOLUTION === 'true';
+            const enableEvolution = process.env.ENABLE_EVOLUTION !== 'false';
             const { pageKind } = (await server.ssrLoadModule('/src/app/routes.ts')) as {
               pageKind: typeof pageKindType;
             };

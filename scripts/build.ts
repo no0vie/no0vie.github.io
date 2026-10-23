@@ -14,7 +14,7 @@ import { pdfFileName } from '../src/app/routes';
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
 const config = publishingConfig();
-const enableEvolution = process.env.ENABLE_EVOLUTION === 'true';
+const enableEvolution = process.env.ENABLE_EVOLUTION !== 'false';
 const knownPages = ['', 'projects'];
 const escape = (value: string) =>
   value.replace(
@@ -45,7 +45,7 @@ try {
       const description = caseStudy
         ? caseStudy.summary[locale]
         : page === 'evolution'
-          ? t.evolution
+          ? t.evolutionIntro
           : page === 'projects'
             ? t.emptyDetail
             : profile.about[locale];

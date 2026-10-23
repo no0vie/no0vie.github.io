@@ -202,4 +202,24 @@
     min-height: 0 !important;
     padding: 0 !important;
   }
+  .evolution-page {
+    padding: 0 !important;
+  }
+  .evolution-layout {
+    display: block !important;
+  }
+  .evolution-map,
+  .evolution-pager,
+  .evolution-back {
+    display: none !important;
+  }
+  .evolution-panel,
+  .evolution-panel[hidden] {
+    display: block !important;
+    padding: 5mm 0 !important;
+    border: 0 !important;
+    border-top: 1px solid #ccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
 }

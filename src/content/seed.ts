@@ -98,7 +98,7 @@ export const seedContent = {
     {
       id: 'mts',
       employer: localized('МТС Веб Сервисы', 'MTS Web Services'),
-      role: localized('Старший разработчик ПО', 'Senior Software Developer'),
+      role: localized('Ведущий разработчик', 'Senior Developer'),
       start: '2024-05',
       datePrecision: 'exact',
       overview: localized(
@@ -271,8 +271,8 @@ export const seedContent = {
       achievements: [
         achievement(
           'glass-factory-display',
-          'Самостоятельно разработал программное обеспечение для управления информационными табло стекольного завода в Гусь-Хрустальном.',
-          'Independently developed software to control information displays for a glass factory in Gus-Khrustalny.',
+          'Самостоятельно разработал конкретное программное обеспечение для управления информационными табло стекольного завода в Гусь-Хрустальном.',
+          'Independently developed the specific software used to control information displays for a glass factory in Gus-Khrustalny.',
         ),
         achievement(
           'fuel-sports-displays',

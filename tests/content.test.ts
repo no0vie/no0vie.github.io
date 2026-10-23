@@ -226,6 +226,7 @@ describe('approved bilingual content', () => {
     const mts = experience.find(({ id }) => id === 'mts');
     const mtsSurfaces = JSON.stringify([highlights[0], mts]);
     expect(mts?.employer).toEqual({ ru: 'МТС Веб Сервисы', en: 'MTS Web Services' });
+    expect(mts?.role).toEqual({ ru: 'Ведущий разработчик', en: 'Senior Developer' });
     expect(mts?.achievements).toHaveLength(5);
     expect(mts?.outcome).toEqual({
       ru: 'Мастер каскадных кампаний был реализован в согласованные сроки, оправдал ожидания заказчика и показал положительный коммерческий результат.',
@@ -258,6 +259,10 @@ describe('approved bilingual content', () => {
     });
     expect(fruct?.role.ru).toMatch(/внештатная почасовая работа/i);
     expect(fruct?.role.en).toMatch(/hourly paid contractor/i);
+    expect(fruct?.achievements.find(({ id }) => id === 'glass-factory-display')?.text).toEqual({
+      ru: 'Самостоятельно разработал конкретное программное обеспечение для управления информационными табло стекольного завода в Гусь-Хрустальном.',
+      en: 'Independently developed the specific software used to control information displays for a glass factory in Gus-Khrustalny.',
+    });
     expect(JSON.stringify(fruct)).toMatch(
       /Java|Kotlin|Spring Boot|Foundation|Aurora|Аврора|C\+\+|QML/,
     );

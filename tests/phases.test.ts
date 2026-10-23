@@ -48,12 +48,13 @@ for (const locale of ['ru', 'en'] as const) {
     const html = renderToStaticMarkup(
       createElement(App, { locale, page: 'evolution', enableEvolution: true }),
     );
-    expect(html.match(/class="evolution-step"/g)).toHaveLength(4);
-    expect(html.match(/class="career-milestone"/g)).toHaveLength(1);
-    expect(html).toMatch(/dateTime="2015-07">2015<\/time>–<time dateTime="2016-12">2016/);
+    expect(html.match(/class="evolution-node"/g)).toHaveLength(4);
+    expect(html.match(/class="evolution-panel"/g)).toHaveLength(4);
+    expect(html.match(/class="evolution-milestone"/g)).toHaveLength(1);
+    expect(html).toMatch(/2015–2016/);
     expect(html).toContain('https://github.com/no0vie/tic-tac-toe');
-    expect(html).toContain('2017-01');
-    expect(html).toContain('2024-05');
+    expect(html).toContain('stage-panel-tensor');
+    expect(html).toContain('stage-panel-mts');
   });
 }
 

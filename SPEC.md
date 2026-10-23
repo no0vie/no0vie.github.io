@@ -141,7 +141,7 @@ type Project = {
 Public employer label: «Лаборатория FRUCT, Ярославский государственный университет им. П. Г. Демидова» / “FRUCT Laboratory, P. G. Demidov Yaroslavl State University”. Role: «Разработчик ПО (внештатная почасовая работа)» / “Software Developer (part-time, hourly paid contractor)”. Internally retain approximate dates `2015-07`–`2016-12` with `datePrecision: 'approximate'`; publicly show only `2015–2016`.
 
 - Paid university-laboratory work on software for LED information displays.
-- Implemented software for a glass factory in Gus-Khrustalny and contributed to petrol-station and sports-display solutions. Do not imply sole development of the entire system or hardware.
+- Independently developed the specific software used to control information displays for a glass factory in Gus-Khrustalny, and contributed to petrol-station and sports-display solutions. The independent contribution applies to that specific software, not to the entire system or hardware.
 - Used Java and Kotlin, Mattermost and an unspecified task tracker. Do not publish “Redmine” as a fact.
 - Participated in a hackathon developing an application for Aurora mobile OS using C++ and QML. This was a hackathon, not commercial OS development or a current core specialization.
 - Do not invent customer/manufacturer identities, deployment scale or commercial outcomes.
@@ -169,7 +169,7 @@ Role: Interface Developer / Разработчик интерфейсов. React
 
 ### MTS Web Services — May 2024 to present
 
-Role: Lead Developer / Ведущий разработчик. OMNI and ORP products. React, TypeScript, MobX, NestJS, Next.js, Jest, Playwright, Webpack, Ant Design.
+Role: Senior Developer / Ведущий разработчик. OMNI and ORP products. React, TypeScript, MobX, NestJS, Next.js, Jest, Playwright, Webpack, Ant Design.
 
 - Owned substantial frontend architecture and implementation of cascade campaigns wizard.
 - First release supported **three channels: SMS, MMS, Email**.

@@ -1,21 +1,20 @@
 # Current QA status
 
-Last updated: 2026-10-23 after Portfolio Copy Mode v2.1.
+Last updated: 2026-10-23 after Evolution — The Journey MVP.
 
 ## Current automated verification
 
 Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is static HTML plus mandatory local RU/EN PDF generation; no remote print service is used.
 
-| Command                                  | Result                                                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `npm run format:check`                   | Pass                                                                                                   |
-| `npm run lint`                           | Pass                                                                                                   |
-| `npm run typecheck`                      | Pass                                                                                                   |
-| `npm test`                               | 49 tests passed across 6 files                                                                         |
-| `npm run build`                          | Pass outside the terminal OS sandbox; static pages, SEO, `/availability.json` and RU/EN PDFs generated |
-| `npm run test:e2e`                       | 37 passed with Evolution disabled                                                                      |
-| `ENABLE_EVOLUTION=true npm run build`    | Pass                                                                                                   |
-| `ENABLE_EVOLUTION=true npm run test:e2e` | 24 passed with Evolution enabled                                                                       |
+| Command                  | Result                                                                                                                           |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check`   | Pass                                                                                                                             |
+| `npm run lint`           | Pass                                                                                                                             |
+| `npm run typecheck`      | Pass                                                                                                                             |
+| `npm test`               | 54 tests passed across 7 files                                                                                                   |
+| `npm run build`          | Pass outside the terminal OS sandbox; static pages including RU/EN Evolution, SEO, `/availability.json` and RU/EN PDFs generated |
+| `npm run test:e2e`       | 37 passed with Evolution enabled by default                                                                                      |
+| `ENABLE_EVOLUTION=false` | Explicit rollback path retained and covered by unit route behavior                                                               |
 
 Sandboxed Chromium could build HTML but hung in `page.pdf()` until the build watchdog. The same build completed normally outside the terminal OS sandbox; this is recorded as an environment limitation, not a successful sandboxed PDF run.
 
@@ -32,7 +31,7 @@ Automated checks cover:
 - system/light/dark themes and persisted explicit theme;
 - keyboard navigation, skip links, axe checks and reduced motion;
 - 320/375/768/1024/1280/1440 px layouts in light/dark themes without horizontal overflow;
-- Evolution disabled and enabled branches, four employment steps, milestone, keyboard controls and no-JS fallback;
+- Evolution default-enabled and explicit rollback branches, canonical four-stage adapter, milestone, direct static deep links, selected-stage locale retention, keyboard tablist and pager controls, no-JS fallback, route-only lazy enhancement and sitemap inclusion;
 - PDF HTTP status, `application/pdf` MIME, `%PDF-` signatures, dated suggested filenames, print visibility and hidden site navigation;
 - the localized portrait, missing-image initials fallback, five contact channels and legacy `#contacts` anchor;
 - copy mode off on load, no hover/query activation, triple portrait toggle, 700 ms touch hold, `Shift+Enter` keyboard alternative and 48 px targets;
@@ -70,7 +69,7 @@ The root result included the expected redirect and a qualified Lantern warning. 
 
 ## Remaining verification
 
-- Smoke-test the live HTTPS GitHub Pages deployment: `/ru`, `/en`, case route, both PDFs, locale switching, canonical/hreflang, sitemap, 404 and social previews.
+- Smoke-test the live HTTPS GitHub Pages deployment: `/ru`, `/en`, both Evolution routes and refreshes, case route, both PDFs, locale switching, canonical/hreflang, sitemap, 404 and social previews.
 - Repeat Lighthouse after deployment or after another substantial layout/content change.
 - Review every page of both current PDFs visually; test copy/search in common viewers and an ATS if privacy policy permits.
 - Test Chrome, Safari and Firefox on physical devices and perform a short screen-reader pass.

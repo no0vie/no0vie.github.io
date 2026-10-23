@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   availability,
-  careerMilestones,
   experience,
   highlights,
   profile,
@@ -15,9 +14,26 @@ import { copy } from './copy';
 import { basePath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
 import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
+import { EvolutionPage } from './EvolutionPage';
 
 type Theme = 'system' | 'light' | 'dark';
 const themes: Theme[] = ['system', 'light', 'dark'];
+
+function OrbitIcon() {
+  return (
+    <svg className="orbit-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle className="orbit-core" cx="12" cy="12" r="1.8" />
+      <g className="orbit-ring orbit-ring-one">
+        <ellipse cx="12" cy="12" rx="9" ry="4.5" />
+        <circle cx="20.4" cy="10.4" r="1" />
+      </g>
+      <g className="orbit-ring orbit-ring-two">
+        <ellipse cx="12" cy="12" rx="4.5" ry="9" transform="rotate(38 12 12)" />
+        <circle cx="7.2" cy="5.6" r="0.85" />
+      </g>
+    </svg>
+  );
+}
 
 function ProfilePortrait({
   locale,
@@ -332,6 +348,18 @@ export function App({
             >
               {t.projects}
             </a>
+            {enableEvolution && (
+              <a
+                className="evolution-link"
+                href={localePath(locale, 'evolution')}
+                aria-label={`Evolution — ${t.openEvolution}`}
+                title={t.openEvolution}
+                aria-current={kind === 'evolution' ? 'page' : undefined}
+              >
+                <OrbitIcon />
+                <span>Evolution</span>
+              </a>
+            )}
             <a
               href={localePath(otherLocale, kind === 'not-found' ? '' : page)}
               hrefLang={otherLocale}
@@ -342,14 +370,6 @@ export function App({
             >
               {otherLocale === 'en' ? 'EN' : 'RU'}
             </a>
-            {enableEvolution && (
-              <a
-                href={localePath(locale, 'evolution')}
-                aria-current={kind === 'evolution' ? 'page' : undefined}
-              >
-                {t.evolution}
-              </a>
-            )}
             <ThemeButton locale={locale} />
           </nav>
         </div>
@@ -437,6 +457,7 @@ export function App({
                 {experience.map((item) => (
                   <article
                     className="experience-card"
+                    id={`experience-${item.id}`}
                     key={item.id}
                     aria-labelledby={`${item.id}-title`}
                   >
@@ -561,58 +582,7 @@ export function App({
             </a>
           </article>
         ) : kind === 'evolution' ? (
-          <section className="standalone-page" aria-labelledby="evolution-title">
-            <h1 id="evolution-title">{t.evolution}</h1>
-            <div data-evolution-controls hidden role="group" aria-label={t.focusStep}>
-              {[...experience].reverse().map((item) => (
-                <button key={item.id} type="button" aria-controls={`step-${item.id}`}>
-                  {item.employer[locale]}
-                </button>
-              ))}
-            </div>
-            <ol className="evolution-timeline">
-              {[...experience].reverse().map((item) => {
-                const milestone = careerMilestones.find(
-                  ({ afterExperienceId }) => afterExperienceId === item.id,
-                );
-                return (
-                  <React.Fragment key={item.id}>
-                    <li className="evolution-step" id={`step-${item.id}`} tabIndex={-1}>
-                      <h2>{item.employer[locale]}</h2>
-                      <p>{item.role[locale]}</p>
-                      <p className="dates">
-                        <ExperiencePeriod item={item} locale={locale} />
-                      </p>
-                      <p>{item.overview[locale]}</p>
-                      <ul>
-                        {item.achievements.map((achievement) => (
-                          <li key={achievement.id}>{achievement.text[locale]}</li>
-                        ))}
-                      </ul>
-                    </li>
-                    {milestone && (
-                      <li className="career-milestone">
-                        <h2>{milestone.title[locale]}</h2>
-                        <p>{milestone.text[locale]}</p>
-                        {milestone.githubUrl && (
-                          <a
-                            className="text-link"
-                            href={milestone.githubUrl}
-                            rel="noopener noreferrer"
-                          >
-                            GitHub · Tic-Tac-Toe <span aria-hidden="true">↗</span>
-                          </a>
-                        )}
-                      </li>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </ol>
-            <a className="text-link" href={localePath(locale)}>
-              {t.back}
-            </a>
-          </section>
+          <EvolutionPage locale={locale} />
         ) : (
           <section
             className={`standalone-page${kind === 'projects' ? ' projects-page' : ''}`}
@@ -646,6 +616,7 @@ export function App({
             {t.contact}
           </a>
           <p>{t.footer}</p>
+          <p className="footer-attribution">{t.attribution}</p>
         </div>
         <p>
           {t.updated}: <time dateTime={profile.updated}>{profile.updated}</time>

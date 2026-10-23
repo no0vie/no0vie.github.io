@@ -67,6 +67,11 @@
 - `docs/QA.md` keeps current reproducible results first and labels older Lighthouse evidence as historical. Recruiter-readiness follow-ups now live in QA instead of a separate stale audit.
 - `README.md` remains operational documentation; `docs/CONTENT_POLICY.md` remains the publication/privacy policy; `.agents/skills/career-update/SKILL.md` remains the reusable career-editing workflow.
 
+## Role and FRUCT contribution clarification (2026-10-23)
+
+- The owner confirmed the current MTS title as `Ведущий разработчик` / `Senior Developer`; canonical content, resume, Evolution, clipboard/PDF output and both specifications use this exact bilingual pair.
+- The owner confirmed independently developing the specific software used to control the glass-factory information displays. The wording deliberately limits independence to that software and does not claim sole ownership of the entire system, hardware, customer deployment or commercial outcome.
+
 ## Career content revision (2026-10-23)
 
 - Updated the canonical bilingual records for MTS Web Services, Tensor and FRUCT without changing dates, historical role titles, Yandex Market content, visual styling, animation timing or copy-control interaction.
@@ -74,6 +79,15 @@
 - Experience links use a strict allowlist for OMNI, ORP and CRM Trends and render as labeled external links with `rel="noopener noreferrer"`. They are active in HTML/PDF and intentionally omitted from clipboard text.
 - Removed the public FRUCT Mattermost/task-tracker detail in favor of the approved Spring Boot/Foundation web-interface work. Tensor now records the approved PostgreSQL query/index work and the limited “one of the mentors/curators” Tensor Hack role.
 - No confidential economics, ROI/payback claim, customer identity, measured speedup or external-profile publication was added.
+
+## Evolution — The Journey MVP (2026-10-23)
+
+- Evolution is now shipped by default at static directory-index routes `/ru/evolution` and `/en/evolution`; `ENABLE_EVOLUTION=false` is retained only as an explicit rollback switch. This preserves direct refresh and project-base GitHub Pages support without an SPA rewrite.
+- The chronological journey starts at FRUCT rather than the most recent role so the visual path communicates progression. All four stages remain directly selectable, and the selected stable stage ID is retained in the URL hash and across locale switching.
+- `getEvolutionStages(locale)` adapts the canonical `experience` records by stable IDs. Evolution-only metadata contains only presentation choices: highlight IDs and localized capability labels; employer, role, dates, summaries, achievements and technologies are not duplicated.
+- The server-rendered page exposes all four stage narratives without JavaScript. A route-only lazy enhancement converts it to an ARIA tablist with previous/next controls, live announcements and hash state. Mobile uses a vertical stepper; print exposes every stage and removes decorative map controls.
+- The original SVG route, swallow and orbit icon use CSS/SVG only. Motion is decorative, bounded and disabled by reduced-motion and print rules. No Spore assets, trademarks, audio, 3D engine or external visual dependencies are used.
+- The compact footer attribution uses the approved non-partnership wording from `EVOLUTION_SPEC.md`. Existing résumé copy mode, Copy Explosion, project cards and Ribbon Sweep code paths were not changed.
 
 ## Microinteractions and copy tools (2026-10-22)
 
