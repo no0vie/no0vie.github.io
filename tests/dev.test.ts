@@ -28,6 +28,8 @@ it('development uses canonical case and Evolution routes under a project base', 
     for (const [path, status, marker] of [
       ['en/cases/campaign-wizard', 200, 'id="approach"'],
       ['ru/evolution', 200, 'class="evolution-page"'],
+      ['notes?lang=en', 200, 'Engineering Notes'],
+      ['notes/javascript-event-loop?lang=ru', 200, 'JavaScript Event Loop'],
       ['en/cases/missing', 404, 'data-page="404"'],
       ['fr/cases/campaign-wizard', 404, 'data-page="404"'],
     ] as const) {

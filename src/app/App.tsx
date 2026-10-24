@@ -10,13 +10,23 @@ import {
   type Locale,
 } from '../content';
 import { cases } from '../content/cases';
+import { notePath } from '../content/notes';
 import { copy } from './copy';
 import { basePath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
 import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 import { EvolutionPage } from './EvolutionPage';
+import { NotesPage } from './NotesPage';
 
 type Theme = 'system' | 'light' | 'dark';
+
+function BookIcon() {
+  return (
+    <span className="book-icon" aria-hidden="true">
+      ▤
+    </span>
+  );
+}
 const themes: Theme[] = ['system', 'light', 'dark'];
 
 function OrbitIcon() {
@@ -283,7 +293,7 @@ function ExperiencePeriod({ item, locale }: { item: CareerItem; locale: Locale }
 }
 
 export function App({
-  locale,
+  locale: initialLocale,
   page,
   enableEvolution = false,
 }: {
@@ -291,14 +301,23 @@ export function App({
   page: string;
   enableEvolution?: boolean;
 }) {
-  const t = copy[locale];
   const kind = pageKind(page, enableEvolution);
+  const [locale, setLocale] = useState(initialLocale);
+  const t = copy[locale];
   const otherLocale = locale === 'ru' ? 'en' : 'ru';
   const [menuOpen, setMenuOpen] = useState(false);
   const [copyMode, setCopyMode] = useState(false);
   useEffect(() => {
     if (kind === 'evolution')
       void import('./evolution').then(({ enhanceEvolution }) => enhanceEvolution());
+    if (kind === 'notes' || kind === 'note') {
+      const requestedLocale = new URLSearchParams(window.location.search).get('lang');
+      if (requestedLocale === 'ru' || requestedLocale === 'en') {
+        const timer = window.setTimeout(() => setLocale(requestedLocale), 0);
+        return () => window.clearTimeout(timer);
+      }
+    }
+    return undefined;
   }, [kind]);
 
   return (
@@ -348,6 +367,14 @@ export function App({
             >
               {t.projects}
             </a>
+            <a
+              className="notes-link"
+              href={notePath(locale)}
+              aria-current={kind === 'notes' || kind === 'note' ? 'page' : undefined}
+            >
+              <BookIcon />
+              <span>{locale === 'ru' ? 'Заметки' : 'Notes'}</span>
+            </a>
             {enableEvolution && (
               <a
                 className="evolution-link"
@@ -361,7 +388,14 @@ export function App({
               </a>
             )}
             <a
-              href={localePath(otherLocale, kind === 'not-found' ? '' : page)}
+              href={
+                kind === 'notes' || kind === 'note'
+                  ? notePath(
+                      otherLocale,
+                      kind === 'note' ? page.replace(/^notes\//, '') : undefined,
+                    )
+                  : localePath(otherLocale, kind === 'not-found' ? '' : page)
+              }
               hrefLang={otherLocale}
               lang={otherLocale}
               aria-label={
@@ -583,6 +617,11 @@ export function App({
           </article>
         ) : kind === 'evolution' ? (
           <EvolutionPage locale={locale} />
+        ) : kind === 'notes' || kind === 'note' ? (
+          <NotesPage
+            locale={locale}
+            slug={kind === 'note' ? page.replace(/^notes\//, '') : undefined}
+          />
         ) : (
           <section
             className={`standalone-page${kind === 'projects' ? ' projects-page' : ''}`}

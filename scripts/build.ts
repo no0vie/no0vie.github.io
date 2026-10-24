@@ -1,7 +1,7 @@
 import { build, createServer } from 'vite';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { publishingConfig, normalizePdf, validatePdf } from './publishing';
 import { serve } from './server';
@@ -9,13 +9,14 @@ import type { App as AppType } from '../src/app/App';
 import type { copy as copyType } from '../src/app/copy';
 import type { cases as casesType } from '../src/content/cases';
 import { availability, profile } from '../src/content';
+import { notes } from '../src/content/notes';
 import { pdfFileName } from '../src/app/routes';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
 const config = publishingConfig();
 const enableEvolution = process.env.ENABLE_EVOLUTION !== 'false';
-const knownPages = ['', 'projects'];
+const knownPages = ['', 'projects', 'notes', ...notes.map(({ slug }) => `notes/${slug}`)];
 const escape = (value: string) =>
   value.replace(
     /[&<>"']/g,
@@ -93,6 +94,8 @@ try {
 }
 const root = `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${profile.name.ru} / ${profile.name.en}</title><script>var locale='ru';try{if(localStorage.getItem('locale')==='en')locale='en'}catch{}location.replace(${JSON.stringify(config.base)}+locale)</script></head><body><main><h1>${profile.name.ru} / ${profile.name.en}</h1><p>Senior Software Engineer (Frontend-focused)</p><p><a href="${config.base}ru">Резюме на русском</a> · <a href="${config.base}en">Resume in English</a></p></main></body></html>`;
 await writeFile('dist/index.html', root);
+// `/notes` is the public entry point; query `lang` switches its hydrated locale.
+await cp('dist/ru/notes', 'dist/notes', { recursive: true });
 await writeFile('dist/.nojekyll', '');
 await writeFile('dist/availability.json', `${JSON.stringify(availability, null, 2)}\n`);
 await writeFile(

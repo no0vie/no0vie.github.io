@@ -17,7 +17,8 @@ export function resumeDev(): Plugin {
             return;
           }
           try {
-            const path = new URL(request.url ?? '/', 'http://localhost').pathname;
+            const requestUrl = new URL(request.url ?? '/', 'http://localhost');
+            const path = requestUrl.pathname;
             const localPath = path.startsWith(server.config.base)
               ? path.slice(server.config.base.length)
               : path;
@@ -27,14 +28,23 @@ export function resumeDev(): Plugin {
               response.end();
               return;
             }
-            const locale = parts[0] === 'en' ? 'en' : 'ru';
-            const page = parts.slice(1).join('/');
+            const isPublicNotesRoute = parts[0] === 'notes';
+            const requestedLocale = requestUrl.searchParams.get('lang');
+            const locale = isPublicNotesRoute
+              ? requestedLocale === 'en'
+                ? 'en'
+                : 'ru'
+              : parts[0] === 'en'
+                ? 'en'
+                : 'ru';
+            const page = isPublicNotesRoute ? parts.join('/') : parts.slice(1).join('/');
             const enableEvolution = process.env.ENABLE_EVOLUTION !== 'false';
             const { pageKind } = (await server.ssrLoadModule('/src/app/routes.ts')) as {
               pageKind: typeof pageKindType;
             };
             const valid =
-              ['ru', 'en'].includes(parts[0]) && pageKind(page, enableEvolution) !== 'not-found';
+              (isPublicNotesRoute || ['ru', 'en'].includes(parts[0])) &&
+              pageKind(page, enableEvolution) !== 'not-found';
             const { App } = (await server.ssrLoadModule('/src/app/App.tsx')) as {
               App: typeof AppType;
             };

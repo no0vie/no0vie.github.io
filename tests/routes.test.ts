@@ -21,9 +21,12 @@ describe('static page routes', () => {
     expect(localePath('en', 'projects/missing', '/')).toBe('/en/projects/missing');
     expect(localePath('ru', 'strange?#/name', '/')).toBe('/ru/strange%3F%23/name');
   });
-  it('recognizes the published resume, projects and Evolution routes', () => {
+  it('recognizes the published resume, projects, notes and Evolution routes', () => {
     expect(pageKind('')).toBe('resume');
     expect(pageKind('projects')).toBe('projects');
+    expect(pageKind('notes')).toBe('notes');
+    expect(pageKind('notes/javascript-event-loop')).toBe('note');
+    expect(pageKind('notes/not-a-note')).toBe('not-found');
     expect(pageKind('evolution', true)).toBe('evolution');
     for (const page of ['unknown', 'projects/missing', 'cases/example'])
       expect(pageKind(page)).toBe('not-found');
@@ -71,6 +74,23 @@ describe('server-rendered resume', () => {
     expect(html).toContain('Released');
     expect(html).toContain('Concept');
     expect(html).toContain('href="/ru/projects"');
+  });
+  it('renders the notes index and complete shareable note articles without adding them to the resume', () => {
+    const index = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'notes' }));
+    expect(index.match(/class="note-card"/g)).toHaveLength(9);
+    expect(index).toContain('href="/notes/javascript-event-loop?lang=en"');
+
+    const article = renderToStaticMarkup(
+      createElement(App, { locale: 'ru', page: 'notes/javascript-event-loop' }),
+    );
+    expect(article).toContain('id="short-answer-title"');
+    expect(article).toContain('id="deep-dive-title"');
+    expect(article).toContain('id="sources-title"');
+    expect(article).toContain('rel="noopener noreferrer"');
+
+    const resume = renderToStaticMarkup(createElement(App, { locale: 'en', page: '' }));
+    expect(resume).not.toContain('id="notes-title"');
+    expect(resume).not.toContain('id="note-answer"');
   });
   it('renders a localized not-found page with a route home', () => {
     const html = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'missing' }));

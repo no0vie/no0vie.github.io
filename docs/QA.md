@@ -1,6 +1,6 @@
 # Current QA status
 
-Last updated: 2026-10-23 after Evolution — The Journey MVP.
+Last updated: 2026-10-23 after Engineering Notes v1 implementation.
 
 ## Current automated verification
 
@@ -11,18 +11,26 @@ Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is stat
 | `npm run format:check`   | Pass                                                                                                                             |
 | `npm run lint`           | Pass                                                                                                                             |
 | `npm run typecheck`      | Pass                                                                                                                             |
-| `npm test`               | 54 tests passed across 7 files                                                                                                   |
+| `npm test`               | 60 tests passed across 8 files after Engineering Notes v1                                                                        |
 | `npm run build`          | Pass outside the terminal OS sandbox; static pages including RU/EN Evolution, SEO, `/availability.json` and RU/EN PDFs generated |
 | `npm run test:e2e`       | 37 passed with Evolution enabled by default                                                                                      |
 | `ENABLE_EVOLUTION=false` | Explicit rollback path retained and covered by unit route behavior                                                               |
 
 Sandboxed Chromium could build HTML but hung in `page.pdf()` until the build watchdog. The same build completed normally outside the terminal OS sandbox; this is recorded as an environment limitation, not a successful sandboxed PDF run.
 
+### Engineering Notes v1 verification in the current environment
+
+- `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm test` passed; unit result: 60 tests across 8 files.
+- All 25 unique external source URLs returned HTTP 200 in a point-in-time network check on 2026-10-23.
+- `npm run build` completed Vite/static HTML generation but failed twice when Playwright Chromium closed before `browser.newPage()` during mandatory PDF generation. No successful build or PDF result is claimed for this run.
+- `npx playwright test e2e/notes.spec.ts` could not create the Playwright `page` fixture and timed out before navigation. The three new browser scenarios and the broader regression suite therefore remain unverified in this environment.
+
 ## Coverage
 
 Automated checks cover:
 
 - complete RU/EN static resume and project pages without JavaScript;
+- unit-validated Engineering Notes completeness, unique stable IDs/slugs, localized search, category filtering, base-path URLs and interview reveal reset;
 - the campaign-wizard case, including the architecture → 1–2 working days → approximately two-week comparable baseline chain;
 - FRUCT date precision and public `2015–2016` rendering;
 - the non-employment Tensor scholarship/Tic-Tac-Toe milestone;
@@ -69,7 +77,9 @@ The root result included the expected redirect and a qualified Lantern warning. 
 
 ## Remaining verification
 
-- Smoke-test the live HTTPS GitHub Pages deployment: `/ru`, `/en`, both Evolution routes and refreshes, case route, both PDFs, locale switching, canonical/hreflang, sitemap, 404 and social previews.
+- Run the new Notes Playwright suite and the complete E2E regression suite in an environment where Chromium can create a page; verify navigation, `/notes/:slug` refreshes, history, axe, interview mode, mobile overflow, themes and reduced motion.
+- Complete a successful production build with mandatory RU/EN PDF generation after resolving the current Chromium launch/closure issue.
+- Smoke-test the live HTTPS GitHub Pages deployment: `/ru`, `/en`, `/notes`, all nine note refreshes, both Evolution routes and refreshes, case route, both PDFs, locale switching, canonical/hreflang, sitemap, 404 and social previews.
 - Repeat Lighthouse after deployment or after another substantial layout/content change.
 - Review every page of both current PDFs visually; test copy/search in common viewers and an ATS if privacy policy permits.
 - Test Chrome, Safari and Firefox on physical devices and perform a short screen-reader pass.

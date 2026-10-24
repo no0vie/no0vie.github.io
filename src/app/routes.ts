@@ -1,5 +1,6 @@
 import { profile, type Locale } from '../content';
 import { cases } from '../content/cases';
+import { notes } from '../content/notes';
 
 /** Prefix a site-local path for both user and project GitHub Pages deployments. */
 export function basePath(path: string, base = import.meta.env.BASE_URL): string {
@@ -22,8 +23,10 @@ export function pdfPath(locale: Locale, base = import.meta.env.BASE_URL): string
 export function pageKind(
   page: string,
   enableEvolution = false,
-): 'resume' | 'projects' | 'case' | 'evolution' | 'not-found' {
+): 'resume' | 'projects' | 'case' | 'evolution' | 'notes' | 'note' | 'not-found' {
   if (cases.some((item) => page === `cases/${item.slug}`)) return 'case';
+  if (page === 'notes') return 'notes';
+  if (notes.some((item) => page === `notes/${item.slug}`)) return 'note';
   if (page === 'evolution' && enableEvolution) return 'evolution';
   return page === '' ? 'resume' : page === 'projects' ? 'projects' : 'not-found';
 }
