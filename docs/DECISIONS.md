@@ -115,3 +115,9 @@
 - Search covers the active locale's question, short answer, tags and keywords; category and query state use URL parameters without adding a routing dependency.
 - Interview mode is in-memory only and off by default. Answers are conditionally absent from the accessibility tree until revealed, reveal state resets whenever mode is enabled, and printing disables interview mode so articles do not print blank.
 - Notes never enter resume sections, HH clipboard serializers or PDF generation. Existing copy mode, Copy Explosion, Ribbon Sweep and Evolution code paths remain separate.
+
+## CI and dependency remediation (2026-10-24)
+
+- `/notes?lang={locale}` is the canonical Notes index URL emitted by `notePath()`; the E2E expectation follows this existing no-trailing-slash contract rather than changing production routing to satisfy a stale assertion.
+- Zod was upgraded independently from 3.25.76 to 4.6.7 because the patched release for GHSA-mrhx-c7xc-m3w5 is unavailable on v3. Existing schemas and inferred types remain the compatibility gate; no validation behavior was intentionally changed.
+- ESM-relative imports in executable scripts use `.js` specifiers so TypeScript, Node-style ESM resolution and editor diagnostics agree while resolving the checked-in `.ts` sources.

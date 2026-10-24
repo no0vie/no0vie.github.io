@@ -10,7 +10,7 @@ for (const locale of ['ru', 'en'] as const) {
 
     await page.goto(`${locale}`);
     await page.locator('.notes-link').click();
-    await expect(page).toHaveURL(new RegExp(`/notes/\\?lang=${locale}$`));
+    await expect(page).toHaveURL(new RegExp(`/notes\\?lang=${locale}$`));
     await expect(page.locator('.note-card')).toHaveCount(9);
 
     const search = page.getByRole('searchbox');

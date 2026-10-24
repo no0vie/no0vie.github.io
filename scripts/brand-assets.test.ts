@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFaviconSvg } from './brand-assets';
+import { createFaviconSvg } from './brand-assets.js';
 
 describe('brand assets', () => {
   it('generates a favicon from the accepted blue light and dark theme palette', () => {

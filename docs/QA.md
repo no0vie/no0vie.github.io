@@ -1,29 +1,32 @@
 # Current QA status
 
-Last updated: 2026-10-23 after Engineering Notes v1 implementation.
+Last updated: 2026-10-24 after CI and analyzer remediation.
 
 ## Current automated verification
 
 Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is static HTML plus mandatory local RU/EN PDF generation; no remote print service is used.
 
-| Command                  | Result                                                                                                                           |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run format:check`   | Pass                                                                                                                             |
-| `npm run lint`           | Pass                                                                                                                             |
-| `npm run typecheck`      | Pass                                                                                                                             |
-| `npm test`               | 60 tests passed across 8 files after Engineering Notes v1                                                                        |
-| `npm run build`          | Pass outside the terminal OS sandbox; static pages including RU/EN Evolution, SEO, `/availability.json` and RU/EN PDFs generated |
-| `npm run test:e2e`       | 37 passed with Evolution enabled by default                                                                                      |
-| `ENABLE_EVOLUTION=false` | Explicit rollback path retained and covered by unit route behavior                                                               |
+| Command                        | Result                                                                                                                           |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run format:check`         | Pass                                                                                                                             |
+| `npm run lint`                 | Pass                                                                                                                             |
+| `npm run typecheck`            | Pass                                                                                                                             |
+| `npm test`                     | 62 tests passed across 9 files                                                                                                   |
+| `npm run build`                | Pass outside the terminal OS sandbox; static pages including RU/EN Evolution, SEO, `/availability.json` and RU/EN PDFs generated |
+| `npm run test:e2e`             | 40 tests passed with Evolution enabled by default                                                                                |
+| `npm audit --audit-level=high` | Pass; 0 vulnerabilities after upgrading Zod to 4.6.7                                                                             |
+| Editor diagnostics             | No errors or warnings                                                                                                            |
+| `ENABLE_EVOLUTION=false`       | Explicit rollback path retained and covered by unit route behavior                                                               |
 
 Sandboxed Chromium could build HTML but hung in `page.pdf()` until the build watchdog. The same build completed normally outside the terminal OS sandbox; this is recorded as an environment limitation, not a successful sandboxed PDF run.
 
-### Engineering Notes v1 verification in the current environment
+### CI and analyzer remediation verification
 
-- `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm test` passed; unit result: 60 tests across 8 files.
+- Corrected the Notes E2E URL assertion to match the canonical `notePath()` contract (`/notes?lang=…`, without a trailing slash). All three Notes browser scenarios and the complete 40-test Playwright suite passed.
+- `npm run format:check`, `npm run lint`, `npm run typecheck` and `npm test` passed; unit result: 62 tests across 9 files.
+- `npm run build` completed static generation and mandatory RU/EN PDF generation outside the terminal OS sandbox. Rollup removed two misplaced `@__PURE__` annotations from Zod's published JavaScript and reported no application-source warning.
+- Zod 4.6.7 replaced vulnerable Zod 3.25.76; schemas, inferred types, static generation and browser behavior passed unchanged. `npm audit --audit-level=high` reports 0 vulnerabilities.
 - All 25 unique external source URLs returned HTTP 200 in a point-in-time network check on 2026-10-23.
-- `npm run build` completed Vite/static HTML generation but failed twice when Playwright Chromium closed before `browser.newPage()` during mandatory PDF generation. No successful build or PDF result is claimed for this run.
-- `npx playwright test e2e/notes.spec.ts` could not create the Playwright `page` fixture and timed out before navigation. The three new browser scenarios and the broader regression suite therefore remain unverified in this environment.
 
 ## Coverage
 
@@ -77,8 +80,6 @@ The root result included the expected redirect and a qualified Lantern warning. 
 
 ## Remaining verification
 
-- Run the new Notes Playwright suite and the complete E2E regression suite in an environment where Chromium can create a page; verify navigation, `/notes/:slug` refreshes, history, axe, interview mode, mobile overflow, themes and reduced motion.
-- Complete a successful production build with mandatory RU/EN PDF generation after resolving the current Chromium launch/closure issue.
 - Smoke-test the live HTTPS GitHub Pages deployment: `/ru`, `/en`, `/notes`, all nine note refreshes, both Evolution routes and refreshes, case route, both PDFs, locale switching, canonical/hreflang, sitemap, 404 and social previews.
 - Repeat Lighthouse after deployment or after another substantial layout/content change.
 - Review every page of both current PDFs visually; test copy/search in common viewers and an ATS if privacy policy permits.

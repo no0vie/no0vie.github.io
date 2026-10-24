@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { profile } from '../src/content';
-import { brandPalette, createFaviconSvg } from './brand-assets';
+import { brandPalette, createFaviconSvg } from './brand-assets.js';
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
 
