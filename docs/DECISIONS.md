@@ -41,7 +41,7 @@
 - About and each employer expose accessible plain-text copy controls for reusing resume content. Copy controls are enhancements and are excluded from print.
 - Skills are grouped by current core, architecture/state, testing/tooling, backend/data and prior specialized experience; no proficiency percentages are used.
 - The visual system uses an original brighter blue-and-white palette inspired only by the requested science-fiction mood. No Star Wolves/InoCo assets, trademarks or interface elements are copied.
-- Purpose-built social cards use the owner-provided portrait and are generated locally with `npm run assets:og`.
+- Purpose-built social cards use the owner-provided portrait. `npm run assets:og` regenerates them together with a theme-aware favicon from the accepted blue palette, preventing the retired green icon from drifting from the visual system.
 - Availability is stored as a typed manual record and rendered without an external link or synchronization dependency.
 
 ## Portfolio update v4 (2026-10-22)
