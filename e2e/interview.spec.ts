@@ -11,7 +11,7 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(page.locator('.exercise-card')).toHaveCount(15);
 
     const search = page.getByRole('searchbox');
-    await search.fill(locale === 'ru' ? 'Promise' : 'Promise');
+    await search.fill('Promise.all');
     await expect(page.locator('.exercise-card')).toHaveCount(1);
     await page.getByRole('link', { name: /Promise\.all/ }).click();
     await expect(page).toHaveURL(new RegExp(`/${locale}/interview/implement-promise-all$`));
@@ -24,9 +24,10 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(page.locator('.hint-panel section')).toHaveCount(1);
     await expect(page.locator('.hint-panel section h3')).toContainText('1');
 
-    const solution = page.getByRole('button', {
-      name: locale === 'ru' ? 'Показать решение' : 'Show solution',
-    });
+    const solution = page.locator('button[aria-controls="solution-content"]');
+    await expect(solution).toHaveAccessibleName(
+      locale === 'ru' ? 'Показать решение' : 'Show solution',
+    );
     await solution.click();
     await expect(solution).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('#solution-content')).toBeVisible();
@@ -50,7 +51,8 @@ test('Interview exercise remains readable without JavaScript', async ({ browser 
   await expect(page.locator('#exercise-title')).toBeVisible();
   await expect(page.locator('.hint-panel noscript section')).toHaveCount(3);
   await expect(page.locator('.no-script-solution')).toBeVisible();
-  await expect(page.locator('.requires-js')).toBeHidden();
+  await expect(page.locator('.requires-js')).toHaveCount(3);
+  await expect(page.locator('.requires-js:visible')).toHaveCount(0);
   await context.close();
 });
 
