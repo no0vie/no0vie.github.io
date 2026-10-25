@@ -1,0 +1,575 @@
+import { useEffect, useMemo, useState } from 'react';
+import type { Locale } from '../../content';
+import {
+  exerciseCategories,
+  exerciseDifficulties,
+  filterAndSortExercises,
+  interviewExercises,
+  nextHintCount,
+  progressStatuses,
+  type ExerciseCategory,
+  type ExerciseFilters,
+  type InterviewExercise,
+  type ProgressStatus,
+} from '../../content/interview';
+import { localePath } from '../../app/routes';
+import {
+  readProgress,
+  resetProgress,
+  updateProgress,
+  writeProgress,
+  type InterviewProgress,
+} from './progress';
+
+const labels = {
+  en: {
+    title: 'Interview Lab',
+    intro:
+      'Practical senior-level JavaScript, TypeScript, browser, security, and system-design exercises. Work from the problem through progressive hints before comparing your reasoning with a reference solution.',
+    search: 'Search exercises',
+    searchPlaceholder: 'Title, description, or tag',
+    category: 'Category',
+    difficulty: 'Difficulty',
+    status: 'Progress',
+    sort: 'Sort',
+    all: 'All',
+    defaultSort: 'Default order',
+    difficultySort: 'Difficulty',
+    durationSort: 'Duration',
+    empty: 'No exercises match these filters.',
+    resetFilters: 'Clear filters',
+    resetProgress: 'Reset progress',
+    resetConfirm: 'Reset progress for all Interview Lab exercises?',
+    notStarted: 'Not started',
+    inProgress: 'In progress',
+    completed: 'Completed',
+    minutes: 'min',
+    back: 'All exercises',
+    problem: 'Problem statement',
+    examples: 'Examples',
+    requirements: 'Requirements and constraints',
+    starter: 'Starter code',
+    hints: 'Progressive hints',
+    revealHint: 'Reveal next hint',
+    solution: 'Reference solution',
+    showSolution: 'Show solution',
+    hideSolution: 'Hide solution',
+    copy: 'Copy code',
+    copied: 'Copied',
+    copyFailed: 'Copy failed',
+    explanation: 'Why it works',
+    edgeCases: 'Edge cases',
+    complexity: 'Complexity analysis',
+    alternatives: 'Alternative approaches',
+    followUps: 'Senior follow-up questions',
+    production: 'Production considerations',
+    reading: 'Further reading',
+    runtime: 'Runtime',
+    exercise: 'Exercise',
+  },
+  ru: {
+    title: 'Лаборатория интервью',
+    intro:
+      'Практические задания уровня Senior по JavaScript, TypeScript, браузеру, безопасности и системному дизайну. Сначала разберите условие и последовательные подсказки, затем сравните рассуждения с эталонным решением.',
+    search: 'Поиск заданий',
+    searchPlaceholder: 'Название, описание или тег',
+    category: 'Категория',
+    difficulty: 'Сложность',
+    status: 'Прогресс',
+    sort: 'Сортировка',
+    all: 'Все',
+    defaultSort: 'По умолчанию',
+    difficultySort: 'По сложности',
+    durationSort: 'По времени',
+    empty: 'Нет заданий, соответствующих фильтрам.',
+    resetFilters: 'Очистить фильтры',
+    resetProgress: 'Сбросить прогресс',
+    resetConfirm: 'Сбросить прогресс по всем заданиям?',
+    notStarted: 'Не начато',
+    inProgress: 'В процессе',
+    completed: 'Завершено',
+    minutes: 'мин',
+    back: 'Все задания',
+    problem: 'Условие задачи',
+    examples: 'Примеры',
+    requirements: 'Требования и ограничения',
+    starter: 'Начальный код',
+    hints: 'Последовательные подсказки',
+    revealHint: 'Открыть следующую подсказку',
+    solution: 'Эталонное решение',
+    showSolution: 'Показать решение',
+    hideSolution: 'Скрыть решение',
+    copy: 'Копировать код',
+    copied: 'Скопировано',
+    copyFailed: 'Ошибка копирования',
+    explanation: 'Почему это работает',
+    edgeCases: 'Граничные случаи',
+    complexity: 'Оценка сложности',
+    alternatives: 'Альтернативные подходы',
+    followUps: 'Дополнительные вопросы уровня Senior',
+    production: 'Продакшен-соображения',
+    reading: 'Дополнительные материалы',
+    runtime: 'Среда',
+    exercise: 'Задание',
+  },
+} as const;
+
+const categoryLabels: Record<Locale, Record<ExerciseCategory, string>> = {
+  en: {
+    javascript: 'JavaScript & async',
+    typescript: 'TypeScript',
+    browser: 'Browser & performance',
+    security: 'Security',
+    architecture: 'System design',
+  },
+  ru: {
+    javascript: 'JavaScript и асинхронность',
+    typescript: 'TypeScript',
+    browser: 'Браузер и производительность',
+    security: 'Безопасность',
+    architecture: 'Системный дизайн',
+  },
+};
+const difficultyLabels: Record<Locale, Record<InterviewExercise['difficulty'], string>> = {
+  en: { medium: 'Medium', hard: 'Hard', senior: 'Senior' },
+  ru: { medium: 'Средняя', hard: 'Сложная', senior: 'Senior' },
+};
+const statusLabel = (locale: Locale, status: ProgressStatus) =>
+  labels[locale][
+    status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'completed'
+  ];
+export const interviewPath = (locale: Locale, slug?: string, base = import.meta.env.BASE_URL) =>
+  localePath(locale, slug ? `interview/${slug}` : 'interview', base);
+
+function useProgress() {
+  const [progress, setProgress] = useState<InterviewProgress>({});
+  useEffect(() => {
+    const timer = window.setTimeout(() => setProgress(readProgress(window.localStorage)), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const setStatus = (id: string, status: ProgressStatus) =>
+    setProgress((current) => {
+      const next = updateProgress(current, id, status);
+      writeProgress(window.localStorage, next);
+      return next;
+    });
+  const clear = () => {
+    resetProgress(window.localStorage);
+    setProgress({});
+  };
+  return { progress, setStatus, clear };
+}
+
+function CodeBlock({
+  label,
+  language,
+  code,
+  locale,
+}: {
+  label: string;
+  language: string;
+  code: string;
+  locale: Locale;
+}) {
+  const t = labels[locale];
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopyState('copied');
+    } catch {
+      setCopyState('failed');
+    }
+    window.setTimeout(() => setCopyState('idle'), 1200);
+  }
+  return (
+    <figure className="interview-code">
+      <figcaption>
+        <span>
+          {label} · {language}
+        </span>
+        <button type="button" onClick={() => void copyCode()} aria-live="polite">
+          {copyState === 'copied' ? t.copied : copyState === 'failed' ? t.copyFailed : t.copy}
+        </button>
+      </figcaption>
+      <pre>
+        <code data-language={language}>{code}</code>
+      </pre>
+    </figure>
+  );
+}
+
+function ProgressSelect({
+  locale,
+  value,
+  onChange,
+  label,
+}: {
+  locale: Locale;
+  value: ProgressStatus;
+  onChange: (status: ProgressStatus) => void;
+  label: string;
+}) {
+  return (
+    <label className="progress-select">
+      <span>{label}</span>
+      <select
+        value={value}
+        onChange={(event) => onChange(event.currentTarget.value as ProgressStatus)}
+      >
+        {progressStatuses.map((status) => (
+          <option key={status} value={status}>
+            {statusLabel(locale, status)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function ExerciseArticle({
+  exercise,
+  locale,
+  status,
+  setStatus,
+}: {
+  exercise: InterviewExercise;
+  locale: Locale;
+  status: ProgressStatus;
+  setStatus: (status: ProgressStatus) => void;
+}) {
+  const t = labels[locale];
+  const article = exercise.content[locale];
+  const [hintCount, setHintCount] = useState(0);
+  const [solutionVisible, setSolutionVisible] = useState(false);
+  return (
+    <article className="interview-page exercise-page" aria-labelledby="exercise-title">
+      <a className="text-link interview-back" href={interviewPath(locale)}>
+        ← {t.back}
+      </a>
+      <header className="exercise-header">
+        <p className="eyebrow">
+          {t.exercise} {exercise.id} · {categoryLabels[locale][exercise.category]}
+        </p>
+        <h1 id="exercise-title">{article.title}</h1>
+        <p className="exercise-description">{article.description}</p>
+        <div className="exercise-meta">
+          <span>{difficultyLabels[locale][exercise.difficulty]}</span>
+          <span>
+            {exercise.estimatedMinutes} {t.minutes}
+          </span>
+          <span>
+            {t.runtime}: {exercise.runtime}
+          </span>
+        </div>
+        <ProgressSelect locale={locale} value={status} onChange={setStatus} label={t.status} />
+      </header>
+      <div className="exercise-layout">
+        <div className="exercise-statement">
+          <section>
+            <h2>{t.problem}</h2>
+            <p>{article.problem}</p>
+          </section>
+          {article.examples.length > 0 && (
+            <section>
+              <h2>{t.examples}</h2>
+              <ul>
+                {article.examples.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          <section>
+            <h2>{t.requirements}</h2>
+            <ul>
+              {article.requirements.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+          {article.starterCode && (
+            <section>
+              <h2>{t.starter}</h2>
+              <CodeBlock {...article.starterCode} locale={locale} />
+            </section>
+          )}
+        </div>
+        <aside className="hint-panel" aria-labelledby="hints-title">
+          <h2 id="hints-title">{t.hints}</h2>
+          {article.hints.slice(0, hintCount).map((hint, index) => (
+            <section key={hint}>
+              <h3>{locale === 'ru' ? `Подсказка ${index + 1}` : `Hint ${index + 1}`}</h3>
+              <p>{hint}</p>
+            </section>
+          ))}
+          {hintCount < 3 && (
+            <button
+              type="button"
+              aria-controls="hints-title"
+              onClick={() => {
+                setHintCount((count) => nextHintCount(count));
+                if (status === 'not-started') setStatus('in-progress');
+              }}
+            >
+              {t.revealHint} ({hintCount + 1}/3)
+            </button>
+          )}
+        </aside>
+      </div>
+      <section className="solution-section" aria-labelledby="solution-title">
+        <div className="solution-heading">
+          <h2 id="solution-title">{t.solution}</h2>
+          <button
+            type="button"
+            aria-expanded={solutionVisible}
+            aria-controls="solution-content"
+            onClick={() => {
+              setSolutionVisible((visible) => !visible);
+              if (status === 'not-started') setStatus('in-progress');
+            }}
+          >
+            {solutionVisible ? t.hideSolution : t.showSolution}
+          </button>
+        </div>
+        {solutionVisible && (
+          <div id="solution-content" className="solution-content">
+            {article.solution.blocks.map((block) => (
+              <CodeBlock key={`${block.label}-${block.language}`} {...block} locale={locale} />
+            ))}
+            <section>
+              <h3>{t.explanation}</h3>
+              {article.explanation.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
+            </section>
+            <section>
+              <h3>{t.edgeCases}</h3>
+              <ul>
+                {article.edgeCases.map((text) => (
+                  <li key={text}>{text}</li>
+                ))}
+              </ul>
+            </section>
+            {article.complexity.length > 0 && (
+              <section>
+                <h3>{t.complexity}</h3>
+                <ul>
+                  {article.complexity.map((text) => (
+                    <li key={text}>{text}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            {article.solution.alternative.length > 0 && (
+              <section>
+                <h3>{t.alternatives}</h3>
+                <ul>
+                  {article.solution.alternative.map((text) => (
+                    <li key={text}>{text}</li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            <section>
+              <h3>{t.followUps}</h3>
+              <ol>
+                {article.followUps.map((text) => (
+                  <li key={text}>{text}</li>
+                ))}
+              </ol>
+            </section>
+            <section>
+              <h3>{t.production}</h3>
+              {article.production.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
+            </section>
+            {article.furtherReading.length > 0 && (
+              <section>
+                <h3>{t.reading}</h3>
+                <ul>
+                  {article.furtherReading.map((link) => (
+                    <li key={link.url}>
+                      <a
+                        className="text-link"
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.label} ↗
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        )}
+      </section>
+    </article>
+  );
+}
+
+export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string }) {
+  const t = labels[locale];
+  const { progress, setStatus, clear } = useProgress();
+  const [filters, setFilters] = useState<ExerciseFilters>({
+    query: '',
+    category: 'all',
+    difficulty: 'all',
+    status: 'all',
+    sort: 'default',
+  });
+  const matches = useMemo(
+    () => filterAndSortExercises(interviewExercises, locale, filters, progress),
+    [filters, locale, progress],
+  );
+  const exercise = slug ? interviewExercises.find((item) => item.slug === slug) : undefined;
+  if (exercise)
+    return (
+      <ExerciseArticle
+        exercise={exercise}
+        locale={locale}
+        status={progress[exercise.id] ?? 'not-started'}
+        setStatus={(status) => setStatus(exercise.id, status)}
+      />
+    );
+  const update = <Key extends keyof ExerciseFilters>(key: Key, value: ExerciseFilters[Key]) =>
+    setFilters((current) => ({ ...current, [key]: value }));
+  const resetFilters = () =>
+    setFilters({ query: '', category: 'all', difficulty: 'all', status: 'all', sort: 'default' });
+  return (
+    <section className="interview-page" aria-labelledby="interview-title">
+      <p className="eyebrow">{t.title}</p>
+      <h1 id="interview-title">{t.title}</h1>
+      <p className="interview-intro">{t.intro}</p>
+      <div className="interview-toolbar">
+        <label>
+          <span>{t.search}</span>
+          <input
+            type="search"
+            value={filters.query}
+            placeholder={t.searchPlaceholder}
+            onChange={(event) => update('query', event.currentTarget.value)}
+          />
+        </label>
+        <label>
+          <span>{t.category}</span>
+          <select
+            value={filters.category}
+            onChange={(event) =>
+              update('category', event.currentTarget.value as ExerciseFilters['category'])
+            }
+          >
+            <option value="all">{t.all}</option>
+            {exerciseCategories.map((value) => (
+              <option key={value} value={value}>
+                {categoryLabels[locale][value]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>{t.difficulty}</span>
+          <select
+            value={filters.difficulty}
+            onChange={(event) =>
+              update('difficulty', event.currentTarget.value as ExerciseFilters['difficulty'])
+            }
+          >
+            <option value="all">{t.all}</option>
+            {exerciseDifficulties.map((value) => (
+              <option key={value} value={value}>
+                {difficultyLabels[locale][value]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>{t.status}</span>
+          <select
+            value={filters.status}
+            onChange={(event) =>
+              update('status', event.currentTarget.value as ExerciseFilters['status'])
+            }
+          >
+            <option value="all">{t.all}</option>
+            {progressStatuses.map((value) => (
+              <option key={value} value={value}>
+                {statusLabel(locale, value)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>{t.sort}</span>
+          <select
+            value={filters.sort}
+            onChange={(event) =>
+              update('sort', event.currentTarget.value as ExerciseFilters['sort'])
+            }
+          >
+            <option value="default">{t.defaultSort}</option>
+            <option value="difficulty">{t.difficultySort}</option>
+            <option value="duration">{t.durationSort}</option>
+          </select>
+        </label>
+      </div>
+      <div className="interview-actions">
+        <button type="button" onClick={resetFilters}>
+          {t.resetFilters}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (window.confirm(t.resetConfirm)) clear();
+          }}
+        >
+          {t.resetProgress}
+        </button>
+      </div>
+      <div className="exercise-grid" aria-live="polite">
+        {matches.length ? (
+          matches.map((item) => {
+            const article = item.content[locale];
+            const status = progress[item.id] ?? 'not-started';
+            return (
+              <article className="exercise-card" key={item.id}>
+                <div className="exercise-card-heading">
+                  <span className="exercise-number">{item.id}</span>
+                  <span className={`progress-badge status-${status}`}>
+                    {statusLabel(locale, status)}
+                  </span>
+                </div>
+                <p className="note-category">{categoryLabels[locale][item.category]}</p>
+                <h2>
+                  <a href={interviewPath(locale, item.slug)}>{article.title}</a>
+                </h2>
+                <p>{article.description}</p>
+                <div className="exercise-meta">
+                  <span>{difficultyLabels[locale][item.difficulty]}</span>
+                  <span>
+                    {item.estimatedMinutes} {t.minutes}
+                  </span>
+                </div>
+                <ul className="tags" aria-label="Tags">
+                  {item.tags.map((tag) => (
+                    <li key={tag}>{tag}</li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })
+        ) : (
+          <div className="empty-state">
+            <p>{t.empty}</p>
+            <button type="button" onClick={resetFilters}>
+              {t.resetFilters}
+            </button>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

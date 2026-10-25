@@ -121,3 +121,13 @@
 - `/notes?lang={locale}` is the canonical Notes index URL emitted by `notePath()`; the E2E expectation follows this existing no-trailing-slash contract rather than changing production routing to satisfy a stale assertion.
 - Zod was upgraded independently from 3.25.76 to 4.6.7 because the patched release for GHSA-mrhx-c7xc-m3w5 is unavailable on v3. Existing schemas and inferred types remain the compatibility gate; no validation behavior was intentionally changed.
 - ESM-relative imports in executable scripts use `.js` specifiers so TypeScript, Node-style ESM resolution and editor diagnostics agree while resolving the checked-in `.ts` sources.
+
+## Interview Lab v1 (2026-10-25)
+
+- Extend the existing React SSR and directory-index static routing with locale-prefixed `/ru|en/interview` and `/ru|en/interview/:slug` routes. No router, backend, code runner, Markdown runtime, or syntax-highlighting dependency is added.
+- Keep 15 exercises as typed bilingual local content split into JavaScript/async, TypeScript/browser, and security/architecture files. A strict Zod aggregate validates exact count, stable unique IDs/slugs, three hints, required sections, HTTPS reading links, and localization completeness at module/build time.
+- Render rich content from structured strings, lists, and code blocks only; no unsafe HTML is accepted. Mermaid architecture source is shown as copyable code with an adjacent accessible textual description instead of adding a diagram runtime.
+- Progressive hints are unlocked strictly in order and solutions are hidden initially. The original problem remains in the document while learners reveal help. Arbitrary code execution is intentionally excluded; executable algorithm implementations are verified in Vitest and examples are copied for local use.
+- Progress uses `interview-lab-progress-v1` in localStorage with validated parsing, corruption/version fallback, blocked-storage handling, explicit status controls, and a confirmed global reset. It has no authentication or synchronization semantics.
+- The catalog supports combined localized text/category/difficulty/status filters and stable default/difficulty/duration sorting. Existing theme tokens, reduced-motion behavior, semantic controls, responsive breakpoints, and shared header/footer are reused.
+- Static generation emits localized metadata, canonical/hreflang URLs, sitemap entries, and directory indexes for every exercise, preserving GitHub Pages deep-link refresh behavior under root and configured project base paths.

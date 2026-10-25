@@ -21,12 +21,15 @@ describe('static page routes', () => {
     expect(localePath('en', 'projects/missing', '/')).toBe('/en/projects/missing');
     expect(localePath('ru', 'strange?#/name', '/')).toBe('/ru/strange%3F%23/name');
   });
-  it('recognizes the published resume, projects, notes and Evolution routes', () => {
+  it('recognizes the published resume, projects, notes, Interview Lab and Evolution routes', () => {
     expect(pageKind('')).toBe('resume');
     expect(pageKind('projects')).toBe('projects');
     expect(pageKind('notes')).toBe('notes');
     expect(pageKind('notes/javascript-event-loop')).toBe('note');
     expect(pageKind('notes/not-a-note')).toBe('not-found');
+    expect(pageKind('interview')).toBe('interview');
+    expect(pageKind('interview/event-loop-execution-order')).toBe('interview-exercise');
+    expect(pageKind('interview/not-an-exercise')).toBe('not-found');
     expect(pageKind('evolution', true)).toBe('evolution');
     for (const page of ['unknown', 'projects/missing', 'cases/example'])
       expect(pageKind(page)).toBe('not-found');
@@ -91,6 +94,23 @@ describe('server-rendered resume', () => {
     const resume = renderToStaticMarkup(createElement(App, { locale: 'en', page: '' }));
     expect(resume).not.toContain('id="notes-title"');
     expect(resume).not.toContain('id="note-answer"');
+  });
+  it('renders the Interview Lab catalog and a complete localized exercise with accessible controls', () => {
+    const catalog = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'interview' }));
+    expect(catalog.match(/class="exercise-card"/g)).toHaveLength(15);
+    expect(catalog).toContain('Search exercises');
+    expect(catalog).toContain('href="/en/interview/event-loop-execution-order"');
+    expect(catalog).toContain('Reset progress');
+
+    const exercise = renderToStaticMarkup(
+      createElement(App, { locale: 'ru', page: 'interview/implement-promise-all' }),
+    );
+    expect(exercise).toContain('Условие задачи');
+    expect(exercise).toContain('Последовательные подсказки');
+    expect(exercise).toContain('aria-expanded="false"');
+    expect(exercise).toContain('Показать решение');
+    expect(exercise).toContain('Копировать код');
+    expect(exercise).toContain('href="/en/interview/implement-promise-all"');
   });
   it('renders a localized not-found page with a route home', () => {
     const html = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'missing' }));

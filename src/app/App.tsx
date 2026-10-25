@@ -17,6 +17,7 @@ import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 import { EvolutionPage } from './EvolutionPage';
 import { NotesPage } from './NotesPage';
+import { InterviewPage, interviewPath } from '../features/interview/InterviewPage';
 
 type Theme = 'system' | 'light' | 'dark';
 
@@ -368,6 +369,14 @@ export function App({
               {t.projects}
             </a>
             <a
+              href={interviewPath(locale)}
+              aria-current={
+                kind === 'interview' || kind === 'interview-exercise' ? 'page' : undefined
+              }
+            >
+              {locale === 'ru' ? 'Интервью' : 'Interview Lab'}
+            </a>
+            <a
               className="notes-link"
               href={notePath(locale)}
               aria-current={kind === 'notes' || kind === 'note' ? 'page' : undefined}
@@ -394,7 +403,14 @@ export function App({
                       otherLocale,
                       kind === 'note' ? page.replace(/^notes\//, '') : undefined,
                     )
-                  : localePath(otherLocale, kind === 'not-found' ? '' : page)
+                  : kind === 'interview' || kind === 'interview-exercise'
+                    ? interviewPath(
+                        otherLocale,
+                        kind === 'interview-exercise'
+                          ? page.replace(/^interview\//, '')
+                          : undefined,
+                      )
+                    : localePath(otherLocale, kind === 'not-found' ? '' : page)
               }
               hrefLang={otherLocale}
               lang={otherLocale}
@@ -621,6 +637,11 @@ export function App({
           <NotesPage
             locale={locale}
             slug={kind === 'note' ? page.replace(/^notes\//, '') : undefined}
+          />
+        ) : kind === 'interview' || kind === 'interview-exercise' ? (
+          <InterviewPage
+            locale={locale}
+            slug={kind === 'interview-exercise' ? page.replace(/^interview\//, '') : undefined}
           />
         ) : (
           <section
