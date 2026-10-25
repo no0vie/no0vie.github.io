@@ -53,13 +53,11 @@ export const interviewExerciseSchema = z
     tags: z.array(text).min(1),
     runtime: z.enum(['universal', 'browser', 'node', 'react']),
     content: z.object({ ru: localizedExerciseSchema, en: localizedExerciseSchema }).strict(),
-    hints: z.tuple([z.literal(1), z.literal(2), z.literal(3)]),
   })
   .strict();
 
 export const interviewExercisesSchema = z
   .array(interviewExerciseSchema)
-  .length(15)
   .superRefine((items, context) => {
     for (const field of ['id', 'slug'] as const) {
       if (new Set(items.map((item) => item[field])).size !== items.length) {
@@ -92,7 +90,7 @@ export function filterAndSortExercises(
   const query = filters.query.trim().toLocaleLowerCase(locale);
   return items
     .filter((item) => {
-      const status = statuses[item.id] ?? 'not-started';
+      const status = statuses[item.slug] ?? 'not-started';
       if (filters.category !== 'all' && item.category !== filters.category) return false;
       if (filters.difficulty !== 'all' && item.difficulty !== filters.difficulty) return false;
       if (filters.status !== 'all' && status !== filters.status) return false;

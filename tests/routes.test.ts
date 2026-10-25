@@ -3,6 +3,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { basePath, localePath, pageKind, pdfFileName, pdfPath } from '../src/app/routes';
 import { App } from '../src/app/App';
+import { InterviewPage } from '../src/features/interview/InterviewPage';
 import { availability, experience, highlights, profile } from '../src/content';
 
 const escapedText = (text: string) =>
@@ -96,20 +97,33 @@ describe('server-rendered resume', () => {
     expect(resume).not.toContain('id="note-answer"');
   });
   it('renders the Interview Lab catalog and a complete localized exercise with accessible controls', () => {
-    const catalog = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'interview' }));
+    const catalog = renderToStaticMarkup(
+      createElement(App, {
+        locale: 'en',
+        page: 'interview',
+        interviewComponent: InterviewPage,
+      }),
+    );
     expect(catalog.match(/class="exercise-card"/g)).toHaveLength(15);
     expect(catalog).toContain('Search exercises');
     expect(catalog).toContain('href="/en/interview/event-loop-execution-order"');
     expect(catalog).toContain('Reset progress');
 
     const exercise = renderToStaticMarkup(
-      createElement(App, { locale: 'ru', page: 'interview/implement-promise-all' }),
+      createElement(App, {
+        locale: 'ru',
+        page: 'interview/implement-promise-all',
+        interviewComponent: InterviewPage,
+      }),
     );
     expect(exercise).toContain('Условие задачи');
     expect(exercise).toContain('Последовательные подсказки');
     expect(exercise).toContain('aria-expanded="false"');
     expect(exercise).toContain('Показать решение');
     expect(exercise).toContain('Копировать код');
+    expect(exercise).toContain('<noscript>');
+    expect(exercise).toContain('no-script-solution');
+    expect(exercise).toContain('class="requires-js"');
     expect(exercise).toContain('href="/en/interview/implement-promise-all"');
   });
   it('renders a localized not-found page with a route home', () => {

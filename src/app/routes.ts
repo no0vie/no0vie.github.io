@@ -1,7 +1,7 @@
 import { profile, type Locale } from '../content';
 import { cases } from '../content/cases';
 import { notes } from '../content/notes';
-import { interviewExercises } from '../content/interview';
+import { interviewExerciseSlugs } from '../content/interview-manifest';
 
 /** Prefix a site-local path for both user and project GitHub Pages deployments. */
 export function basePath(path: string, base = import.meta.env.BASE_URL): string {
@@ -12,6 +12,9 @@ export function localePath(locale: Locale, page = '', base = import.meta.env.BAS
   const suffix = page ? `/${page.split('/').map(encodeURIComponent).join('/')}` : '';
   return basePath(`${locale}${suffix}`, base);
 }
+
+export const interviewPath = (locale: Locale, slug?: string, base = import.meta.env.BASE_URL) =>
+  localePath(locale, slug ? `interview/${slug}` : 'interview', base);
 
 export function pdfFileName(locale: Locale): string {
   return `eugene-novikov-sse-${profile.updated}-${locale}.pdf`;
@@ -38,7 +41,7 @@ export function pageKind(
   if (page === 'notes') return 'notes';
   if (notes.some((item) => page === `notes/${item.slug}`)) return 'note';
   if (page === 'interview') return 'interview';
-  if (interviewExercises.some((item) => page === `interview/${item.slug}`))
+  if (interviewExerciseSlugs.some((slug) => page === `interview/${slug}`))
     return 'interview-exercise';
   if (page === 'evolution' && enableEvolution) return 'evolution';
   return page === '' ? 'resume' : page === 'projects' ? 'projects' : 'not-found';

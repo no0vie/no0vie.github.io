@@ -235,7 +235,6 @@ export const platformExercises = [
     estimatedMinutes: 45,
     tags: ['TypeScript', 'state-machine', 'exhaustiveness'],
     runtime: 'universal',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Состояние запроса как дискриминируемое объединение',
@@ -365,7 +364,6 @@ export const platformExercises = [
     estimatedMinutes: 60,
     tags: ['React', 'TypeScript', 'accessibility'],
     runtime: 'react',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Типобезопасная полиморфная кнопка',
@@ -487,7 +485,6 @@ export const platformExercises = [
     estimatedMinutes: 45,
     tags: ['TypeScript', 'generics', 'collections'],
     runtime: 'universal',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Обобщённые groupBy и indexBy',
@@ -611,7 +608,6 @@ export const platformExercises = [
     estimatedMinutes: 60,
     tags: ['DevTools', 'React', 'memory'],
     runtime: 'browser',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Диагностика утечки памяти',
@@ -729,7 +725,6 @@ export const platformExercises = [
     estimatedMinutes: 75,
     tags: ['virtualization', 'React', 'performance'],
     runtime: 'react',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Рендеринг 100 000 элементов',
@@ -851,7 +846,6 @@ export const platformExercises = [
     estimatedMinutes: 75,
     tags: ['React', 'state-management', 'useSyncExternalStore'],
     runtime: 'react',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Минимальный реактивный store',
@@ -975,7 +969,6 @@ export const platformExercises = [
     estimatedMinutes: 75,
     tags: ['rendering', 'Web Performance', 'DevTools'],
     runtime: 'browser',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Производительность рендеринга браузера',

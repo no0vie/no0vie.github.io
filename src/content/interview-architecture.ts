@@ -7,7 +7,6 @@ export const architectureExercises = [
     estimatedMinutes: 75,
     tags: ['XSS', 'CSRF', 'CSP', 'cookies', 'authentication', 'security review'],
     runtime: 'browser',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Security review фронтенд-приложения',
@@ -239,7 +238,6 @@ Content-Security-Policy:
     estimatedMinutes: 90,
     tags: ['upload', 'resumable', 'chunks', 'object storage', 'integrity'],
     runtime: 'browser',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Возобновляемая загрузка большого файла',
@@ -527,7 +525,6 @@ expired sessions -> garbage collection`,
     estimatedMinutes: 105,
     tags: ['realtime', 'WebSocket', 'offline', 'consistency', 'virtualization'],
     runtime: 'browser',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Архитектура realtime-мессенджера',

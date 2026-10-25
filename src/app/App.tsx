@@ -12,12 +12,11 @@ import {
 import { cases } from '../content/cases';
 import { notePath } from '../content/notes';
 import { copy } from './copy';
-import { basePath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
+import { basePath, interviewPath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
 import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 import { EvolutionPage } from './EvolutionPage';
 import { NotesPage } from './NotesPage';
-import { InterviewPage, interviewPath } from '../features/interview/InterviewPage';
 
 type Theme = 'system' | 'light' | 'dark';
 
@@ -297,10 +296,12 @@ export function App({
   locale: initialLocale,
   page,
   enableEvolution = false,
+  interviewComponent: InterviewComponent,
 }: {
   locale: Locale;
   page: string;
   enableEvolution?: boolean;
+  interviewComponent?: React.ComponentType<{ locale: Locale; slug?: string }>;
 }) {
   const kind = pageKind(page, enableEvolution);
   const [locale, setLocale] = useState(initialLocale);
@@ -638,8 +639,8 @@ export function App({
             locale={locale}
             slug={kind === 'note' ? page.replace(/^notes\//, '') : undefined}
           />
-        ) : kind === 'interview' || kind === 'interview-exercise' ? (
-          <InterviewPage
+        ) : (kind === 'interview' || kind === 'interview-exercise') && InterviewComponent ? (
+          <InterviewComponent
             locale={locale}
             slug={kind === 'interview-exercise' ? page.replace(/^interview\//, '') : undefined}
           />

@@ -6,6 +6,7 @@ import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { publishingConfig, normalizePdf, validatePdf } from './publishing';
 import { serve } from './server';
 import type { App as AppType } from '../src/app/App';
+import type { InterviewPage as InterviewPageType } from '../src/features/interview/InterviewPage';
 import type { copy as copyType } from '../src/app/copy';
 import type { cases as casesType } from '../src/content/cases';
 import { availability, profile } from '../src/content';
@@ -35,6 +36,9 @@ const template = await readFile('dist/index.html', 'utf8');
 const ssr = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 try {
   const { App } = (await ssr.ssrLoadModule('/src/app/App.tsx')) as { App: typeof AppType };
+  const { InterviewPage } = (await ssr.ssrLoadModule(
+    '/src/features/interview/InterviewPage.tsx',
+  )) as { InterviewPage: typeof InterviewPageType };
   const { copy } = (await ssr.ssrLoadModule('/src/app/copy.ts')) as {
     copy: typeof copyType;
   };
@@ -97,7 +101,14 @@ try {
         .replace('<!--seo-->', seo)
         .replace(
           '<!--app-->',
-          renderToString(React.createElement(App, { locale, page, enableEvolution })),
+          renderToString(
+            React.createElement(App, {
+              locale,
+              page,
+              enableEvolution,
+              interviewComponent: InterviewPage,
+            }),
+          ),
         );
       if (page === '404') {
         if (locale === 'ru') await writeFile('dist/404.html', html);

@@ -7,7 +7,6 @@ export const javascriptExercises = [
     estimatedMinutes: 25,
     tags: ['JavaScript', 'Event Loop', 'Promises', 'Microtasks'],
     runtime: 'universal',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Порядок выполнения Event Loop',
@@ -159,7 +158,6 @@ export const javascriptExercises = [
     estimatedMinutes: 45,
     tags: ['JavaScript', 'Promise', 'Thenables', 'Async'],
     runtime: 'universal',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Реализация Promise.all',
@@ -305,7 +303,6 @@ export const javascriptExercises = [
     estimatedMinutes: 50,
     tags: ['JavaScript', 'Concurrency', 'Promises', 'Scheduling'],
     runtime: 'universal',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Ограничитель конкурентности',
@@ -453,7 +450,6 @@ export const javascriptExercises = [
     estimatedMinutes: 60,
     tags: ['JavaScript', 'Debounce', 'Timers', 'API Design'],
     runtime: 'universal',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Production-ready Debounce',
@@ -601,7 +597,6 @@ export const javascriptExercises = [
     estimatedMinutes: 55,
     tags: ['React', 'Race Conditions', 'AbortController', 'Autocomplete'],
     runtime: 'react',
-    hints: [1, 2, 3],
     content: {
       ru: {
         title: 'Гонки запросов в autocomplete',

@@ -1,8 +1,15 @@
-import { progressStatuses, type ProgressStatus } from '../../content/interview';
+import { interviewExercises, progressStatuses, type ProgressStatus } from '../../content/interview';
 
-export const INTERVIEW_PROGRESS_KEY = 'interview-lab-progress-v1';
-const version = 1;
+export const INTERVIEW_PROGRESS_KEY = 'interview-lab-progress-v2';
+export const LEGACY_INTERVIEW_PROGRESS_KEY = 'interview-lab-progress-v1';
+const version = 2;
+const exerciseSlugs = new Set(interviewExercises.map(({ slug }) => slug));
+const legacyIds = new Map(interviewExercises.map(({ id, slug }) => [id, slug]));
 export type InterviewProgress = Record<string, ProgressStatus>;
+
+function isProgressStatus(value: unknown): value is ProgressStatus {
+  return progressStatuses.includes(value as ProgressStatus);
+}
 
 export function parseProgress(value: string | null): InterviewProgress {
   if (!value) return {};
@@ -17,13 +24,29 @@ export function parseProgress(value: string | null): InterviewProgress {
     )
       return {};
     const entries = Object.entries(candidate.statuses);
-    if (
-      !entries.every(
-        ([id, status]) => /^\d{2}$/.test(id) && progressStatuses.includes(status as ProgressStatus),
-      )
-    )
+    if (!entries.every(([slug, status]) => exerciseSlugs.has(slug) && isProgressStatus(status)))
       return {};
     return Object.fromEntries<ProgressStatus>(entries);
+  } catch {
+    return {};
+  }
+}
+
+function migrateLegacyProgress(value: string | null): InterviewProgress {
+  if (!value) return {};
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!parsed || typeof parsed !== 'object') return {};
+    const candidate = parsed as { version?: unknown; statuses?: unknown };
+    if (candidate.version !== 1 || !candidate.statuses || typeof candidate.statuses !== 'object')
+      return {};
+    const migrated: InterviewProgress = {};
+    for (const [id, status] of Object.entries(candidate.statuses)) {
+      const slug = legacyIds.get(id);
+      if (!slug || !isProgressStatus(status)) return {};
+      migrated[slug] = status;
+    }
+    return migrated;
   } catch {
     return {};
   }
@@ -35,10 +58,11 @@ export function serializeProgress(progress: InterviewProgress): string {
 
 export function updateProgress(
   progress: InterviewProgress,
-  id: string,
+  slug: string,
   status: ProgressStatus,
 ): InterviewProgress {
-  return { ...progress, [id]: status };
+  if (!exerciseSlugs.has(slug)) return progress;
+  return { ...progress, [slug]: status };
 }
 
 export interface ProgressStorage {
@@ -49,7 +73,14 @@ export interface ProgressStorage {
 export function readProgress(storage: ProgressStorage | undefined): InterviewProgress {
   if (!storage) return {};
   try {
-    return parseProgress(storage.getItem(INTERVIEW_PROGRESS_KEY));
+    const current = parseProgress(storage.getItem(INTERVIEW_PROGRESS_KEY));
+    if (Object.keys(current).length > 0) return current;
+    const migrated = migrateLegacyProgress(storage.getItem(LEGACY_INTERVIEW_PROGRESS_KEY));
+    if (Object.keys(migrated).length > 0) {
+      storage.setItem(INTERVIEW_PROGRESS_KEY, serializeProgress(migrated));
+      storage.removeItem(LEGACY_INTERVIEW_PROGRESS_KEY);
+    }
+    return migrated;
   } catch {
     return {};
   }
@@ -67,6 +98,7 @@ export function writeProgress(
 export function resetProgress(storage: ProgressStorage | undefined): void {
   try {
     storage?.removeItem(INTERVIEW_PROGRESS_KEY);
+    storage?.removeItem(LEGACY_INTERVIEW_PROGRESS_KEY);
   } catch {
     /* Storage may be blocked. */
   }

@@ -31,7 +31,7 @@ for (const locale of ['ru', 'en'] as const) {
     await expect(solution).toHaveAttribute('aria-expanded', 'true');
     await expect(page.locator('#solution-content')).toBeVisible();
     await page.locator('.interview-code button').first().click();
-    await expect(page.locator('.interview-code button').first()).toHaveText(
+    await expect(page.locator('.interview-code [role="status"]').first()).toHaveText(
       locale === 'ru' ? 'Скопировано' : 'Copied',
     );
 
@@ -42,6 +42,17 @@ for (const locale of ['ru', 'en'] as const) {
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 }
+
+test('Interview exercise remains readable without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('en/interview/implement-promise-all');
+  await expect(page.locator('#exercise-title')).toBeVisible();
+  await expect(page.locator('.hint-panel noscript section')).toHaveCount(3);
+  await expect(page.locator('.no-script-solution')).toBeVisible();
+  await expect(page.locator('.requires-js')).toBeHidden();
+  await context.close();
+});
 
 test('Interview Lab remains usable at 320px in dark reduced-motion mode', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });

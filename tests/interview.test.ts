@@ -7,7 +7,9 @@ import {
 } from '../src/content/interview';
 import {
   INTERVIEW_PROGRESS_KEY,
+  LEGACY_INTERVIEW_PROGRESS_KEY,
   parseProgress,
+  readProgress,
   serializeProgress,
   updateProgress,
 } from '../src/features/interview/progress';
@@ -38,7 +40,6 @@ describe('Interview Lab content', () => {
     expect(new Set(interviewExercises.map(({ slug }) => slug)).size).toBe(15);
 
     for (const exercise of interviewExercises) {
-      expect(exercise.hints).toHaveLength(3);
       expect(exercise.tags.length).toBeGreaterThan(0);
       for (const locale of ['ru', 'en'] as const) {
         const article = exercise.content[locale];
@@ -56,7 +57,10 @@ describe('Interview Lab content', () => {
   });
 
   it('filters by text, category, difficulty and completion status together', () => {
-    const statuses = { '02': 'completed', '03': 'in-progress' } as const;
+    const statuses = {
+      'implement-promise-all': 'completed',
+      'concurrency-limiter': 'in-progress',
+    } as const;
     expect(
       filterAndSortExercises(
         interviewExercises,
@@ -116,18 +120,43 @@ describe('Interview Lab content', () => {
 describe('Interview Lab progress persistence', () => {
   it('uses a versioned key and round-trips valid progress', () => {
     expect(INTERVIEW_PROGRESS_KEY).toMatch(/v\d+$/);
-    const progress = updateProgress({}, '02', 'completed');
+    const progress = updateProgress({}, 'implement-promise-all', 'completed');
     expect(parseProgress(serializeProgress(progress))).toEqual(progress);
   });
 
   it('recovers from unavailable or corrupted storage values', () => {
     expect(parseProgress(null)).toEqual({});
     expect(parseProgress('{broken')).toEqual({});
-    expect(parseProgress(JSON.stringify({ version: 99, statuses: { '02': 'completed' } }))).toEqual(
-      {},
-    );
-    expect(parseProgress(JSON.stringify({ version: 1, statuses: { '02': 'invalid' } }))).toEqual(
-      {},
-    );
+    expect(
+      parseProgress(
+        JSON.stringify({ version: 99, statuses: { 'implement-promise-all': 'completed' } }),
+      ),
+    ).toEqual({});
+    expect(
+      parseProgress(
+        JSON.stringify({ version: 2, statuses: { 'implement-promise-all': 'invalid' } }),
+      ),
+    ).toEqual({});
+    expect(
+      parseProgress(JSON.stringify({ version: 2, statuses: { 'unknown-exercise': 'completed' } })),
+    ).toEqual({});
+  });
+
+  it('migrates valid v1 ID progress to stable slugs and removes the legacy value', () => {
+    const values = new Map<string, string>([
+      [
+        LEGACY_INTERVIEW_PROGRESS_KEY,
+        JSON.stringify({ version: 1, statuses: { '02': 'completed' } }),
+      ],
+    ]);
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+      removeItem: (key: string) => values.delete(key),
+    };
+
+    expect(readProgress(storage)).toEqual({ 'implement-promise-all': 'completed' });
+    expect(values.has(LEGACY_INTERVIEW_PROGRESS_KEY)).toBe(false);
+    expect(values.has(INTERVIEW_PROGRESS_KEY)).toBe(true);
   });
 });

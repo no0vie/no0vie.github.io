@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import type { Locale } from '../../content';
 import {
   exerciseCategories,
@@ -12,8 +12,10 @@ import {
   type InterviewExercise,
   type ProgressStatus,
 } from '../../content/interview';
-import { localePath } from '../../app/routes';
+import { interviewPath } from '../../app/routes';
 import {
+  INTERVIEW_PROGRESS_KEY,
+  LEGACY_INTERVIEW_PROGRESS_KEY,
   readProgress,
   resetProgress,
   updateProgress,
@@ -56,7 +58,9 @@ const labels = {
     hideSolution: 'Hide solution',
     copy: 'Copy code',
     copied: 'Copied',
-    copyFailed: 'Copy failed',
+    copyFailed: 'Select the visible code manually',
+    allHints: 'All hints revealed',
+    results: 'Exercises shown',
     explanation: 'Why it works',
     edgeCases: 'Edge cases',
     complexity: 'Complexity analysis',
@@ -101,7 +105,9 @@ const labels = {
     hideSolution: 'Скрыть решение',
     copy: 'Копировать код',
     copied: 'Скопировано',
-    copyFailed: 'Ошибка копирования',
+    copyFailed: 'Выделите видимый код вручную',
+    allHints: 'Все подсказки открыты',
+    results: 'Показано заданий',
     explanation: 'Почему это работает',
     edgeCases: 'Граничные случаи',
     complexity: 'Оценка сложности',
@@ -138,24 +144,45 @@ const statusLabel = (locale: Locale, status: ProgressStatus) =>
   labels[locale][
     status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'completed'
   ];
-export const interviewPath = (locale: Locale, slug?: string, base = import.meta.env.BASE_URL) =>
-  localePath(locale, slug ? `interview/${slug}` : 'interview', base);
+
+const emptyProgress: InterviewProgress = {};
+let progressSnapshot = emptyProgress;
+const progressListeners = new Set<() => void>();
+
+function publishProgress(progress: InterviewProgress) {
+  progressSnapshot = progress;
+  for (const listener of progressListeners) listener();
+}
+
+function subscribeProgress(listener: () => void) {
+  progressListeners.add(listener);
+  const stored = readProgress(window.localStorage);
+  if (JSON.stringify(stored) !== JSON.stringify(progressSnapshot)) publishProgress(stored);
+  const syncAcrossTabs = (event: StorageEvent) => {
+    if (event.key === INTERVIEW_PROGRESS_KEY || event.key === LEGACY_INTERVIEW_PROGRESS_KEY)
+      publishProgress(readProgress(window.localStorage));
+  };
+  window.addEventListener('storage', syncAcrossTabs);
+  return () => {
+    progressListeners.delete(listener);
+    window.removeEventListener('storage', syncAcrossTabs);
+  };
+}
 
 function useProgress() {
-  const [progress, setProgress] = useState<InterviewProgress>({});
-  useEffect(() => {
-    const timer = window.setTimeout(() => setProgress(readProgress(window.localStorage)), 0);
-    return () => window.clearTimeout(timer);
-  }, []);
-  const setStatus = (id: string, status: ProgressStatus) =>
-    setProgress((current) => {
-      const next = updateProgress(current, id, status);
-      writeProgress(window.localStorage, next);
-      return next;
-    });
+  const progress = useSyncExternalStore(
+    subscribeProgress,
+    () => progressSnapshot,
+    () => emptyProgress,
+  );
+  const setStatus = (slug: string, status: ProgressStatus) => {
+    const next = updateProgress(progressSnapshot, slug, status);
+    writeProgress(window.localStorage, next);
+    publishProgress(next);
+  };
   const clear = () => {
     resetProgress(window.localStorage);
-    setProgress({});
+    publishProgress(emptyProgress);
   };
   return { progress, setStatus, clear };
 }
@@ -173,14 +200,26 @@ function CodeBlock({
 }) {
   const t = labels[locale];
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const resetTimer = useRef<number | undefined>(undefined);
+  useEffect(
+    () => () => {
+      if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
+    },
+    [],
+  );
   async function copyCode() {
+    if (resetTimer.current !== undefined) window.clearTimeout(resetTimer.current);
     try {
+      if (!navigator.clipboard?.writeText) throw new Error('Clipboard API unavailable');
       await navigator.clipboard.writeText(code);
       setCopyState('copied');
     } catch {
       setCopyState('failed');
     }
-    window.setTimeout(() => setCopyState('idle'), 1200);
+    resetTimer.current = window.setTimeout(() => {
+      setCopyState('idle');
+      resetTimer.current = undefined;
+    }, 1200);
   }
   return (
     <figure className="interview-code">
@@ -188,9 +227,12 @@ function CodeBlock({
         <span>
           {label} · {language}
         </span>
-        <button type="button" onClick={() => void copyCode()} aria-live="polite">
-          {copyState === 'copied' ? t.copied : copyState === 'failed' ? t.copyFailed : t.copy}
+        <button className="requires-js" type="button" onClick={() => void copyCode()}>
+          {t.copy}
         </button>
+        <span className="visually-hidden" role="status" aria-live="polite">
+          {copyState === 'copied' ? t.copied : copyState === 'failed' ? t.copyFailed : ''}
+        </span>
       </figcaption>
       <pre>
         <code data-language={language}>{code}</code>
@@ -297,30 +339,42 @@ function ExerciseArticle({
         </div>
         <aside className="hint-panel" aria-labelledby="hints-title">
           <h2 id="hints-title">{t.hints}</h2>
-          {article.hints.slice(0, hintCount).map((hint, index) => (
-            <section key={hint}>
-              <h3>{locale === 'ru' ? `Подсказка ${index + 1}` : `Hint ${index + 1}`}</h3>
-              <p>{hint}</p>
-            </section>
-          ))}
-          {hintCount < 3 && (
-            <button
-              type="button"
-              aria-controls="hints-title"
-              onClick={() => {
-                setHintCount((count) => nextHintCount(count));
-                if (status === 'not-started') setStatus('in-progress');
-              }}
-            >
-              {t.revealHint} ({hintCount + 1}/3)
-            </button>
-          )}
+          <div id="revealed-hints">
+            {article.hints.slice(0, hintCount).map((hint, index) => (
+              <section key={hint} tabIndex={-1}>
+                <h3>{locale === 'ru' ? `Подсказка ${index + 1}` : `Hint ${index + 1}`}</h3>
+                <p>{hint}</p>
+              </section>
+            ))}
+          </div>
+          <button
+            className="requires-js"
+            type="button"
+            aria-controls="revealed-hints"
+            aria-expanded={hintCount === 3}
+            disabled={hintCount === 3}
+            onClick={() => {
+              setHintCount((count) => nextHintCount(count));
+              if (status === 'not-started') setStatus('in-progress');
+            }}
+          >
+            {hintCount === 3 ? t.allHints : `${t.revealHint} (${hintCount + 1}/3)`}
+          </button>
+          <noscript>
+            {article.hints.map((hint, index) => (
+              <section key={hint}>
+                <h3>{locale === 'ru' ? `Подсказка ${index + 1}` : `Hint ${index + 1}`}</h3>
+                <p>{hint}</p>
+              </section>
+            ))}
+          </noscript>
         </aside>
       </div>
       <section className="solution-section" aria-labelledby="solution-title">
         <div className="solution-heading">
           <h2 id="solution-title">{t.solution}</h2>
           <button
+            className="requires-js"
             type="button"
             aria-expanded={solutionVisible}
             aria-controls="solution-content"
@@ -406,6 +460,48 @@ function ExerciseArticle({
             )}
           </div>
         )}
+        <noscript>
+          <div className="solution-content no-script-solution">
+            {article.solution.blocks.map((block) => (
+              <figure className="interview-code" key={`${block.label}-${block.language}`}>
+                <figcaption>
+                  {block.label} · {block.language}
+                </figcaption>
+                <pre>
+                  <code data-language={block.language}>{block.code}</code>
+                </pre>
+              </figure>
+            ))}
+            <section>
+              <h3>{t.explanation}</h3>
+              {article.explanation.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
+            </section>
+            <section>
+              <h3>{t.edgeCases}</h3>
+              <ul>
+                {article.edgeCases.map((text) => (
+                  <li key={text}>{text}</li>
+                ))}
+              </ul>
+            </section>
+            <section>
+              <h3>{t.followUps}</h3>
+              <ol>
+                {article.followUps.map((text) => (
+                  <li key={text}>{text}</li>
+                ))}
+              </ol>
+            </section>
+            <section>
+              <h3>{t.production}</h3>
+              {article.production.map((text) => (
+                <p key={text}>{text}</p>
+              ))}
+            </section>
+          </div>
+        </noscript>
       </section>
     </article>
   );
@@ -431,8 +527,8 @@ export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string 
       <ExerciseArticle
         exercise={exercise}
         locale={locale}
-        status={progress[exercise.id] ?? 'not-started'}
-        setStatus={(status) => setStatus(exercise.id, status)}
+        status={progress[exercise.slug] ?? 'not-started'}
+        setStatus={(status) => setStatus(exercise.slug, status)}
       />
     );
   const update = <Key extends keyof ExerciseFilters>(key: Key, value: ExerciseFilters[Key]) =>
@@ -529,11 +625,14 @@ export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string 
           {t.resetProgress}
         </button>
       </div>
-      <div className="exercise-grid" aria-live="polite">
+      <p className="visually-hidden" role="status" aria-live="polite">
+        {t.results}: {matches.length}
+      </p>
+      <div className="exercise-grid">
         {matches.length ? (
           matches.map((item) => {
             const article = item.content[locale];
-            const status = progress[item.id] ?? 'not-started';
+            const status = progress[item.slug] ?? 'not-started';
             return (
               <article className="exercise-card" key={item.id}>
                 <div className="exercise-card-heading">
