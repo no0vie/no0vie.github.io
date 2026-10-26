@@ -12,7 +12,13 @@ import {
   type InterviewExercise,
   type ProgressStatus,
 } from '../../content/interview';
-import { interviewPath } from '../../app/routes';
+import { interviewPath, preparationPath } from '../../app/routes';
+import {
+  learningPaths,
+  preparationTopics,
+  resolveExerciseNavigation,
+  topicForExercise,
+} from '../../content/preparation';
 import {
   INTERVIEW_PROGRESS_KEY,
   LEGACY_INTERVIEW_PROGRESS_KEY,
@@ -44,6 +50,7 @@ const labels = {
     resetConfirm: 'Reset progress for all Interview Lab exercises?',
     notStarted: 'Not started',
     inProgress: 'In progress',
+    needsReview: 'Needs review',
     completed: 'Completed',
     minutes: 'min',
     back: 'All exercises',
@@ -70,6 +77,19 @@ const labels = {
     reading: 'Further reading',
     runtime: 'Runtime',
     exercise: 'Exercise',
+    preparation: 'Interview Preparation',
+    topics: 'Theory topics',
+    practice: 'Practice exercises',
+    paths: 'Learning paths',
+    continueLearning: 'Continue learning',
+    shortAnswer: '30–60 second answer',
+    detailed: 'Detailed explanation',
+    mistakes: 'Common mistakes',
+    relatedTheory: 'Related theory',
+    relatedPractice: 'Related practice',
+    previous: 'Previous exercise',
+    next: 'Next exercise',
+    position: 'Position',
   },
   ru: {
     title: 'Лаборатория интервью',
@@ -91,6 +111,7 @@ const labels = {
     resetConfirm: 'Сбросить прогресс по всем заданиям?',
     notStarted: 'Не начато',
     inProgress: 'В процессе',
+    needsReview: 'Нужно повторить',
     completed: 'Завершено',
     minutes: 'мин',
     back: 'Все задания',
@@ -117,6 +138,19 @@ const labels = {
     reading: 'Дополнительные материалы',
     runtime: 'Среда',
     exercise: 'Задание',
+    preparation: 'Подготовка к интервью',
+    topics: 'Теоретические темы',
+    practice: 'Практические задания',
+    paths: 'Учебные маршруты',
+    continueLearning: 'Продолжить обучение',
+    shortAnswer: 'Ответ на 30–60 секунд',
+    detailed: 'Подробное объяснение',
+    mistakes: 'Типичные ошибки',
+    relatedTheory: 'Связанная теория',
+    relatedPractice: 'Связанная практика',
+    previous: 'Предыдущее задание',
+    next: 'Следующее задание',
+    position: 'Позиция',
   },
 } as const;
 
@@ -142,7 +176,13 @@ const difficultyLabels: Record<Locale, Record<InterviewExercise['difficulty'], s
 };
 const statusLabel = (locale: Locale, status: ProgressStatus) =>
   labels[locale][
-    status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'completed'
+    status === 'not-started'
+      ? 'notStarted'
+      : status === 'in-progress'
+        ? 'inProgress'
+        : status === 'needs-review'
+          ? 'needsReview'
+          : 'completed'
   ];
 
 const emptyProgress: InterviewProgress = {};
@@ -284,11 +324,50 @@ function ExerciseArticle({
   const article = exercise.content[locale];
   const [hintCount, setHintCount] = useState(0);
   const [solutionVisible, setSolutionVisible] = useState(false);
+  const pathId = useSyncExternalStore(
+    () => () => undefined,
+    () => new URLSearchParams(window.location.search).get('path') ?? undefined,
+    () => undefined,
+  );
+  const navigation = resolveExerciseNavigation(exercise.slug, { pathId });
+  const theory = topicForExercise(exercise.id);
+  const exerciseHref = (target: InterviewExercise) =>
+    `${preparationPath(locale, `practice/${target.slug}`)}${navigation.context ? `?path=${encodeURIComponent(navigation.context)}` : ''}`;
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return;
+      const destination =
+        event.altKey && event.key === 'ArrowLeft'
+          ? navigation.previous
+          : event.altKey && event.key === 'ArrowRight'
+            ? navigation.next
+            : undefined;
+      if (destination) window.location.assign(exerciseHref(destination));
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  });
   return (
     <article className="interview-page exercise-page" aria-labelledby="exercise-title">
-      <a className="text-link interview-back" href={interviewPath(locale)}>
-        ← {t.back}
-      </a>
+      <nav className="exercise-navigation" aria-label={t.practice}>
+        <a className="text-link interview-back" href={preparationPath(locale, 'practice')}>
+          ← {t.back}
+        </a>
+        <span>
+          {t.position}: {navigation.position}/{navigation.total}
+        </span>
+        {navigation.previous && (
+          <a className="text-link" rel="prev" href={exerciseHref(navigation.previous)}>
+            ← {t.previous}
+          </a>
+        )}
+        {navigation.next && (
+          <a className="text-link" rel="next" href={exerciseHref(navigation.next)}>
+            {t.next} →
+          </a>
+        )}
+      </nav>
       <header className="exercise-header">
         <p className="eyebrow">
           {t.exercise} {exercise.id} · {categoryLabels[locale][exercise.category]}
@@ -305,6 +384,13 @@ function ExerciseArticle({
           </span>
         </div>
         <ProgressSelect locale={locale} value={status} onChange={setStatus} label={t.status} />
+        {theory && (
+          <p>
+            <a className="text-link" href={preparationPath(locale, `topics/${theory.slug}`)}>
+              {t.relatedTheory}: {theory.title[locale]}
+            </a>
+          </p>
+        )}
       </header>
       <div className="exercise-layout">
         <div className="exercise-statement">
@@ -507,7 +593,15 @@ function ExerciseArticle({
   );
 }
 
-export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string }) {
+export function InterviewPage({
+  locale,
+  slug,
+  view = 'home',
+}: {
+  locale: Locale;
+  slug?: string;
+  view?: 'home' | 'topics' | 'topic' | 'practice' | 'paths';
+}) {
   const t = labels[locale];
   const { progress, setStatus, clear } = useProgress();
   const [filters, setFilters] = useState<ExerciseFilters>({
@@ -522,6 +616,84 @@ export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string 
     [filters, locale, progress],
   );
   const exercise = slug ? interviewExercises.find((item) => item.slug === slug) : undefined;
+  const topic = view === 'topic' ? preparationTopics.find((item) => item.slug === slug) : undefined;
+  if (topic) {
+    const theory = topic.theory;
+    return (
+      <article className="interview-page exercise-page" aria-labelledby="topic-title">
+        <a className="text-link interview-back" href={preparationPath(locale, 'topics')}>
+          ← {t.topics}
+        </a>
+        <p className="eyebrow">{topic.category}</p>
+        <h1 id="topic-title">{topic.title[locale]}</h1>
+        <p className="exercise-description">{topic.description[locale]}</p>
+        <section>
+          <h2>{t.shortAnswer}</h2>
+          <p>{theory.shortAnswer[locale]}</p>
+        </section>
+        <section>
+          <h2>{t.detailed}</h2>
+          {theory.detailedExplanation[locale].map((text) => (
+            <p key={text}>{text}</p>
+          ))}
+        </section>
+        {theory.codeExamples.map((example) => (
+          <CodeBlock
+            key={example.label[locale]}
+            label={example.label[locale]}
+            language={example.language}
+            code={example.code}
+            locale={locale}
+          />
+        ))}
+        <section>
+          <h2>{t.mistakes}</h2>
+          <ul>
+            {theory.commonMistakes[locale].map((text) => (
+              <li key={text}>{text}</li>
+            ))}
+          </ul>
+        </section>
+        {topic.practiceIds.length > 0 && (
+          <section>
+            <h2>{t.relatedPractice}</h2>
+            <ul>
+              {topic.practiceIds.map((id) => {
+                const item = interviewExercises.find((candidate) => candidate.id === id);
+                return item ? (
+                  <li key={id}>
+                    <a
+                      className="text-link"
+                      href={preparationPath(locale, `practice/${item.slug}`)}
+                    >
+                      {item.content[locale].title}
+                    </a>
+                  </li>
+                ) : null;
+              })}
+            </ul>
+          </section>
+        )}
+        <section>
+          <h2>{t.reading}</h2>
+          <ul>
+            {topic.references.map((reference) => (
+              <li key={reference.url}>
+                <a
+                  className="text-link"
+                  href={reference.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {reference.title} ↗
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </article>
+    );
+  }
   if (exercise)
     return (
       <ExerciseArticle
@@ -530,6 +702,94 @@ export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string 
         status={progress[exercise.slug] ?? 'not-started'}
         setStatus={(status) => setStatus(exercise.slug, status)}
       />
+    );
+  if (view === 'home')
+    return (
+      <section className="interview-page" aria-labelledby="interview-title">
+        <p className="eyebrow">{t.preparation}</p>
+        <h1 id="interview-title">{t.preparation}</h1>
+        <p className="interview-intro">{t.intro}</p>
+        <div className="exercise-grid">
+          <article className="exercise-card">
+            <h2>
+              <a href={preparationPath(locale, 'topics')}>{t.topics}</a>
+            </h2>
+            <p>
+              {preparationTopics.length} {locale === 'ru' ? 'тем' : 'topics'}
+            </p>
+          </article>
+          <article className="exercise-card">
+            <h2>
+              <a href={preparationPath(locale, 'practice')}>{t.practice}</a>
+            </h2>
+            <p>
+              {interviewExercises.length} {locale === 'ru' ? 'заданий' : 'exercises'}
+            </p>
+          </article>
+          <article className="exercise-card">
+            <h2>
+              <a href={preparationPath(locale, 'paths')}>{t.paths}</a>
+            </h2>
+            <p>
+              {learningPaths.length} {locale === 'ru' ? 'маршрутов' : 'paths'}
+            </p>
+          </article>
+        </div>
+      </section>
+    );
+  if (view === 'topics')
+    return (
+      <section className="interview-page" aria-labelledby="topics-title">
+        <p className="eyebrow">{t.preparation}</p>
+        <h1 id="topics-title">{t.topics}</h1>
+        <div className="exercise-grid">
+          {preparationTopics.map((item) => (
+            <article className="exercise-card" key={item.id}>
+              <p className="note-category">{item.category}</p>
+              <h2>
+                <a href={preparationPath(locale, `topics/${item.slug}`)}>{item.title[locale]}</a>
+              </h2>
+              <p>{item.description[locale]}</p>
+              <div className="exercise-meta">
+                <span>
+                  {item.estimatedMinutes} {t.minutes}
+                </span>
+                <span>{difficultyLabels[locale][item.difficulty]}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    );
+  if (view === 'paths')
+    return (
+      <section className="interview-page" aria-labelledby="paths-title">
+        <p className="eyebrow">{t.preparation}</p>
+        <h1 id="paths-title">{t.paths}</h1>
+        <div className="exercise-grid">
+          {learningPaths.map((path) => (
+            <article className="exercise-card" key={path.id}>
+              <h2>{path.title[locale]}</h2>
+              <p>{path.description[locale]}</p>
+              <p>
+                {path.estimatedMinutes} {t.minutes}
+              </p>
+              {path.exerciseIds[0] &&
+                (() => {
+                  const first = interviewExercises.find(({ id }) => id === path.exerciseIds[0]);
+                  return first ? (
+                    <a
+                      className="text-link"
+                      href={`${preparationPath(locale, `practice/${first.slug}`)}?path=${path.id}`}
+                    >
+                      {t.continueLearning} →
+                    </a>
+                  ) : null;
+                })()}
+            </article>
+          ))}
+        </div>
+      </section>
     );
   const update = <Key extends keyof ExerciseFilters>(key: Key, value: ExerciseFilters[Key]) =>
     setFilters((current) => ({ ...current, [key]: value }));
@@ -643,7 +903,15 @@ export function InterviewPage({ locale, slug }: { locale: Locale; slug?: string 
                 </div>
                 <p className="note-category">{categoryLabels[locale][item.category]}</p>
                 <h2>
-                  <a href={interviewPath(locale, item.slug)}>{article.title}</a>
+                  <a
+                    href={
+                      view === 'practice'
+                        ? preparationPath(locale, `practice/${item.slug}`)
+                        : interviewPath(locale, item.slug)
+                    }
+                  >
+                    {article.title}
+                  </a>
                 </h2>
                 <p>{article.description}</p>
                 <div className="exercise-meta">

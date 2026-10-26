@@ -56,6 +56,26 @@ export function serializeProgress(progress: InterviewProgress): string {
   return JSON.stringify({ version, statuses: progress });
 }
 
+export function exportProgress(progress: InterviewProgress): string {
+  return `${JSON.stringify({ version, exportedAt: new Date().toISOString(), statuses: progress }, null, 2)}\n`;
+}
+
+export function importProgress(value: string): InterviewProgress {
+  const parsed = parseProgress(value);
+  let entryCount = 0;
+  try {
+    const candidate = JSON.parse(value) as { statuses?: unknown };
+    entryCount =
+      candidate.statuses && typeof candidate.statuses === 'object'
+        ? Object.keys(candidate.statuses).length
+        : 0;
+  } catch {
+    throw new Error('Invalid progress file');
+  }
+  if (entryCount > 0 && Object.keys(parsed).length === 0) throw new Error('Invalid progress file');
+  return parsed;
+}
+
 export function updateProgress(
   progress: InterviewProgress,
   slug: string,

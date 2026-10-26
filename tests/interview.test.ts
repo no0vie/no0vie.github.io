@@ -8,6 +8,8 @@ import {
 import {
   INTERVIEW_PROGRESS_KEY,
   LEGACY_INTERVIEW_PROGRESS_KEY,
+  exportProgress,
+  importProgress,
   parseProgress,
   readProgress,
   serializeProgress,
@@ -118,10 +120,19 @@ describe('Interview Lab content', () => {
 });
 
 describe('Interview Lab progress persistence', () => {
-  it('uses a versioned key and round-trips valid progress', () => {
+  it('uses a versioned key and round-trips all preparation progress states', () => {
     expect(INTERVIEW_PROGRESS_KEY).toMatch(/v\d+$/);
-    const progress = updateProgress({}, 'implement-promise-all', 'completed');
-    expect(parseProgress(serializeProgress(progress))).toEqual(progress);
+    const completed = updateProgress({}, 'implement-promise-all', 'completed');
+    const needsReview = updateProgress(completed, 'event-loop-execution-order', 'needs-review');
+    expect(parseProgress(serializeProgress(needsReview))).toEqual(needsReview);
+  });
+
+  it('exports and imports schema-validated JSON', () => {
+    const source = { 'event-loop-execution-order': 'needs-review' } as const;
+    expect(importProgress(exportProgress(source))).toEqual(source);
+    expect(() => importProgress('{"version":2,"statuses":{"unknown":"completed"}}')).toThrow(
+      /Invalid progress file/,
+    );
   });
 
   it('recovers from unavailable or corrupted storage values', () => {

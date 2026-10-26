@@ -1,6 +1,6 @@
 # Current QA status
 
-Last updated: 2026-10-24 after CI and analyzer remediation.
+Last updated: 2026-10-27 after Interview Preparation Hub phases 0–3.
 
 ## Current automated verification
 
@@ -11,9 +11,9 @@ Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is stat
 | `npm run format:check`         | Pass                                                                                                                             |
 | `npm run lint`                 | Pass                                                                                                                             |
 | `npm run typecheck`            | Pass                                                                                                                             |
-| `npm test`                     | 62 tests passed across 9 files                                                                                                   |
+| `npm test`                     | 81 tests passed across 12 files                                                                                                  |
 | `npm run build`                | Pass outside the terminal OS sandbox; static pages including RU/EN Evolution, SEO, `/availability.json` and RU/EN PDFs generated |
-| `npm run test:e2e`             | 40 tests passed with Evolution enabled by default                                                                                |
+| `npm run test:e2e`             | 44 tests passed with Evolution enabled by default                                                                                |
 | `npm audit --audit-level=high` | Pass; 0 vulnerabilities after upgrading Zod to 4.6.7                                                                             |
 | Editor diagnostics             | No errors or warnings                                                                                                            |
 | `ENABLE_EVOLUTION=false`       | Explicit rollback path retained and covered by unit route behavior                                                               |
@@ -27,6 +27,14 @@ Sandboxed Chromium could build HTML but hung in `page.pdf()` until the build wat
 - `npm run build` completed static generation and mandatory RU/EN PDF generation outside the terminal OS sandbox. Rollup removed two misplaced `@__PURE__` annotations from Zod's published JavaScript and reported no application-source warning.
 - Zod 4.6.7 replaced vulnerable Zod 3.25.76; schemas, inferred types, static generation and browser behavior passed unchanged. `npm audit --audit-level=high` reports 0 vulnerabilities.
 - All 25 unique external source URLs returned HTTP 200 in a point-in-time network check on 2026-10-23.
+
+### Interview Preparation Hub verification
+
+- Unified home, topics, practice and paths routes are generated for RU/EN, including direct topic/practice detail pages and retained legacy exercise/Notes URLs.
+- Unit tests validate topic relations, manifest parity, six learning paths, stable catalog fallback navigation, selected-path navigation, four progress statuses, v1 migration and JSON import/export validation.
+- Playwright verifies unified discovery, canonical practice URLs, previous/next controls, progressive hints, hidden solutions, persisted progress, no-JavaScript readability, accessibility and 320 px reduced-motion layout.
+- The production build passed outside the terminal sandbox and generated both mandatory PDFs. The first sandboxed attempt again closed Chromium during PDF creation; no build defect was inferred from that environment-only failure.
+- Editor diagnostics reported false unresolved-extension errors for existing extensionless TypeScript imports after `tsc --noEmit` passed; CLI typecheck, lint, unit tests and production build are the authoritative checks for this run.
 
 ## Coverage
 

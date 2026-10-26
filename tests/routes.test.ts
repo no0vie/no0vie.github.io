@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { basePath, localePath, pageKind, pdfFileName, pdfPath } from '../src/app/routes';
+import {
+  basePath,
+  interviewPath,
+  localePath,
+  pageKind,
+  pdfFileName,
+  pdfPath,
+  preparationPath,
+} from '../src/app/routes';
 import { App } from '../src/app/App';
 import { InterviewPage } from '../src/features/interview/InterviewPage';
 import { availability, experience, highlights, profile } from '../src/content';
@@ -29,12 +37,29 @@ describe('static page routes', () => {
     expect(pageKind('notes/javascript-event-loop')).toBe('note');
     expect(pageKind('notes/not-a-note')).toBe('not-found');
     expect(pageKind('interview')).toBe('interview');
+    expect(pageKind('interview/topics')).toBe('interview-topics');
+    expect(pageKind('interview/topics/javascript-event-loop')).toBe('interview-topic');
+    expect(pageKind('interview/practice')).toBe('interview-practice');
+    expect(pageKind('interview/practice/event-loop-execution-order')).toBe('interview-exercise');
+    expect(pageKind('interview/paths')).toBe('interview-paths');
     expect(pageKind('interview/event-loop-execution-order')).toBe('interview-exercise');
     expect(pageKind('interview/not-an-exercise')).toBe('not-found');
     expect(pageKind('evolution', true)).toBe('evolution');
     for (const page of ['unknown', 'projects/missing', 'cases/example'])
       expect(pageKind(page)).toBe('not-found');
   });
+  it('builds canonical preparation URLs while retaining legacy exercise URLs', () => {
+    expect(preparationPath('ru', 'topics/javascript-event-loop', '/career/')).toBe(
+      '/career/ru/interview/topics/javascript-event-loop',
+    );
+    expect(preparationPath('en', 'practice/implement-promise-all', '/')).toBe(
+      '/en/interview/practice/implement-promise-all',
+    );
+    expect(interviewPath('en', 'implement-promise-all', '/')).toBe(
+      '/en/interview/implement-promise-all',
+    );
+  });
+
   it('links to dated locale-specific PDFs under the deployment base', () => {
     expect(pdfFileName('ru')).toBe('eugene-novikov-sse-2026-10-22-ru.pdf');
     expect(pdfFileName('en')).toBe('eugene-novikov-sse-2026-10-22-en.pdf');
@@ -104,10 +129,22 @@ describe('server-rendered resume', () => {
         interviewComponent: InterviewPage,
       }),
     );
-    expect(catalog.match(/class="exercise-card"/g)).toHaveLength(15);
-    expect(catalog).toContain('Search exercises');
-    expect(catalog).toContain('href="/en/interview/event-loop-execution-order"');
-    expect(catalog).toContain('Reset progress');
+    expect(catalog.match(/class="exercise-card"/g)).toHaveLength(3);
+    expect(catalog).toContain('Interview Preparation');
+    expect(catalog).toContain('href="/en/interview/topics"');
+    expect(catalog).toContain('href="/en/interview/practice"');
+
+    const practice = renderToStaticMarkup(
+      createElement(App, {
+        locale: 'en',
+        page: 'interview/practice',
+        interviewComponent: InterviewPage,
+      }),
+    );
+    expect(practice.match(/class="exercise-card"/g)).toHaveLength(15);
+    expect(practice).toContain('Search exercises');
+    expect(practice).toContain('href="/en/interview/practice/event-loop-execution-order"');
+    expect(practice).toContain('Reset progress');
 
     const exercise = renderToStaticMarkup(
       createElement(App, {
@@ -121,6 +158,9 @@ describe('server-rendered resume', () => {
     expect(exercise).toContain('aria-expanded="false"');
     expect(exercise).toContain('Показать решение');
     expect(exercise).toContain('Копировать код');
+    expect(exercise).toContain('Позиция: 2/15');
+    expect(exercise).toContain('Предыдущее задание');
+    expect(exercise).toContain('Следующее задание');
     expect(exercise).toContain('<noscript>');
     expect(exercise).toContain('no-script-solution');
     expect(exercise).toContain('class="requires-js"');

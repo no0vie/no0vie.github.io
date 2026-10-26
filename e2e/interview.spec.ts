@@ -8,13 +8,34 @@ for (const locale of ['ru', 'en'] as const) {
   }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto(`${locale}/interview`);
+    await expect(
+      page.getByRole('heading', {
+        name: locale === 'ru' ? 'Подготовка к интервью' : 'Interview Preparation',
+      }),
+    ).toBeVisible();
+    await page
+      .getByRole('link', { name: locale === 'ru' ? 'Практические задания' : 'Practice exercises' })
+      .click();
+    await expect(page).toHaveURL(new RegExp(`/${locale}/interview/practice$`));
     await expect(page.locator('.exercise-card')).toHaveCount(15);
 
     const search = page.getByRole('searchbox');
     await search.fill('Promise.all');
     await expect(page.locator('.exercise-card')).toHaveCount(1);
     await page.getByRole('link', { name: /Promise\.all/ }).click();
-    await expect(page).toHaveURL(new RegExp(`/${locale}/interview/implement-promise-all$`));
+    await expect(page).toHaveURL(
+      new RegExp(`/${locale}/interview/practice/implement-promise-all$`),
+    );
+    await expect(
+      page.getByRole('link', {
+        name: new RegExp(locale === 'ru' ? 'Предыдущее задание' : 'Previous exercise'),
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', {
+        name: new RegExp(locale === 'ru' ? 'Следующее задание' : 'Next exercise'),
+      }),
+    ).toBeVisible();
     await page.reload();
     await expect(page.locator('#exercise-title')).toBeVisible();
 
@@ -59,7 +80,7 @@ test('Interview exercise remains readable without JavaScript', async ({ browser 
 test('Interview Lab remains usable at 320px in dark reduced-motion mode', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
-  await page.goto('en/interview/realtime-messaging-system');
+  await page.goto('en/interview/practice/realtime-messaging-system');
   await expect(page.locator('#exercise-title')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);

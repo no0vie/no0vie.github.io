@@ -1,0 +1,18 @@
+export const preparationTopicSlugs = [
+  'what-happens-after-entering-a-url',
+  'mvc-mvp-mvvm',
+  'virtual-dom-relevant-today',
+  'javascript-event-loop',
+  'react-fiber-render-and-commit',
+  'mobx-vs-redux',
+  'microfrontends-when-not-to-use-them',
+  'frontend-performance-diagnosis',
+  'playwright-e2e-and-flaky-tests',
+  'react-batching-closures',
+  'react-memoization',
+  'browser-rendering-pipeline',
+  'node-event-loop',
+  'postgresql-concurrency',
+  'idempotency',
+  'reliable-messaging',
+] as const;

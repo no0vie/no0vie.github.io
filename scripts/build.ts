@@ -12,6 +12,7 @@ import type { cases as casesType } from '../src/content/cases';
 import { availability, profile } from '../src/content';
 import { notes } from '../src/content/notes';
 import { interviewExercises } from '../src/content/interview';
+import { preparationTopics } from '../src/content/preparation';
 import { pdfFileName } from '../src/app/routes';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
@@ -24,7 +25,11 @@ const knownPages = [
   'notes',
   ...notes.map(({ slug }) => `notes/${slug}`),
   'interview',
-  ...interviewExercises.map(({ slug }) => `interview/${slug}`),
+  'interview/topics',
+  ...preparationTopics.map(({ slug }) => `interview/topics/${slug}`),
+  'interview/practice',
+  'interview/paths',
+  ...interviewExercises.flatMap(({ slug }) => [`interview/${slug}`, `interview/practice/${slug}`]),
 ];
 const escape = (value: string) =>
   value.replace(
@@ -55,23 +60,28 @@ try {
       const t = copy[locale];
       const caseStudy = cases.find((item) => page === `cases/${item.slug}`);
       const interviewExercise = interviewExercises.find(
-        (item) => page === `interview/${item.slug}`,
+        (item) => page === `interview/${item.slug}` || page === `interview/practice/${item.slug}`,
+      );
+      const preparationTopic = preparationTopics.find(
+        (item) => page === `interview/topics/${item.slug}`,
       );
       const interviewTitle = locale === 'ru' ? 'Лаборатория интервью' : 'Interview Lab';
-      const title = `${profile.name[locale]} — ${caseStudy ? caseStudy.title[locale] : interviewExercise ? interviewExercise.content[locale].title : page === 'interview' ? interviewTitle : page === 'evolution' ? t.evolution : page === 'projects' ? t.projects : page === '404' ? t.notFound : t.resume}`;
+      const title = `${profile.name[locale]} — ${caseStudy ? caseStudy.title[locale] : interviewExercise ? interviewExercise.content[locale].title : preparationTopic ? preparationTopic.title[locale] : page === 'interview' ? interviewTitle : page === 'evolution' ? t.evolution : page === 'projects' ? t.projects : page === '404' ? t.notFound : t.resume}`;
       const description = caseStudy
         ? caseStudy.summary[locale]
         : interviewExercise
           ? interviewExercise.content[locale].description
-          : page === 'interview'
-            ? locale === 'ru'
-              ? 'Практические задания уровня Senior по JavaScript, TypeScript, браузеру, безопасности и системному дизайну.'
-              : 'Practical senior-level JavaScript, TypeScript, browser, security, and system-design exercises.'
-            : page === 'evolution'
-              ? t.evolutionIntro
-              : page === 'projects'
-                ? t.emptyDetail
-                : profile.about[locale];
+          : preparationTopic
+            ? preparationTopic.description[locale]
+            : page === 'interview'
+              ? locale === 'ru'
+                ? 'Практические задания уровня Senior по JavaScript, TypeScript, браузеру, безопасности и системному дизайну.'
+                : 'Practical senior-level JavaScript, TypeScript, browser, security, and system-design exercises.'
+              : page === 'evolution'
+                ? t.evolutionIntro
+                : page === 'projects'
+                  ? t.emptyDetail
+                  : profile.about[locale];
       const path = `${locale}${page ? `/${page}` : ''}`;
       const structuredData = JSON.stringify({
         '@context': 'https://schema.org',

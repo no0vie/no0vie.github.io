@@ -12,7 +12,12 @@ export const exerciseCategories = [
   'architecture',
 ] as const;
 export const exerciseDifficulties = ['medium', 'hard', 'senior'] as const;
-export const progressStatuses = ['not-started', 'in-progress', 'completed'] as const;
+export const progressStatuses = [
+  'not-started',
+  'in-progress',
+  'needs-review',
+  'completed',
+] as const;
 export type ExerciseCategory = (typeof exerciseCategories)[number];
 export type Difficulty = (typeof exerciseDifficulties)[number];
 export type ProgressStatus = (typeof progressStatuses)[number];

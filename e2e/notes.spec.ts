@@ -8,8 +8,7 @@ for (const locale of ['ru', 'en'] as const) {
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
 
-    await page.goto(`${locale}`);
-    await page.locator('.notes-link').click();
+    await page.goto(`notes?lang=${locale}`);
     await expect(page).toHaveURL(new RegExp(`/notes\\?lang=${locale}$`));
     await expect(page.locator('.note-card')).toHaveCount(9);
 

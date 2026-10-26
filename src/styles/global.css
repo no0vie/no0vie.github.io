@@ -1625,9 +1625,23 @@ button:hover {
   max-width: 220px;
   margin-top: 1rem;
 }
+.exercise-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 2rem;
+}
+.exercise-navigation .interview-back {
+  margin: 0 auto 0 0;
+}
 .interview-back {
   display: inline-block;
   margin-bottom: 2rem;
+}
+.status-needs-review {
+  border: 1px dashed var(--accent);
+  color: var(--accent-strong);
 }
 .exercise-layout {
   display: grid;

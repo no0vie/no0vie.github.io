@@ -20,13 +20,6 @@ import { NotesPage } from './NotesPage';
 
 type Theme = 'system' | 'light' | 'dark';
 
-function BookIcon() {
-  return (
-    <span className="book-icon" aria-hidden="true">
-      ▤
-    </span>
-  );
-}
 const themes: Theme[] = ['system', 'light', 'dark'];
 
 function OrbitIcon() {
@@ -301,7 +294,11 @@ export function App({
   locale: Locale;
   page: string;
   enableEvolution?: boolean;
-  interviewComponent?: React.ComponentType<{ locale: Locale; slug?: string }>;
+  interviewComponent?: React.ComponentType<{
+    locale: Locale;
+    slug?: string;
+    view?: 'home' | 'topics' | 'topic' | 'practice' | 'paths';
+  }>;
 }) {
   const kind = pageKind(page, enableEvolution);
   const [locale, setLocale] = useState(initialLocale);
@@ -371,19 +368,9 @@ export function App({
             </a>
             <a
               href={interviewPath(locale)}
-              aria-current={
-                kind === 'interview' || kind === 'interview-exercise' ? 'page' : undefined
-              }
+              aria-current={kind.startsWith('interview') ? 'page' : undefined}
             >
-              {locale === 'ru' ? 'Интервью' : 'Interview Lab'}
-            </a>
-            <a
-              className="notes-link"
-              href={notePath(locale)}
-              aria-current={kind === 'notes' || kind === 'note' ? 'page' : undefined}
-            >
-              <BookIcon />
-              <span>{locale === 'ru' ? 'Заметки' : 'Notes'}</span>
+              {locale === 'ru' ? 'Подготовка' : 'Preparation'}
             </a>
             {enableEvolution && (
               <a
@@ -404,13 +391,8 @@ export function App({
                       otherLocale,
                       kind === 'note' ? page.replace(/^notes\//, '') : undefined,
                     )
-                  : kind === 'interview' || kind === 'interview-exercise'
-                    ? interviewPath(
-                        otherLocale,
-                        kind === 'interview-exercise'
-                          ? page.replace(/^interview\//, '')
-                          : undefined,
-                      )
+                  : kind.startsWith('interview')
+                    ? localePath(otherLocale, page)
                     : localePath(otherLocale, kind === 'not-found' ? '' : page)
               }
               hrefLang={otherLocale}
@@ -639,10 +621,27 @@ export function App({
             locale={locale}
             slug={kind === 'note' ? page.replace(/^notes\//, '') : undefined}
           />
-        ) : (kind === 'interview' || kind === 'interview-exercise') && InterviewComponent ? (
+        ) : kind.startsWith('interview') && InterviewComponent ? (
           <InterviewComponent
             locale={locale}
-            slug={kind === 'interview-exercise' ? page.replace(/^interview\//, '') : undefined}
+            slug={
+              kind === 'interview-exercise'
+                ? page.replace(/^interview\/(?:practice\/)?/, '')
+                : kind === 'interview-topic'
+                  ? page.replace(/^interview\/topics\//, '')
+                  : undefined
+            }
+            view={
+              kind === 'interview-topics'
+                ? 'topics'
+                : kind === 'interview-topic'
+                  ? 'topic'
+                  : kind === 'interview-practice' || kind === 'interview-exercise'
+                    ? 'practice'
+                    : kind === 'interview-paths'
+                      ? 'paths'
+                      : 'home'
+            }
           />
         ) : (
           <section
