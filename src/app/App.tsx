@@ -297,7 +297,7 @@ export function App({
   interviewComponent?: React.ComponentType<{
     locale: Locale;
     slug?: string;
-    view?: 'home' | 'topics' | 'topic' | 'practice' | 'paths';
+    view?: 'home' | 'topics' | 'topic' | 'practice' | 'paths' | 'session';
   }>;
 }) {
   const kind = pageKind(page, enableEvolution);
@@ -629,18 +629,22 @@ export function App({
                 ? page.replace(/^interview\/(?:practice\/)?/, '')
                 : kind === 'interview-topic'
                   ? page.replace(/^interview\/topics\//, '')
-                  : undefined
+                  : kind === 'interview-session'
+                    ? page.replace(/^interview\/session\//, '')
+                    : undefined
             }
             view={
-              kind === 'interview-topics'
-                ? 'topics'
-                : kind === 'interview-topic'
-                  ? 'topic'
-                  : kind === 'interview-practice' || kind === 'interview-exercise'
-                    ? 'practice'
-                    : kind === 'interview-paths'
-                      ? 'paths'
-                      : 'home'
+              kind === 'interview-session'
+                ? 'session'
+                : kind === 'interview-topics'
+                  ? 'topics'
+                  : kind === 'interview-topic'
+                    ? 'topic'
+                    : kind === 'interview-practice' || kind === 'interview-exercise'
+                      ? 'practice'
+                      : kind === 'interview-paths'
+                        ? 'paths'
+                        : 'home'
             }
           />
         ) : (

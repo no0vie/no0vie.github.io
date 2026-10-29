@@ -3,6 +3,7 @@ import { cases } from '../content/cases';
 import { notes } from '../content/notes';
 import { interviewExerciseSlugs } from '../content/interview-manifest';
 import { preparationTopicSlugs } from '../content/preparation-manifest';
+import { learningSessionIds } from '../content/study-flow';
 
 /** Prefix a site-local path for both user and project GitHub Pages deployments. */
 export function basePath(path: string, base = import.meta.env.BASE_URL): string {
@@ -44,6 +45,7 @@ export function pageKind(
   | 'interview-practice'
   | 'interview-paths'
   | 'interview-exercise'
+  | 'interview-session'
   | 'not-found' {
   if (cases.some((item) => page === `cases/${item.slug}`)) return 'case';
   if (page === 'notes') return 'notes';
@@ -54,6 +56,8 @@ export function pageKind(
     return 'interview-topic';
   if (page === 'interview/practice') return 'interview-practice';
   if (page === 'interview/paths') return 'interview-paths';
+  if (learningSessionIds.some((id) => page === `interview/session/${id}`))
+    return 'interview-session';
   if (
     interviewExerciseSlugs.some(
       (slug) => page === `interview/${slug}` || page === `interview/practice/${slug}`,

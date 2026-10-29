@@ -28,6 +28,7 @@ import {
   writeProgress,
   type InterviewProgress,
 } from './progress';
+import { StudyFlowPage } from '../study-flow/StudyFlowPage';
 
 const labels = {
   en: {
@@ -600,7 +601,7 @@ export function InterviewPage({
 }: {
   locale: Locale;
   slug?: string;
-  view?: 'home' | 'topics' | 'topic' | 'practice' | 'paths';
+  view?: 'home' | 'topics' | 'topic' | 'practice' | 'paths' | 'session';
 }) {
   const t = labels[locale];
   const { progress, setStatus, clear } = useProgress();
@@ -617,6 +618,8 @@ export function InterviewPage({
   );
   const exercise = slug ? interviewExercises.find((item) => item.slug === slug) : undefined;
   const topic = view === 'topic' ? preparationTopics.find((item) => item.slug === slug) : undefined;
+  if (view === 'home' || view === 'session')
+    return <StudyFlowPage locale={locale} sessionId={view === 'session' ? slug : undefined} />;
   if (topic) {
     const theory = topic.theory;
     return (
@@ -703,40 +706,7 @@ export function InterviewPage({
         setStatus={(status) => setStatus(exercise.slug, status)}
       />
     );
-  if (view === 'home')
-    return (
-      <section className="interview-page" aria-labelledby="interview-title">
-        <p className="eyebrow">{t.preparation}</p>
-        <h1 id="interview-title">{t.preparation}</h1>
-        <p className="interview-intro">{t.intro}</p>
-        <div className="exercise-grid">
-          <article className="exercise-card">
-            <h2>
-              <a href={preparationPath(locale, 'topics')}>{t.topics}</a>
-            </h2>
-            <p>
-              {preparationTopics.length} {locale === 'ru' ? 'тем' : 'topics'}
-            </p>
-          </article>
-          <article className="exercise-card">
-            <h2>
-              <a href={preparationPath(locale, 'practice')}>{t.practice}</a>
-            </h2>
-            <p>
-              {interviewExercises.length} {locale === 'ru' ? 'заданий' : 'exercises'}
-            </p>
-          </article>
-          <article className="exercise-card">
-            <h2>
-              <a href={preparationPath(locale, 'paths')}>{t.paths}</a>
-            </h2>
-            <p>
-              {learningPaths.length} {locale === 'ru' ? 'маршрутов' : 'paths'}
-            </p>
-          </article>
-        </div>
-      </section>
-    );
+
   if (view === 'topics')
     return (
       <section className="interview-page" aria-labelledby="topics-title">

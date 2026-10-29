@@ -13,6 +13,7 @@ import { availability, profile } from '../src/content';
 import { notes } from '../src/content/notes';
 import { interviewExercises } from '../src/content/interview';
 import { preparationTopics } from '../src/content/preparation';
+import { learningSessions } from '../src/content/study-flow';
 import { pdfFileName } from '../src/app/routes';
 
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
@@ -29,6 +30,7 @@ const knownPages = [
   ...preparationTopics.map(({ slug }) => `interview/topics/${slug}`),
   'interview/practice',
   'interview/paths',
+  ...learningSessions.map(({ id }) => `interview/session/${id}`),
   ...interviewExercises.flatMap(({ slug }) => [`interview/${slug}`, `interview/practice/${slug}`]),
 ];
 const escape = (value: string) =>
