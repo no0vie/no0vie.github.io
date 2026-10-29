@@ -10,11 +10,11 @@ for (const locale of ['ru', 'en'] as const) {
     await page.goto(`${locale}/interview`);
     await expect(
       page.getByRole('heading', {
-        name: locale === 'ru' ? 'Подготовка к интервью' : 'Interview Preparation',
+        name: locale === 'ru' ? 'Учебный поток' : 'Study Flow',
       }),
     ).toBeVisible();
     await page
-      .getByRole('link', { name: locale === 'ru' ? 'Практические задания' : 'Practice exercises' })
+      .getByRole('link', { name: locale === 'ru' ? 'Все материалы' : 'All materials' })
       .click();
     await expect(page).toHaveURL(new RegExp(`/${locale}/interview/practice$`));
     await expect(page.locator('.exercise-card')).toHaveCount(15);

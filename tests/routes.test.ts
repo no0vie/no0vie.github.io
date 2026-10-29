@@ -42,6 +42,7 @@ describe('static page routes', () => {
     expect(pageKind('interview/practice')).toBe('interview-practice');
     expect(pageKind('interview/practice/event-loop-execution-order')).toBe('interview-exercise');
     expect(pageKind('interview/paths')).toBe('interview-paths');
+    expect(pageKind('interview/session/browser-event-loop-mechanics')).toBe('interview-session');
     expect(pageKind('interview/event-loop-execution-order')).toBe('interview-exercise');
     expect(pageKind('interview/not-an-exercise')).toBe('not-found');
     expect(pageKind('evolution', true)).toBe('evolution');
@@ -129,9 +130,9 @@ describe('server-rendered resume', () => {
         interviewComponent: InterviewPage,
       }),
     );
-    expect(catalog.match(/class="exercise-card"/g)).toHaveLength(3);
-    expect(catalog).toContain('Interview Preparation');
-    expect(catalog).toContain('href="/en/interview/topics"');
+    expect(catalog.match(/class="study-session-card"/g)).toHaveLength(4);
+    expect(catalog).toContain('Study Flow');
+    expect(catalog).toContain('href="/en/interview/session/browser-event-loop-mechanics"');
     expect(catalog).toContain('href="/en/interview/practice"');
 
     const practice = renderToStaticMarkup(
