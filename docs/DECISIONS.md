@@ -1,5 +1,16 @@
 # Decisions and phase log
 
+## Study Flow — Phase 0 audit and Phase 1 vertical slice (2026-10-29)
+
+- Audit confirmed 16 theory topics, 15 exercises and six learning paths across three canonical layers: Engineering Notes/adapted topics, compact preparation topics and structured exercises. Full source articles, hints and solutions remain available under `/interview/topics`, `/interview/practice` and `/notes`.
+- `/ru|en/interview` is now the Study Flow entry; static `/ru|en/interview/session/:sessionId` deep links are generated for GitHub Pages. Existing topic, practice, path, note and legacy exercise URLs remain compatible.
+- Phase 1 deliberately contains four complete sessions rather than a superficial full migration: `browser-event-loop` → `browser-event-loop-mechanics` + `browser-event-loop-prediction`; exercise `01` → `browser-event-loop-prediction`; `browser-rendering-pipeline` → `browser-rendering-critical-path`; `react-fiber` → `react-fiber-render-commit`.
+- Sessions contain 4–5 cards and total 17–18 minutes including one explicit reflection/navigation minute. Viewing the last card does not complete a session; completion is an explicit action with confidence or a separately recorded skipped self-check.
+- `study-flow:v1` is runtime-validated and stores stable session/version records, last card, visits/completions, confidence, due date and queue history. Legacy v1 ID and v2 slug progress for exercise `01` migrates to the prediction session; unrelated exercise progress stays in its existing key until those sources are migrated.
+- Recommendations are deterministic: blocked prerequisites sort last, due reviews first, then new sessions and completed material. Review intervals are transparent defaults (1/3/7/14 days), not claimed as scientifically optimal.
+- The Event Loop generator is deterministic by integer seed, has a validator/oracle and is tested over 100 seeds. Its variant space is intentionally finite; no runtime LLM, API or arbitrary code execution is used.
+- Phase 2 full migration is not complete. Independent follow-ups: migrate remaining Browser/React content; deepen all seven compact topics before migration; split exercises `02`–`15`; add broader generators/variant banks; calibrate durations with actual learners; finish full taxonomy/concept graph and localized editorial learning paths.
+
 ## Phase 0 — audit (2026-10-22)
 
 - Repository contains a Foundation/jQuery HTML placeholder, README, license and implementation instructions; no package manager, tests, assets or reusable components.
