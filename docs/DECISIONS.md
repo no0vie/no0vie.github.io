@@ -1,5 +1,14 @@
 # Decisions and phase log
 
+## Career graph / brnchly integration (2026-10-29)
+
+- Canonical résumé data remains the only career source. A bilingual stable skill registry and `experience[].skills` references extend the existing strict Zod model; the pure adapter generates EvolutionGraph schema v2 without React, DOM, storage or network access.
+- Canonical experience IDs are `fruct`, `tensor`, `yandex-market`, and `mts-web-services`. Graph nodes use `${stageId}:${skillId}`; repeated confirmed skill usage creates evolution edges only between consecutive confirmed appearances.
+- The portfolio owns career semantics: three configured lanes, four semantic branches, visibility and explicit relation metadata. brnchly remains unchanged and receives only its universal public graph model.
+- Unpublished brnchly core/react `1.0.0` release candidates are integrated as checked-in immutable npm tarballs under `vendor/brnchly/`. This keeps GitHub Pages/CI reproducible without sibling checkouts and avoids private package imports or copied renderer source.
+- The renderer is a lazy client-only enhancement on the existing Evolution route. Complete server-rendered stage text remains available without JavaScript and in print. Existing theme tokens map to public brnchly CSS variables; playback uses `createPlaybackPlan`/`snapshotAt` and is reduced-motion aware.
+- The audited brnchly `readonly` prop is currently not an enforcement boundary. Production read-only behavior therefore uses `editingEnabled={false}`, omits all edit/connection callbacks, and retains only selection, camera, details, fit and playback interactions.
+
 ## Study Flow — Phase 0 audit and Phase 1 vertical slice (2026-10-29)
 
 - Audit confirmed 16 theory topics, 15 exercises and six learning paths across three canonical layers: Engineering Notes/adapted topics, compact preparation topics and structured exercises. Full source articles, hints and solutions remain available under `/interview/topics`, `/interview/practice` and `/notes`.
