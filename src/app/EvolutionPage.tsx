@@ -1,8 +1,14 @@
-import type { CSSProperties } from 'react';
+import { lazy, Suspense, type CSSProperties } from 'react';
 import { careerMilestones, type Locale } from '../content';
 import { copy } from './copy';
 import { getEvolutionStages, type EvolutionStage } from './evolution-data';
 import { localePath } from './routes';
+
+const CareerGraph = lazy(() =>
+  import('../features/career-graph/components/CareerGraph').then((module) => ({
+    default: module.CareerGraph,
+  })),
+);
 
 function period(stage: EvolutionStage, locale: Locale): string {
   if (stage.datePrecision === 'approximate' && stage.end)
@@ -52,7 +58,17 @@ export function EvolutionPage({ locale }: { locale: Locale }) {
         </a>
       </header>
 
-      <div className="evolution-layout">
+      <Suspense
+        fallback={
+          <div className="career-graph-placeholder" role="status">
+            {locale === 'ru' ? 'Загрузка интерактивного графа…' : 'Loading interactive graph…'}
+          </div>
+        }
+      >
+        <CareerGraph locale={locale} />
+      </Suspense>
+
+      <div className="evolution-layout evolution-fallback">
         <section className="evolution-map" aria-labelledby="journey-map-title">
           <h2 id="journey-map-title" className="visually-hidden">
             {t.focusStep}

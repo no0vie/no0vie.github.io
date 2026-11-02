@@ -208,6 +208,8 @@
   .evolution-layout {
     display: block !important;
   }
+  .career-graph,
+  .career-graph-placeholder,
   .evolution-map,
   .evolution-pager,
   .evolution-back {

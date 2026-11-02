@@ -1857,3 +1857,64 @@ button:hover {
     min-height: 320px;
   }
 }
+
+.career-graph-ready .evolution-fallback {
+  display: none;
+}
+.career-graph,
+.career-graph-placeholder {
+  margin: 2rem 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+}
+.career-graph {
+  --brnchly-graph-background: var(--background);
+  --brnchly-graph-surface: var(--surface);
+  --brnchly-graph-text: var(--text);
+  --brnchly-graph-muted: var(--muted);
+  --brnchly-graph-border: var(--border);
+  --brnchly-graph-accent: var(--accent);
+  --brnchly-graph-dependency: #e09231;
+  --brnchly-graph-evolution: var(--accent);
+}
+.career-graph-heading,
+.career-graph-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.career-graph-controls button {
+  min-height: 44px;
+}
+.career-graph-renderer {
+  min-width: 0;
+  margin-top: 1rem;
+  overflow: hidden;
+  border-radius: 16px;
+}
+@media (max-width: 900px) {
+  .career-graph .graph-viewport {
+    min-height: 460px;
+    height: 62vh;
+  }
+}
+@media (max-width: 600px) {
+  .career-graph,
+  .career-graph-placeholder {
+    margin-inline: -0.5rem;
+    border-radius: 16px;
+  }
+  .career-graph .graph-viewport {
+    min-height: 400px;
+    height: 58vh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .career-graph * {
+    scroll-behavior: auto;
+  }
+}
