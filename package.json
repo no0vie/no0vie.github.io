@@ -19,6 +19,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@no0vie/brnchly-core": "file:vendor/brnchly/no0vie-brnchly-core-1.0.0.tgz",
+    "@no0vie/brnchly-react": "file:vendor/brnchly/no0vie-brnchly-react-1.0.0.tgz",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zod": "^4.6.7"
