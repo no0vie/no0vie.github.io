@@ -11,7 +11,12 @@ describe('Evolution stage adapter', () => {
     (locale) => {
       const stages = getEvolutionStages(locale);
 
-      expect(stages.map(({ id }) => id)).toEqual(['fruct', 'tensor', 'yandex', 'mts']);
+      expect(stages.map(({ id }) => id)).toEqual([
+        'fruct',
+        'tensor',
+        'yandex-market',
+        'mts-web-services',
+      ]);
       expect(stages).toHaveLength(4);
       for (const stage of stages) {
         const source = experience.find(({ id }) => id === stage.id);

@@ -1,4 +1,5 @@
 import type { Achievement, Content, Localized } from './schema';
+import { careerSkills } from './skills';
 
 const localized = (ru: string, en: string): Localized => ({ ru, en });
 const achievement = (id: string, ru: string, en: string): Achievement => ({
@@ -94,9 +95,10 @@ export const seedContent = {
       ),
     },
   ],
+  skills: careerSkills,
   experience: [
     {
-      id: 'mts',
+      id: 'mts-web-services',
       employer: localized('МТС Веб Сервисы', 'MTS Web Services'),
       role: localized('Ведущий разработчик', 'Senior Developer'),
       start: '2024-05',
@@ -149,10 +151,21 @@ export const seedContent = {
         'Webpack',
         'Ant Design',
       ],
+      skills: [
+        { skillId: 'react' },
+        { skillId: 'typescript' },
+        { skillId: 'modular-frontend', achievementId: 'campaign-wizard' },
+        { skillId: 'cascade-editor', achievementId: 'campaign-wizard' },
+        { skillId: 'api-design', achievementId: 'validation-feedback' },
+        { skillId: 'ux-validation', achievementId: 'validation-feedback' },
+        { skillId: 'nestjs-bff', achievementId: 'data-tooling' },
+        { skillId: 'architecture-tradeoffs', achievementId: 'campaign-wizard' },
+        { skillId: 'mentoring', graphVisible: false },
+      ],
       caseStudySlugs: ['campaign-wizard'],
     },
     {
-      id: 'yandex',
+      id: 'yandex-market',
       employer: localized('Яндекс Маркет', 'Yandex Market'),
       role: localized('Разработчик интерфейсов', 'Interface Developer'),
       start: '2021-03',
@@ -212,6 +225,16 @@ export const seedContent = {
         'Grafana',
         'Apiary',
       ],
+      skills: [
+        { skillId: 'react' },
+        { skillId: 'typescript' },
+        { skillId: 'microfrontends', achievementId: 'microfrontends' },
+        { skillId: 'frontend-performance', achievementId: 'map-preloading' },
+        { skillId: 'caching', achievementId: 'address-cache' },
+        { skillId: 'monitoring', achievementId: 'production-on-call' },
+        { skillId: 'ab-testing', achievementId: 'ab-experiments' },
+        { skillId: 'mentoring', achievementId: 'reviews-mentoring' },
+      ],
       caseStudySlugs: [],
     },
     {
@@ -249,6 +272,13 @@ export const seedContent = {
       ],
       links: [],
       technologies: ['JavaScript', 'TypeScript', 'WaSaby', 'Less', 'Python', 'PostgreSQL', 'SQL'],
+      skills: [
+        { skillId: 'web-ui', achievementId: 'business-interfaces' },
+        { skillId: 'typescript', achievementId: 'business-interfaces' },
+        { skillId: 'postgresql', achievementId: 'sql-optimization' },
+        { skillId: 'sql-optimization', achievementId: 'sql-optimization' },
+        { skillId: 'mentoring', achievementId: 'tensor-mentoring' },
+      ],
       caseStudySlugs: [],
     },
     {
@@ -292,6 +322,11 @@ export const seedContent = {
       ],
       links: [],
       technologies: ['Java', 'Kotlin', 'Spring Boot', 'Foundation'],
+      skills: [
+        { skillId: 'qml-cpp', achievementId: 'aurora-hackathon' },
+        { skillId: 'web-ui', achievementId: 'display-web-interface' },
+        { skillId: 'spring-boot', achievementId: 'display-web-interface' },
+      ],
       caseStudySlugs: [],
     },
   ],

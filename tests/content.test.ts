@@ -17,6 +17,7 @@ import {
   projects,
   skillGroupSchema,
   skillGroups,
+  skills,
   sortExperience,
   validateContent,
 } from '../src/content';
@@ -32,19 +33,35 @@ describe('approved bilingual content', () => {
         availability,
         careerMilestones,
         experience,
+        skills,
         highlights,
         projects,
       }),
-    ).toEqual({ profile, availability, careerMilestones, experience, highlights, projects });
-    expect(experience.map(({ id }) => id)).toEqual(['mts', 'yandex', 'tensor', 'fruct']);
+    ).toEqual({
+      profile,
+      availability,
+      careerMilestones,
+      experience,
+      skills,
+      highlights,
+      projects,
+    });
+    expect(experience.map(({ id }) => id)).toEqual([
+      'mts-web-services',
+      'yandex-market',
+      'tensor',
+      'fruct',
+    ]);
     expect(projects.map(({ slug }) => slug)).toEqual([
       'pantry',
       'magic-ball',
       'riply',
       'cave-escaper',
     ]);
-    expect(experience.find(({ id }) => id === 'mts')?.caseStudySlugs).toEqual(['campaign-wizard']);
-    expect(experience.find(({ id }) => id === 'mts')?.links).toEqual([
+    expect(experience.find(({ id }) => id === 'mts-web-services')?.caseStudySlugs).toEqual([
+      'campaign-wizard',
+    ]);
+    expect(experience.find(({ id }) => id === 'mts-web-services')?.links).toEqual([
       { label: 'OMNI', url: 'https://omnichannel.mts.ru/' },
       { label: 'ORP', url: 'https://orp.mts.ru/' },
       { label: 'CRM Trends', url: 'https://omnichannel.mts.ru/crmtrends' },
@@ -223,7 +240,7 @@ describe('approved bilingual content', () => {
     expect(profile.education.en).toMatch(/B1.*self-assessed/i);
     expect(profile.education.en).toMatch(/technical documentation.*communicat/i);
 
-    const mts = experience.find(({ id }) => id === 'mts');
+    const mts = experience.find(({ id }) => id === 'mts-web-services');
     const mtsSurfaces = JSON.stringify([highlights[0], mts]);
     expect(mts?.employer).toEqual({ ru: 'МТС Веб Сервисы', en: 'MTS Web Services' });
     expect(mts?.role).toEqual({ ru: 'Ведущий разработчик', en: 'Senior Developer' });
@@ -276,7 +293,7 @@ describe('approved bilingual content', () => {
       githubUrl: 'https://github.com/no0vie/tic-tac-toe',
     });
     const yandexIds = experience
-      .find(({ id }) => id === 'yandex')
+      .find(({ id }) => id === 'yandex-market')
       ?.achievements.map(({ id }) => id);
     expect(yandexIds).toEqual([
       'checkout-addresses',

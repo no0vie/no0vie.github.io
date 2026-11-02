@@ -1,6 +1,6 @@
 import { experience, type Locale } from '../content';
 
-const stageOrder = ['fruct', 'tensor', 'yandex', 'mts'] as const;
+const stageOrder = ['fruct', 'tensor', 'yandex-market', 'mts-web-services'] as const;
 type EvolutionStageId = (typeof stageOrder)[number];
 
 const presentation = {
@@ -18,14 +18,14 @@ const presentation = {
       en: ['Product interfaces', 'Data engineering', 'Mentoring'],
     },
   },
-  yandex: {
+  'yandex-market': {
     highlightIds: ['checkout-addresses', 'microfrontends', 'address-cache', 'production-on-call'],
     capabilities: {
       ru: ['Продуктовая разработка', 'Архитектура', 'Производительность и эксплуатация'],
       en: ['Product engineering', 'Architecture', 'Performance and operations'],
     },
   },
-  mts: {
+  'mts-web-services': {
     highlightIds: [
       'campaign-wizard',
       'template-editors',

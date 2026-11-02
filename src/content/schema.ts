@@ -92,6 +92,35 @@ const experienceLinkSchema = z
   })
   .strict();
 
+export const skillCategorySchema = z.enum(['frontend', 'management', 'backend']);
+export type SkillCategory = z.infer<typeof skillCategorySchema>;
+export const skillBranchIdSchema = z.enum([
+  'web-ui',
+  'application-architecture',
+  'data-services',
+  'engineering-practices',
+]);
+export type SkillBranchId = z.infer<typeof skillBranchIdSchema>;
+export const resumeSkillSchema = z
+  .object({
+    id: idSchema,
+    category: skillCategorySchema,
+    branchId: skillBranchIdSchema,
+    title: localizedSchema,
+    description: localizedSchema.optional(),
+  })
+  .strict();
+export type ResumeSkill = z.infer<typeof resumeSkillSchema>;
+export const experienceSkillSchema = z
+  .object({
+    skillId: idSchema,
+    graphVisible: z.boolean().optional(),
+    description: localizedSchema.optional(),
+    achievementId: idSchema.optional(),
+  })
+  .strict();
+export type ExperienceSkill = z.infer<typeof experienceSkillSchema>;
+
 export const experienceSchema = z
   .object({
     id: idSchema,
@@ -108,6 +137,12 @@ export const experienceSchema = z
       .min(1)
       .refine(uniqueIds, 'Achievement IDs must be unique'),
     technologies: z.array(textSchema),
+    skills: z
+      .array(experienceSkillSchema)
+      .refine(
+        (items) => new Set(items.map(({ skillId }) => skillId)).size === items.length,
+        'Experience skill IDs must be unique',
+      ),
     caseStudySlugs: z.array(z.literal('campaign-wizard')).max(1),
   })
   .strict()
@@ -165,6 +200,7 @@ export const contentSchema = z
       .array(careerMilestoneSchema)
       .refine(uniqueIds, 'Career milestone IDs must be unique'),
     experience: z.array(experienceSchema).refine(uniqueIds, 'Experience IDs must be unique'),
+    skills: z.array(resumeSkillSchema).refine(uniqueIds, 'Skill IDs must be unique'),
     highlights: z.array(highlightSchema).refine(uniqueIds, 'Highlight IDs must be unique'),
     projects: z
       .array(projectSchema)
@@ -175,6 +211,7 @@ export const contentSchema = z
   })
   .strict();
 export type Content = z.infer<typeof contentSchema>;
+export type ResumeData = Content;
 
 export function validateContent(value: unknown): Content {
   return contentSchema.parse(value);

@@ -54,7 +54,7 @@ for (const locale of ['ru', 'en'] as const) {
     expect(html).toMatch(/2015–2016/);
     expect(html).toContain('https://github.com/no0vie/tic-tac-toe');
     expect(html).toContain('stage-panel-tensor');
-    expect(html).toContain('stage-panel-mts');
+    expect(html).toContain('stage-panel-mts-web-services');
   });
 }
 
