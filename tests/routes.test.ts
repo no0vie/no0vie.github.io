@@ -119,6 +119,7 @@ describe('server-rendered resume', () => {
     expect(article).toContain('rel="noopener noreferrer"');
 
     const resume = renderToStaticMarkup(createElement(App, { locale: 'en', page: '' }));
+    expect(resume).not.toContain('href="/en/interview"');
     expect(resume).not.toContain('id="notes-title"');
     expect(resume).not.toContain('id="note-answer"');
   });

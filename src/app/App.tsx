@@ -12,7 +12,7 @@ import {
 import { cases } from '../content/cases';
 import { notePath } from '../content/notes';
 import { copy } from './copy';
-import { basePath, interviewPath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
+import { basePath, localePath, pageKind, pdfFileName, pdfPath } from './routes';
 import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 import { EvolutionPage } from './EvolutionPage';
@@ -366,12 +366,7 @@ export function App({
             >
               {t.projects}
             </a>
-            <a
-              href={interviewPath(locale)}
-              aria-current={kind.startsWith('interview') ? 'page' : undefined}
-            >
-              {locale === 'ru' ? 'Подготовка' : 'Preparation'}
-            </a>
+
             {enableEvolution && (
               <a
                 className="evolution-link"
