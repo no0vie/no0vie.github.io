@@ -24,6 +24,7 @@ const labels = {
 export function CareerGraph({ locale }: { locale: Locale }) {
   const graph = useMemo(() => buildCareerGraph(resumeData, locale, careerGraphConfig), [locale]);
   const renderer = useRef<GraphRendererHandle>(null);
+  const rendererRoot = useRef<HTMLDivElement>(null);
 
   const [progress, setProgress] = useState(1);
   const [playing, setPlaying] = useState(false);
@@ -48,6 +49,22 @@ export function CareerGraph({ locale }: { locale: Locale }) {
     document.documentElement.classList.add('career-graph-ready');
     return () => document.documentElement.classList.remove('career-graph-ready');
   }, []);
+
+  useEffect(() => {
+    const root = rendererRoot.current;
+    if (!root) return;
+    const synchronizeNodeNames = () => {
+      for (const button of root.querySelectorAll<HTMLButtonElement>(
+        '[data-node-id] > .universal-node',
+      )) {
+        button.removeAttribute('aria-label');
+      }
+    };
+    synchronizeNodeNames();
+    const observer = new MutationObserver(synchronizeNodeNames);
+    observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [graph]);
 
   useEffect(() => {
     if (!playing) return;
@@ -103,7 +120,7 @@ export function CareerGraph({ locale }: { locale: Locale }) {
           </button>
         </div>
       </div>
-      <div className="career-graph-renderer">
+      <div ref={rendererRoot} className="career-graph-renderer">
         <GraphRenderer
           ref={renderer}
           graph={graph}

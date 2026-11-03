@@ -53,21 +53,14 @@ for (const locale of ['ru', 'en']) {
     if (!enabled) return;
     await page.setViewportSize({ width: 320, height: 900 });
     await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
-    const buttons = page.locator('[role="tablist"] [role="tab"]');
-    await expect(buttons).toHaveCount(4);
-    await expect(buttons.first()).toBeVisible();
-    await buttons.first().focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(buttons.nth(1)).toBeFocused();
-    await expect(buttons.nth(1)).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('#stage-panel-tensor')).toBeVisible();
-    await expect(page.locator('#stage-panel-fruct')).toBeHidden();
-    await expect(page.locator('.evolution-panel')).toHaveCount(4);
-    await expect(page.locator('.evolution-milestone')).toHaveCount(1);
-    await expect(page.locator('.evolution-milestone a')).toHaveAttribute(
-      'href',
-      'https://github.com/no0vie/tic-tac-toe',
-    );
+    await expect(page.locator('.career-graph')).toBeVisible();
+    const graphNodes = page.locator('[data-node-id] > .universal-node');
+    await expect(graphNodes).toHaveCount(24);
+    await expect(graphNodes.first()).toBeVisible();
+    await graphNodes.first().focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.node-details')).toBeVisible();
+    await expect(page.locator('.evolution-fallback')).toBeHidden();
     const overflow = await page.evaluate(() => ({
       fits: document.documentElement.scrollWidth <= innerWidth,
       viewport: innerWidth,
@@ -94,17 +87,14 @@ for (const locale of ['ru', 'en']) {
           `${locale} Evolution overflowed at ${width}px in ${colorScheme} theme`,
         ).toBe(true);
         await expect(page.locator('.evolution-page')).toBeVisible();
-        await expect(page.locator('[role="tab"][aria-selected="true"]')).toBeVisible();
+        await expect(page.locator('.career-graph')).toBeVisible();
       }
     }
     await page.locator('a[hreflang]').click();
     await expect(page).toHaveURL(
-      new RegExp(`/${locale === 'en' ? 'ru' : 'en'}/evolution/?#tensor$`),
+      new RegExp(`/${locale === 'en' ? 'ru' : 'en'}/evolution/?#fruct$`),
     );
-    await expect(page.locator('[role="tab"][aria-selected="true"]')).toHaveAttribute(
-      'data-stage-id',
-      'tensor',
-    );
+    await expect(page.locator('.career-graph')).toBeVisible();
     const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const fallback = await context.newPage();
     await fallback.goto(`${locale}/evolution`);

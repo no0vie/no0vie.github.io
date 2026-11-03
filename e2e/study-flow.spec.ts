@@ -18,8 +18,12 @@ test('Study Flow supports deep links, keyboard, reload, explicit completion and 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.study-progress')).toContainText('3/5');
   await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.study-progress')).toContainText('4/5');
   await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.study-progress')).toContainText('5/5');
+  await expect(page.getByRole('button', { name: 'Finish' })).toBeVisible();
   await page.getByRole('button', { name: 'Finish' }).click();
   await page.getByRole('button', { name: 'good' }).click();
   const completedCount = await page.evaluate(() => {
@@ -38,11 +42,12 @@ test('seeded challenge replays and touch swipe changes cards', async ({ page }) 
   const source = await page.locator('.challenge code').textContent();
   await page.reload();
   await expect(page.locator('.challenge code')).toHaveText(source ?? '');
-  await page
-    .locator('.study-session')
-    .dispatchEvent('touchstart', { touches: [{ clientX: 300, clientY: 300 }] });
-  await page
-    .locator('.study-session')
-    .dispatchEvent('touchend', { changedTouches: [{ clientX: 100, clientY: 305 }] });
+  await expect(page.locator('.study-session')).toBeVisible();
+  await page.locator('.study-session').evaluate((element) => {
+    const start = new Touch({ identifier: 1, target: element, clientX: 300, clientY: 300 });
+    element.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [start] }));
+    const end = new Touch({ identifier: 1, target: element, clientX: 100, clientY: 305 });
+    element.dispatchEvent(new TouchEvent('touchend', { bubbles: true, changedTouches: [end] }));
+  });
   await expect(page.locator('.study-progress')).toContainText('3/5');
 });

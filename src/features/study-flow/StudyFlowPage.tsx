@@ -202,8 +202,7 @@ function Session({
     setReady(true);
   }
   return (
-    <main
-      id="main"
+    <article
       className="study-session"
       aria-labelledby="session-title"
       onTouchStart={(e) => {
@@ -332,6 +331,6 @@ function Session({
           </button>
         </section>
       )}
-    </main>
+    </article>
   );
 }

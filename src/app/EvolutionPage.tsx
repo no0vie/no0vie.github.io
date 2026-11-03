@@ -1,14 +1,29 @@
-import { lazy, Suspense, type CSSProperties } from 'react';
+import { useEffect, useState, type ComponentType, type CSSProperties } from 'react';
 import { careerMilestones, type Locale } from '../content';
 import { copy } from './copy';
 import { getEvolutionStages, type EvolutionStage } from './evolution-data';
 import { localePath } from './routes';
 
-const CareerGraph = lazy(() =>
-  import('../features/career-graph/components/CareerGraph').then((module) => ({
-    default: module.CareerGraph,
-  })),
-);
+function CareerGraphLoader({ locale }: { locale: Locale }) {
+  const [CareerGraph, setCareerGraph] = useState<ComponentType<{ locale: Locale }> | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void import('../features/career-graph/components/CareerGraph').then((module) => {
+      if (active) setCareerGraph(() => module.CareerGraph);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (CareerGraph) return <CareerGraph locale={locale} />;
+  return (
+    <div className="career-graph-placeholder" role="status">
+      {locale === 'ru' ? 'Загрузка интерактивного графа…' : 'Loading interactive graph…'}
+    </div>
+  );
+}
 
 function period(stage: EvolutionStage, locale: Locale): string {
   if (stage.datePrecision === 'approximate' && stage.end)
@@ -58,15 +73,7 @@ export function EvolutionPage({ locale }: { locale: Locale }) {
         </a>
       </header>
 
-      <Suspense
-        fallback={
-          <div className="career-graph-placeholder" role="status">
-            {locale === 'ru' ? 'Загрузка интерактивного графа…' : 'Loading interactive graph…'}
-          </div>
-        }
-      >
-        <CareerGraph locale={locale} />
-      </Suspense>
+      <CareerGraphLoader locale={locale} />
 
       <div className="evolution-layout evolution-fallback">
         <section className="evolution-map" aria-labelledby="journey-map-title">
