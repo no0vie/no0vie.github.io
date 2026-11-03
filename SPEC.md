@@ -194,6 +194,8 @@ Yaroslavl State University named after P. G. Demidov; Bachelor in Applied Mathem
 
 ### Personal projects
 
+brnchly (`https://github.com/no0vie/brnchly`) is an audited public evolution-graph toolkit with a framework-independent TypeScript core, React renderer and browser editor. The portfolio already integrates core/react packages via pinned tarballs for its résumé-derived Evolution graph, including zoom, node selection and playback. Keep the project `in-progress`: v1.0 is a release candidate, not a confirmed npm publication or standalone deployment. Do not invent a demo URL or adoption/performance metrics.
+
 GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https://github.com/no0vie/pantry`; public version complete, future evolution into a platform is planned) and Magic Ball (`https://github.com/no0vie/magic-ball`, in progress; main scenarios implemented, full cross-browser acceptance unfinished). Owner-approved future concepts: Riply fishing-game Telegram bot and Cave Escaper Telegram game bot; both must be labeled as concepts with no release claim or invented link. Never depict concepts as shipped. Privacy: no IPs, infrastructure secrets, sensitive diagrams or internal company code.
 
 ## 8. Content writing and bilingual editorial policy

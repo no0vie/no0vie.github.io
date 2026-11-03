@@ -95,6 +95,18 @@ describe('server-rendered resume', () => {
       expect(html).not.toContain('<details');
     },
   );
+  it.each(['ru', 'en'] as const)(
+    'renders brnchly on the %s resume and projects index',
+    (locale) => {
+      for (const page of ['', 'projects']) {
+        const html = renderToStaticMarkup(createElement(App, { locale, page }));
+        expect(html).toContain('brnchly');
+        expect(html).toContain('https://github.com/no0vie/brnchly');
+        expect(html).toContain('Evolution');
+        expect(html).toContain('v1.0');
+      }
+    },
+  );
   it('renders verified projects and preserves the locale-switch route', () => {
     const html = renderToStaticMarkup(createElement(App, { locale: 'en', page: 'projects' }));
     expect(html).toContain('Pantry');

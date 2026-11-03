@@ -71,7 +71,10 @@ for (const locale of ['ru', 'en']) {
     await expect(page.locator('.site-header')).toBeHidden();
     await expect(page.locator('#education')).toBeVisible();
     await page.goto(`${locale}/projects`);
-    await expect(page.locator('.project-card')).toHaveCount(4);
+    await expect(page.locator('.project-card')).toHaveCount(5);
+    await expect(page.locator('.project-card').filter({ hasText: 'brnchly' })).toContainText(
+      'Evolution',
+    );
     await context.close();
   });
 }
@@ -124,7 +127,10 @@ test('projects spacing stays responsive and stable across locale and theme chang
         gridGap: parseFloat(getComputedStyle(grid).columnGap),
         cardPadding: parseFloat(getComputedStyle(cards[0]).paddingTop),
         gridToBack: backRect.top - gridRect.bottom,
-        sourceLinkBottoms: sourceLinks.map((link) => link.getBoundingClientRect().bottom),
+        sourceLinks: sourceLinks.map((link) => ({
+          row: link.closest('.project-card')!.getBoundingClientRect().top,
+          bottom: link.getBoundingClientRect().bottom,
+        })),
         overflow: document.documentElement.scrollWidth > innerWidth,
         cardsOverlap: cards.some((card, index) =>
           cards.slice(index + 1).some((other) => {
@@ -147,9 +153,12 @@ test('projects spacing stays responsive and stable across locale and theme chang
     expect(layout.cardPadding).toBeGreaterThanOrEqual(24);
     expect(layout.cardPadding).toBeLessThanOrEqual(28);
     expect(layout.gridToBack).toBe(32);
-    expect(
-      Math.max(...layout.sourceLinkBottoms) - Math.min(...layout.sourceLinkBottoms),
-    ).toBeLessThan(1);
+    for (const row of new Set(layout.sourceLinks.map((link) => link.row))) {
+      const bottoms = layout.sourceLinks
+        .filter((link) => link.row === row)
+        .map((link) => link.bottom);
+      expect(Math.max(...bottoms) - Math.min(...bottoms)).toBeLessThan(1);
+    }
     expect(layout.overflow).toBe(false);
     expect(layout.cardsOverlap).toBe(false);
   };

@@ -55,6 +55,7 @@ describe('approved bilingual content', () => {
     expect(projects.map(({ slug }) => slug)).toEqual([
       'pantry',
       'magic-ball',
+      'brnchly',
       'riply',
       'cave-escaper',
     ]);
@@ -209,13 +210,24 @@ describe('approved bilingual content', () => {
         tech: ['Vue 3', 'JavaScript', 'Vuex', 'Vue Router', 'Vite', 'Playwright'],
         githubUrl: 'https://github.com/no0vie/magic-ball',
       }),
+      expect.objectContaining({
+        slug: 'brnchly',
+        stage: 'in-progress',
+        tech: ['TypeScript', 'React'],
+        githubUrl: 'https://github.com/no0vie/brnchly',
+      }),
       expect.objectContaining({ slug: 'riply', stage: 'concept', tech: [] }),
       expect.objectContaining({ slug: 'cave-escaper', stage: 'concept', tech: [] }),
     ]);
     expect(projects[0]?.summary.ru).toMatch(/публичн.*верс.*завершен.*платформ/i);
     expect(projects[0]?.summary.en).toMatch(/public version.*complete.*platform/i);
-    expect(projects.slice(2).every((project) => !('githubUrl' in project))).toBe(true);
-    expect(JSON.stringify(projects.slice(2))).toMatch(/Telegram|Телеграм/);
+    const brnchly = projects.find(({ slug }) => slug === 'brnchly');
+    expect(brnchly?.summary.ru).toMatch(/Evolution.*портфолио/);
+    expect(brnchly?.summary.en).toMatch(/portfolio.*Evolution/);
+    expect(brnchly).not.toHaveProperty('demoUrl');
+    const concepts = projects.filter(({ stage }) => stage === 'concept');
+    expect(concepts.every((project) => !('githubUrl' in project))).toBe(true);
+    expect(JSON.stringify(concepts)).toMatch(/Telegram|Телеграм/);
 
     const project = projects[0];
     for (const extra of [

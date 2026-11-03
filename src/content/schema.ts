@@ -157,6 +157,7 @@ export type ProjectStage = z.infer<typeof projectStageSchema>;
 const verifiedProjectUrlSchema = z.enum([
   'https://github.com/no0vie/pantry',
   'https://github.com/no0vie/magic-ball',
+  'https://github.com/no0vie/brnchly',
 ]);
 export const projectSchema = z
   .object({

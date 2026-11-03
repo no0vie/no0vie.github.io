@@ -356,6 +356,18 @@ export const seedContent = {
       public: true,
     },
     {
+      slug: 'brnchly',
+      title: localized('brnchly', 'brnchly'),
+      summary: localized(
+        'Инструментарий для графов развития: независимое TypeScript-ядро, интерактивный React-рендерер и браузерный редактор. Интегрирован в раздел Evolution этого портфолио: граф строится из данных резюме и поддерживает масштабирование, выбор узлов и воспроизведение развития. Подготовлен release candidate v1.0; публикация пакетов в npm пока не подтверждена.',
+        'An evolution-graph toolkit with a framework-independent TypeScript core, an interactive React renderer, and a browser editor. Integrated into this portfolio’s Evolution section: résumé data drives a graph with zoom, node selection, and evolution playback. A v1.0 release candidate is prepared; npm publication is not yet confirmed.',
+      ),
+      stage: 'in-progress',
+      tech: ['TypeScript', 'React'],
+      githubUrl: 'https://github.com/no0vie/brnchly',
+      public: true,
+    },
+    {
       slug: 'riply',
       title: localized('Riply', 'Riply'),
       summary: localized(

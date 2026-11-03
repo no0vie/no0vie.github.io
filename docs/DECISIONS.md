@@ -1,5 +1,11 @@
 # Decisions and phase log
 
+## brnchly project publication (2026-11-04)
+
+- Added the bilingual brnchly project record and verified repository URL to the canonical content/allowlist. Public README at https://github.com/no0vie/brnchly confirms a framework-independent TypeScript core, React renderer, browser editor and v1.0 release-candidate status; npm publication and standalone deployment are not confirmed.
+- The existing portfolio integration (`buildCareerGraph.ts`, `CareerGraph.tsx` and pinned vendor packages) confirms résumé-derived graphs, zoom, selection and playback. These are observed implementation facts, not adoption or performance claims. No project dates, metrics or external demo URL are inferred.
+- Keep stage `in-progress`; reuse the canonical summary on the résumé, projects index and PDF rather than adding a separate content copy. No graph behavior or dependencies change.
+
 ## Career graph / brnchly integration (2026-10-29)
 
 - Canonical résumé data remains the only career source. A bilingual stable skill registry and `experience[].skills` references extend the existing strict Zod model; the pure adapter generates EvolutionGraph schema v2 without React, DOM, storage or network access.
