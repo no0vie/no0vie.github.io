@@ -1,5 +1,11 @@
 # Decisions and phase log
 
+## Recruiter-focused project cards (2026-11-06)
+
+- Rewrote Pantry, Magic Ball and brnchly summaries around their product purpose and implemented capabilities, with equivalent RU/EN copy. Category, product description and factual stage are rendered separately; brnchly retains the concise `v1.0 release candidate` status without npm-publication commentary in the card.
+- Kept the audited technology stacks and repository links. GitHub repository metadata, Pages API responses and expected `no0vie.github.io/{pantry,magic-ball,brnchly}` URLs were checked on 2026-11-06; no working public deployment was found, so no demo link was invented.
+- Removed Riply and Cave Escaper from the main résumé project grid while preserving them in the full projects catalogue under a separate “Experiments and concepts” section. Their cards describe only the product concepts and do not present missing implementation as the main message.
+
 ## brnchly project publication (2026-11-04)
 
 - Added the bilingual brnchly project record and verified repository URL to the canonical content/allowlist. Public README at https://github.com/no0vie/brnchly confirms a framework-independent TypeScript core, React renderer, browser editor and v1.0 release-candidate status; npm publication and standalone deployment are not confirmed.
