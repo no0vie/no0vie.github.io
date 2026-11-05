@@ -183,22 +183,32 @@ function ContactLinks({ locale }: { locale: Locale }) {
   );
 }
 
-function ProjectCards({ locale }: { locale: Locale }) {
+function ProjectCards({
+  locale,
+  includeExperiments = false,
+}: {
+  locale: Locale;
+  includeExperiments?: boolean;
+}) {
   const t = copy[locale];
   const stageLabel = {
     released: t.released,
     'in-progress': t.inProgress,
     concept: t.concept,
   } as const;
-  return (
+  const renderCards = (items: typeof projects) => (
     <div className="project-grid">
-      {projects.map((project) => (
+      {items.map((project) => (
         <article className="project-card" key={project.slug}>
           <div className="project-heading">
-            <h3>{project.title[locale]}</h3>
+            <div>
+              <p className="project-category">{t.projectCategory[project.category]}</p>
+              <h3>{project.title[locale]}</h3>
+            </div>
             <span className={`stage stage-${project.stage}`}>{stageLabel[project.stage]}</span>
           </div>
           <p>{project.summary[locale]}</p>
+          {project.status && <p className="project-status">{project.status[locale]}</p>}
           {project.tech.length > 0 && (
             <ul className="tags" aria-label={t.skills}>
               {project.tech.map((technology) => (
@@ -206,14 +216,38 @@ function ProjectCards({ locale }: { locale: Locale }) {
               ))}
             </ul>
           )}
-          {project.githubUrl && (
-            <a className="text-link" href={project.githubUrl} rel="noopener noreferrer">
-              {t.github} <span aria-hidden="true">↗</span>
-            </a>
+          {(project.demoUrl !== undefined || project.githubUrl !== undefined) && (
+            <div className="project-links">
+              {project.demoUrl && (
+                <a className="text-link" href={project.demoUrl} rel="noopener noreferrer">
+                  {t.openApp} <span aria-hidden="true">↗</span>
+                </a>
+              )}
+              {project.githubUrl && (
+                <a className="text-link" href={project.githubUrl} rel="noopener noreferrer">
+                  {t.github} <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </div>
           )}
         </article>
       ))}
     </div>
+  );
+  const implemented = projects.filter(({ stage }) => stage !== 'concept');
+  const experiments = projects.filter(({ stage }) => stage === 'concept');
+
+  return (
+    <>
+      {renderCards(implemented)}
+      {includeExperiments && experiments.length > 0 && (
+        <section className="project-experiments" aria-labelledby="experiments-title">
+          <h2 id="experiments-title">{t.experiments}</h2>
+          <p className="projects-intro">{t.experimentsDetail}</p>
+          {renderCards(experiments)}
+        </section>
+      )}
+    </>
   );
 }
 
@@ -652,7 +686,7 @@ export function App({
             {kind === 'projects' ? (
               <>
                 <p className="projects-intro">{t.emptyDetail}</p>
-                <ProjectCards locale={locale} />
+                <ProjectCards locale={locale} includeExperiments />
               </>
             ) : (
               <div className="empty-state">

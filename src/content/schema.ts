@@ -154,6 +154,13 @@ export type CareerItem = z.infer<typeof experienceSchema>;
 
 export const projectStageSchema = z.enum(['released', 'in-progress', 'concept']);
 export type ProjectStage = z.infer<typeof projectStageSchema>;
+export const projectCategorySchema = z.enum([
+  'application',
+  'game',
+  'library',
+  'engineering-tool',
+]);
+export type ProjectCategory = z.infer<typeof projectCategorySchema>;
 const verifiedProjectUrlSchema = z.enum([
   'https://github.com/no0vie/pantry',
   'https://github.com/no0vie/magic-ball',
@@ -163,7 +170,9 @@ export const projectSchema = z
   .object({
     slug: idSchema,
     title: localizedSchema,
+    category: projectCategorySchema,
     summary: localizedSchema,
+    status: localizedSchema.optional(),
     stage: projectStageSchema,
     tech: z.array(textSchema),
     githubUrl: verifiedProjectUrlSchema.optional(),

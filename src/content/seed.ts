@@ -55,7 +55,7 @@ export const seedContent = {
       telegram: 'https://t.me/no_0vie',
       whatsapp: 'https://wa.me/qr/XFZZQSNXJCSBL1',
     },
-    updated: '2026-10-22',
+    updated: '2026-11-06',
   },
   availability: {
     status: 'available',
@@ -334,9 +334,10 @@ export const seedContent = {
     {
       slug: 'pantry',
       title: localized('Pantry', 'Pantry'),
+      category: 'application',
       summary: localized(
-        'Разработка публичной версии приложения для рецептов и списка покупок завершена; в планах — развитие проекта в платформу.',
-        'The public version is complete; evolving this recipe and grocery-list application into a platform is planned.',
+        'Приложение для ведения рецептов и списков покупок. Оно объединяет совместимые количества одинаковых продуктов, поддерживает пользовательские единицы измерения и хранит данные локально в браузере.',
+        'An application for managing recipes and shopping lists. It combines compatible quantities of the same product, supports custom units, and stores data locally in the browser.',
       ),
       stage: 'released',
       tech: ['React', 'TypeScript', 'Vite', 'MobX', 'Ant Design', 'Playwright'],
@@ -346,9 +347,10 @@ export const seedContent = {
     {
       slug: 'magic-ball',
       title: localized('Magic Ball', 'Magic Ball'),
+      category: 'game',
       summary: localized(
-        'Основные сценарии реализованы; полная приёмка во всех браузерах ещё не завершена.',
-        'The main scenarios are implemented; full cross-browser acceptance is not yet complete.',
+        'Шуточная браузерная игра-предсказатель: пользователь задаёт вопрос и получает случайный ответ с учётом его веса. Наборы ответов можно настраивать, импортировать и экспортировать, а история и настройки сохраняются в браузере.',
+        'A playful browser fortune-telling game: ask a question and receive a weighted random answer. Answer sets can be customized, imported, and exported, while history and settings stay in the browser.',
       ),
       stage: 'in-progress',
       tech: ['Vue 3', 'JavaScript', 'Vuex', 'Vue Router', 'Vite', 'Playwright'],
@@ -358,10 +360,12 @@ export const seedContent = {
     {
       slug: 'brnchly',
       title: localized('brnchly', 'brnchly'),
+      category: 'engineering-tool',
       summary: localized(
-        'Инструментарий для графов развития: независимое TypeScript-ядро, интерактивный React-рендерер и браузерный редактор. Интегрирован в раздел Evolution этого портфолио: граф строится из данных резюме и поддерживает масштабирование, выбор узлов и воспроизведение развития. Подготовлен release candidate v1.0; публикация пакетов в npm пока не подтверждена.',
-        'An evolution-graph toolkit with a framework-independent TypeScript core, an interactive React renderer, and a browser editor. Integrated into this portfolio’s Evolution section: résumé data drives a graph with zoom, node selection, and evolution playback. A v1.0 release candidate is prepared; npm publication is not yet confirmed.',
+        'Инженерный инструментарий для моделирования, компоновки, отображения и редактирования графов развития. Независимое TypeScript-ядро и React-рендерер используются в разделе Evolution этого портфолио для графа из данных резюме с масштабированием, выбором узлов и воспроизведением развития.',
+        'An engineering toolkit for modelling, laying out, rendering, and editing evolution graphs. Its framework-independent TypeScript core and React renderer power this portfolio’s Evolution view, including zoom, node selection, and progression playback over résumé data.',
       ),
+      status: localized('Кандидат на выпуск v1.0', 'v1.0 release candidate'),
       stage: 'in-progress',
       tech: ['TypeScript', 'React'],
       githubUrl: 'https://github.com/no0vie/brnchly',
@@ -370,9 +374,10 @@ export const seedContent = {
     {
       slug: 'riply',
       title: localized('Riply', 'Riply'),
+      category: 'game',
       summary: localized(
-        'Концепция будущего Telegram-бота об игре с рыбалкой; разработка ещё не начата.',
-        'A concept for a future fishing-game Telegram bot; implementation has not started.',
+        'Концепция игровой механики о рыбалке для Telegram-бота. Идея сохранена в каталоге отдельно от реализованных приложений.',
+        'A fishing game concept designed for a Telegram bot. The idea remains in the catalogue separately from implemented applications.',
       ),
       stage: 'concept',
       tech: [],
@@ -381,9 +386,10 @@ export const seedContent = {
     {
       slug: 'cave-escaper',
       title: localized('Cave Escaper', 'Cave Escaper'),
+      category: 'game',
       summary: localized(
-        'Концепция будущего игрового Telegram-бота о побеге из пещеры; разработка ещё не начата.',
-        'A concept for a future Telegram game bot about escaping a cave; implementation has not started.',
+        'Концепция приключенческой игры для Telegram-бота, построенной вокруг побега из пещеры. Идея сохранена в каталоге отдельно от реализованных приложений.',
+        'An adventure game concept for a Telegram bot, centred on escaping a cave. The idea remains in the catalogue separately from implemented applications.',
       ),
       stage: 'concept',
       tech: [],

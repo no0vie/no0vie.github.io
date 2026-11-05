@@ -200,30 +200,46 @@ describe('approved bilingual content', () => {
     expect(projects).toEqual([
       expect.objectContaining({
         slug: 'pantry',
+        category: 'application',
         stage: 'released',
         tech: ['React', 'TypeScript', 'Vite', 'MobX', 'Ant Design', 'Playwright'],
         githubUrl: 'https://github.com/no0vie/pantry',
       }),
       expect.objectContaining({
         slug: 'magic-ball',
+        category: 'game',
         stage: 'in-progress',
         tech: ['Vue 3', 'JavaScript', 'Vuex', 'Vue Router', 'Vite', 'Playwright'],
         githubUrl: 'https://github.com/no0vie/magic-ball',
       }),
       expect.objectContaining({
         slug: 'brnchly',
+        category: 'engineering-tool',
         stage: 'in-progress',
         tech: ['TypeScript', 'React'],
         githubUrl: 'https://github.com/no0vie/brnchly',
       }),
-      expect.objectContaining({ slug: 'riply', stage: 'concept', tech: [] }),
-      expect.objectContaining({ slug: 'cave-escaper', stage: 'concept', tech: [] }),
+      expect.objectContaining({
+        slug: 'riply',
+        category: 'game',
+        stage: 'concept',
+        tech: [],
+      }),
+      expect.objectContaining({
+        slug: 'cave-escaper',
+        category: 'game',
+        stage: 'concept',
+        tech: [],
+      }),
     ]);
-    expect(projects[0]?.summary.ru).toMatch(/публичн.*верс.*завершен.*платформ/i);
-    expect(projects[0]?.summary.en).toMatch(/public version.*complete.*platform/i);
+    expect(projects[0]?.summary.ru).toMatch(/рецепт.*спис.*покуп/i);
+    expect(projects[0]?.summary.en).toMatch(/recipe.*shopping list/i);
     const brnchly = projects.find(({ slug }) => slug === 'brnchly');
     expect(brnchly?.summary.ru).toMatch(/Evolution.*портфолио/);
     expect(brnchly?.summary.en).toMatch(/portfolio.*Evolution/);
+    expect(JSON.stringify(projects)).not.toMatch(
+      /при[её]мка не завершена|публикация npm не подтверждена|разработка ещ[её] не начата|acceptance is not yet complete|npm publication is not yet confirmed|implementation has not started/i,
+    );
     expect(brnchly).not.toHaveProperty('demoUrl');
     const concepts = projects.filter(({ stage }) => stage === 'concept');
     expect(concepts.every((project) => !('githubUrl' in project))).toBe(true);

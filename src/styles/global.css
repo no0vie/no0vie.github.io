@@ -864,12 +864,34 @@ button:hover {
 .project-heading h3 {
   min-width: 0;
 }
+.project-category {
+  margin-bottom: 0.25rem;
+  color: var(--accent-strong) !important;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .project-card p,
 .projects-intro {
   color: var(--muted);
 }
-.project-card .text-link {
+.project-status {
+  width: fit-content;
+  padding: 0.3rem 0.6rem;
+  border-left: 2px solid var(--accent);
+  color: var(--text) !important;
+  font-size: 0.82rem;
+}
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
   margin-top: auto;
+}
+.project-links .text-link {
+  min-height: 2.75rem;
+  align-items: center;
 }
 .stage {
   flex-shrink: 0;
@@ -893,6 +915,15 @@ button:hover {
 }
 .projects-page .project-grid {
   margin-top: clamp(2rem, 3vw, 2.5rem);
+}
+.project-experiments {
+  margin-top: clamp(3rem, 5vw, 4.5rem);
+}
+.project-experiments .projects-intro {
+  margin-top: 0.5rem;
+}
+.project-experiments .project-grid {
+  margin-top: 1.5rem;
 }
 .projects-page > .button {
   margin-top: 2rem;

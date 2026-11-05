@@ -56,7 +56,7 @@ for (const locale of ['ru', 'en']) {
     const href = await downloadLink.getAttribute('href');
     await expect(downloadLink).toHaveAttribute(
       'download',
-      `eugene-novikov-sse-2026-10-22-${locale}.pdf`,
+      `eugene-novikov-sse-2026-11-06-${locale}.pdf`,
     );
     const pdf = await request.get(href!);
     expect(pdf.status()).toBe(200);
@@ -66,7 +66,7 @@ for (const locale of ['ru', 'en']) {
     const downloadPromise = page.waitForEvent('download');
     await downloadLink.click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe(`eugene-novikov-sse-2026-10-22-${locale}.pdf`);
+    expect(download.suggestedFilename()).toBe(`eugene-novikov-sse-2026-11-06-${locale}.pdf`);
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.site-header')).toBeHidden();
     await expect(page.locator('#education')).toBeVisible();
@@ -293,8 +293,10 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
   });
   await page.goto('en/projects');
   const pantry = page.locator('.project-card').filter({ hasText: 'Pantry' });
+  await expect(pantry).toContainText('Application');
   await expect(pantry).toContainText('Released');
-  await expect(pantry).toContainText('The public version is complete');
+  await expect(pantry).toContainText('recipes and shopping lists');
+  await expect(page.getByRole('heading', { name: 'Experiments and concepts' })).toBeVisible();
   const structuredData: unknown = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
   );

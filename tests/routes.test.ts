@@ -62,12 +62,12 @@ describe('static page routes', () => {
   });
 
   it('links to dated locale-specific PDFs under the deployment base', () => {
-    expect(pdfFileName('ru')).toBe('eugene-novikov-sse-2026-10-22-ru.pdf');
-    expect(pdfFileName('en')).toBe('eugene-novikov-sse-2026-10-22-en.pdf');
+    expect(pdfFileName('ru')).toBe('eugene-novikov-sse-2026-11-06-ru.pdf');
+    expect(pdfFileName('en')).toBe('eugene-novikov-sse-2026-11-06-en.pdf');
     expect(pdfPath('ru', '/career/')).toBe(
-      '/career/downloads/eugene-novikov-sse-2026-10-22-ru.pdf',
+      '/career/downloads/eugene-novikov-sse-2026-11-06-ru.pdf',
     );
-    expect(pdfPath('en', '/')).toBe('/downloads/eugene-novikov-sse-2026-10-22-en.pdf');
+    expect(pdfPath('en', '/')).toBe('/downloads/eugene-novikov-sse-2026-11-06-en.pdf');
   });
 });
 
@@ -89,8 +89,8 @@ describe('server-rendered resume', () => {
       expect(html).toContain(escapedText(availability.label[locale]));
       expect(html).toContain('class="availability-status"');
       expect(html).toContain('https://wa.me/qr/XFZZQSNXJCSBL1');
-      expect(html).toContain(`downloads/eugene-novikov-sse-2026-10-22-${locale}.pdf`);
-      expect(html).toContain(`download="eugene-novikov-sse-2026-10-22-${locale}.pdf"`);
+      expect(html).toContain(`downloads/eugene-novikov-sse-2026-11-06-${locale}.pdf`);
+      expect(html).toContain(`download="eugene-novikov-sse-2026-11-06-${locale}.pdf"`);
       expect(html).toContain('id="main"');
       expect(html).not.toContain('<details');
     },
@@ -112,9 +112,12 @@ describe('server-rendered resume', () => {
     expect(html).toContain('Pantry');
     expect(html).toContain('Magic Ball');
     expect(html).toContain('https://github.com/no0vie/pantry');
-    expect(html).toContain('The public version is complete');
+    expect(html).toContain('recipes and shopping lists');
+    expect(html).toContain('Application');
     expect(html).toContain('Released');
+    expect(html).toContain('Experiments and concepts');
     expect(html).toContain('Concept');
+    expect(html).not.toContain('implementation has not started');
     expect(html).toContain('href="/ru/projects"');
   });
   it('renders the notes index and complete shareable note articles without adding them to the resume', () => {
