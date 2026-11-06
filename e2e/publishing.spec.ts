@@ -112,7 +112,9 @@ test('projects spacing stays responsive and stable across locale and theme chang
     const layout = await page.locator('.projects-page').evaluate((section) => {
       const styles = getComputedStyle(section);
       const intro = section.querySelector<HTMLElement>('.projects-intro')!;
-      const grid = section.querySelector<HTMLElement>('.project-grid')!;
+      const grids = [...section.querySelectorAll<HTMLElement>('.project-grid')];
+      const grid = grids[0];
+      const lastGrid = grids[grids.length - 1];
       const back = section.querySelector<HTMLElement>('.button')!;
       const cards = [...section.querySelectorAll<HTMLElement>('.project-card')];
       const sourceLinks = [...section.querySelectorAll<HTMLElement>('.project-card .text-link')];
@@ -126,7 +128,7 @@ test('projects spacing stays responsive and stable across locale and theme chang
         introToGrid: gridRect.top - introRect.bottom,
         gridGap: parseFloat(getComputedStyle(grid).columnGap),
         cardPadding: parseFloat(getComputedStyle(cards[0]).paddingTop),
-        gridToBack: backRect.top - gridRect.bottom,
+        gridToBack: backRect.top - lastGrid.getBoundingClientRect().bottom,
         sourceLinks: sourceLinks.map((link) => ({
           row: link.closest('.project-card')!.getBoundingClientRect().top,
           bottom: link.getBoundingClientRect().bottom,
