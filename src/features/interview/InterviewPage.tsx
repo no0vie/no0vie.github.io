@@ -162,6 +162,7 @@ const categoryLabels: Record<Locale, Record<ExerciseCategory, string>> = {
     browser: 'Browser & performance',
     security: 'Security',
     architecture: 'System design',
+    'ai-engineering': 'AI Engineering',
   },
   ru: {
     javascript: 'JavaScript и асинхронность',
@@ -169,6 +170,7 @@ const categoryLabels: Record<Locale, Record<ExerciseCategory, string>> = {
     browser: 'Браузер и производительность',
     security: 'Безопасность',
     architecture: 'Системный дизайн',
+    'ai-engineering': 'AI Engineering',
   },
 };
 const difficultyLabels: Record<Locale, Record<InterviewExercise['difficulty'], string>> = {

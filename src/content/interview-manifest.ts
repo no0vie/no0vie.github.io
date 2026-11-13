@@ -14,6 +14,10 @@ export const interviewExerciseManifest = [
   { id: '13', slug: 'frontend-security-review' },
   { id: '14', slug: 'resumable-large-file-upload' },
   { id: '15', slug: 'realtime-messaging-system' },
+  { id: '16', slug: 'build-simple-rag' },
+  { id: '17', slug: 'tool-calling-agent' },
+  { id: '18', slug: 'typescript-ai-gateway-sdk' },
+  { id: '19', slug: 'ai-evaluation-suite' },
 ] as const;
 
 export const interviewExerciseSlugs = interviewExerciseManifest.map(({ slug }) => slug);

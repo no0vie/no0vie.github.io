@@ -3,6 +3,7 @@ import type { Locale } from './schema';
 import { javascriptExercises } from './interview-javascript';
 import { platformExercises } from './interview-platform';
 import { architectureExercises } from './interview-architecture';
+import { aiEngineeringExercises } from './interview-ai-engineering';
 
 export const exerciseCategories = [
   'javascript',
@@ -10,6 +11,7 @@ export const exerciseCategories = [
   'browser',
   'security',
   'architecture',
+  'ai-engineering',
 ] as const;
 export const exerciseDifficulties = ['medium', 'hard', 'senior'] as const;
 export const progressStatuses = [
@@ -75,6 +77,7 @@ export const interviewExercises = interviewExercisesSchema.parse([
   ...javascriptExercises,
   ...platformExercises,
   ...architectureExercises,
+  ...aiEngineeringExercises,
 ]);
 
 export interface ExerciseFilters {
