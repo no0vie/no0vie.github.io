@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { interviewExercises, type InterviewExercise } from './interview';
 import { notes } from './notes';
+import { aiEngineeringTopics } from './preparation-ai-engineering';
 
 const localizedText = z
   .object({ ru: z.string().trim().min(1), en: z.string().trim().min(1) })
@@ -17,6 +18,7 @@ export const preparationCategories = [
   'system-design',
   'architecture',
   'testing',
+  'ai-engineering',
 ] as const;
 export const preparationTopicSchema = z
   .object({
@@ -26,6 +28,7 @@ export const preparationTopicSchema = z
     description: localizedText,
     category: z.enum(preparationCategories),
     difficulty: z.enum(['medium', 'hard', 'senior']),
+    interviewLevel: z.enum(['basic', 'middle', 'senior']).optional(),
     estimatedMinutes: z.number().int().positive(),
     prerequisites: z.array(z.string()),
     relatedTopics: z.array(z.string()),
@@ -282,7 +285,7 @@ export const preparationTopics = z
           ctx.addIssue({ code: 'custom', message: `Unknown exercise ${id}` });
     }
   })
-  .parse([...noteTopics, ...priorityTopics]);
+  .parse([...noteTopics, ...priorityTopics, ...aiEngineeringTopics]);
 
 const pathInput = [
   [
@@ -327,28 +330,44 @@ const pathInput = [
   ],
 ] as const;
 
-export const learningPaths = pathInput.map(([id, topicIds, exerciseIds]) => ({
-  id,
-  title: {
-    ru: id === 'weak-spots' ? 'Работа над слабыми местами' : id.replaceAll('-', ' '),
-    en: id === 'weak-spots' ? 'Focused review' : id.replaceAll('-', ' '),
+export const learningPaths = [
+  ...pathInput.map(([id, topicIds, exerciseIds]) => ({
+    id,
+    title: {
+      ru: id === 'weak-spots' ? 'Работа над слабыми местами' : id.replaceAll('-', ' '),
+      en: id === 'weak-spots' ? 'Focused review' : id.replaceAll('-', ' '),
+    },
+    description: {
+      ru:
+        id === 'weak-spots'
+          ? 'Стартовый маршрут повторения, не публичная оценка профессионального уровня.'
+          : 'Упорядоченная подготовка Senior-уровня.',
+      en:
+        id === 'weak-spots'
+          ? 'A starter review path, not a public assessment of professional level.'
+          : 'An ordered senior-level preparation path.',
+    },
+    targetRole: 'Senior Software Engineer',
+    topicIds: [...topicIds],
+    exerciseIds: [...exerciseIds],
+    recommendedOrder: [...topicIds, ...exerciseIds],
+    estimatedMinutes: topicIds.length * 45 + exerciseIds.length * 60,
+  })),
+  {
+    id: 'ai-engineering',
+    title: { ru: 'AI Engineering', en: 'AI Engineering' },
+    description: {
+      ru: 'LLM, RAG, агенты, архитектура, AI-first/SDD и production AI.',
+      en: 'LLMs, RAG, agents, architecture, AI-first/SDD, and production AI.',
+    },
+    targetRole: 'Senior Software Engineer / Fullstack Engineer',
+    topicIds: aiEngineeringTopics.map(({ id }) => id),
+    exerciseIds: ['16', '17', '18', '19'],
+    recommendedOrder: [...aiEngineeringTopics.map(({ id }) => id), '16', '17', '18', '19'],
+    estimatedMinutes:
+      aiEngineeringTopics.reduce((sum, item) => sum + item.estimatedMinutes, 0) + 330,
   },
-  description: {
-    ru:
-      id === 'weak-spots'
-        ? 'Стартовый маршрут повторения, не публичная оценка профессионального уровня.'
-        : 'Упорядоченная подготовка Senior-уровня.',
-    en:
-      id === 'weak-spots'
-        ? 'A starter review path, not a public assessment of professional level.'
-        : 'An ordered senior-level preparation path.',
-  },
-  targetRole: 'Senior Software Engineer',
-  topicIds: [...topicIds],
-  exerciseIds: [...exerciseIds],
-  recommendedOrder: [...topicIds, ...exerciseIds],
-  estimatedMinutes: topicIds.length * 45 + exerciseIds.length * 60,
-}));
+];
 
 export function resolveExerciseNavigation(
   slug: string,
