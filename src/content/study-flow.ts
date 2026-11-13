@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { aiLearningSessions } from './study-flow-ai';
 
 const localized = z.object({ ru: z.string().min(1), en: z.string().min(1) }).strict();
 const cardKinds = [
@@ -40,7 +41,17 @@ export const learningSessionSchema = z
     version: z.number().int().positive(),
     title: localized,
     goal: localized,
-    category: z.enum(['browser', 'react']),
+    category: z.enum(['browser', 'react', 'ai-engineering']),
+    module: z
+      .enum([
+        'llm-fundamentals',
+        'rag',
+        'ai-agents',
+        'ai-architecture',
+        'ai-first-sdd',
+        'production-ai',
+      ])
+      .optional(),
     tags: z.array(z.string()).min(1),
     difficulty: z.enum(['hard', 'senior']),
     estimatedMinutes: z.number().int().min(15).max(20),
@@ -496,6 +507,7 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
       },
     ],
   },
+  ...aiLearningSessions,
 ]);
 
 export const learningSessionIds = learningSessions.map(({ id }) => id);
