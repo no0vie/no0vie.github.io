@@ -1,5 +1,14 @@
 # Decisions and phase log
 
+## Study Flow — AI Engineering track (2026-11-13)
+
+- Added AI Engineering to the existing bilingual Study Flow rather than creating an independent learning UI. The canonical reference layer contains 22 interview questions grouped into Basic, Middle and Senior levels across six modules: LLM Fundamentals, RAG, AI Agents, AI Architecture, AI-first & SDD, and Production AI.
+- Full answers, explanations, TypeScript examples where applicable, mistakes, follow-ups, related topics and verifiable sources live in `preparation-ai-engineering.ts`. Study Flow cards derive their short/detailed text from this layer; Engineering Notes remain unchanged and contain no duplicate AI articles.
+- Added four canonical full-length exercises (`16`–`19`): simple RAG, bounded tool-calling agent, TypeScript AI Gateway SDK and AI eval suite. The browser does not call an LLM or execute arbitrary learner code; exercises use injected adapters and deterministic fixtures.
+- Added six stable AI session IDs. Each session remains 15–20 minutes, has a self-check, source provenance and an architecture diagram with a textual alternative. Existing Phase 1 IDs and `study-flow:v1` progress records are unchanged, so no progress migration is required.
+- Agent material explicitly treats model actions as untrusted proposals. Authorization, budgets, stop conditions, approval, validation and observability remain deterministic orchestration responsibilities; no claim of full autonomy or error-free operation is made.
+- Technical sources include the Transformer and RAG papers, ReAct, MCP specification, NIST AI RMF and OWASP guidance. Provider-specific behavior is not presented as a universal guarantee.
+
 ## Recruiter-focused project cards (2026-11-06)
 
 - Rewrote Pantry, Magic Ball and brnchly summaries around their product purpose and implemented capabilities, with equivalent RU/EN copy. Category, product description and factual stage are rendered separately; brnchly retains the concise `v1.0 release candidate` status without npm-publication commentary in the card.
