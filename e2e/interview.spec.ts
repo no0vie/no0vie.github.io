@@ -17,7 +17,7 @@ for (const locale of ['ru', 'en'] as const) {
       .getByRole('link', { name: locale === 'ru' ? 'Все материалы' : 'All materials' })
       .click();
     await expect(page).toHaveURL(new RegExp(`/${locale}/interview/practice$`));
-    await expect(page.locator('.exercise-card')).toHaveCount(15);
+    await expect(page.locator('.exercise-card')).toHaveCount(19);
 
     const search = page.getByRole('searchbox');
     await search.fill('Promise.all');

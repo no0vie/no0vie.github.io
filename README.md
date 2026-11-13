@@ -14,6 +14,8 @@ npm run dev
 
 On Linux/CI use `PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install --with-deps chromium`. The browser cache stays under `node_modules`, not the home directory. Chromium must be permitted to launch by the host sandbox. No remote PDF service is used. Development renders the existing App before hydration; production HTML and metadata are generated during build.
 
+`npm ci` configures the repository's versioned `.githooks/pre-push` hook for local clones. Every push runs `npm run validate`, including the complete Playwright suite; use the same command to run all checks manually.
+
 ```sh
 npm run format:check
 npm run lint

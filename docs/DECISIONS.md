@@ -1,5 +1,11 @@
 # Decisions and phase log
 
+## Versioned pre-push validation (2026-11-13)
+
+- Keep the local push gate in the tracked `.githooks/pre-push` file and configure `core.hooksPath` during non-CI dependency installation. This avoids relying on unversioned per-clone files under `.git/hooks`.
+- The hook runs the same complete `npm run validate` pipeline expected before publication: formatting, lint, strict typecheck, unit tests, production build and all Playwright tests. CI retains its explicit steps and skips local hook installation.
+- Interview Lab E2E coverage asserts the canonical 19-exercise catalog so content additions cannot leave an obsolete catalog count unnoticed.
+
 ## Study Flow — AI Engineering track (2026-11-13)
 
 - Added AI Engineering to the existing bilingual Study Flow rather than creating an independent learning UI. The canonical reference layer contains 22 interview questions grouped into Basic, Middle and Senior levels across six modules: LLM Fundamentals, RAG, AI Agents, AI Architecture, AI-first & SDD, and Production AI.
