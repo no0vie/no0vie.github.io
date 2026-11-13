@@ -146,9 +146,10 @@ describe('server-rendered resume', () => {
         interviewComponent: InterviewPage,
       }),
     );
-    expect(catalog.match(/class="study-session-card"/g)).toHaveLength(4);
+    expect(catalog.match(/class="study-session-card"/g)).toHaveLength(10);
     expect(catalog).toContain('Study Flow');
     expect(catalog).toContain('href="/en/interview/session/browser-event-loop-mechanics"');
+    expect(catalog).toContain('href="/en/interview/session/ai-rag-engineering"');
     expect(catalog).toContain('href="/en/interview/practice"');
 
     const practice = renderToStaticMarkup(
@@ -158,9 +159,10 @@ describe('server-rendered resume', () => {
         interviewComponent: InterviewPage,
       }),
     );
-    expect(practice.match(/class="exercise-card"/g)).toHaveLength(15);
+    expect(practice.match(/class="exercise-card"/g)).toHaveLength(19);
     expect(practice).toContain('Search exercises');
     expect(practice).toContain('href="/en/interview/practice/event-loop-execution-order"');
+    expect(practice).toContain('href="/en/interview/practice/build-simple-rag"');
     expect(practice).toContain('Reset progress');
 
     const exercise = renderToStaticMarkup(
@@ -175,7 +177,7 @@ describe('server-rendered resume', () => {
     expect(exercise).toContain('aria-expanded="false"');
     expect(exercise).toContain('Показать решение');
     expect(exercise).toContain('Копировать код');
-    expect(exercise).toContain('Позиция: 2/15');
+    expect(exercise).toContain('Позиция: 2/19');
     expect(exercise).toContain('Предыдущее задание');
     expect(exercise).toContain('Следующее задание');
     expect(exercise).toContain('<noscript>');

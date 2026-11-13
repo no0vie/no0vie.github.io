@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { learningSessions, learningSessionsSchema } from '../src/content/study-flow';
+import { preparationTopics } from '../src/content/preparation';
+import { interviewExercises } from '../src/content/interview';
 import {
   generateEventLoopChallenge,
   validateEventLoopChallenge,
@@ -14,9 +16,16 @@ import {
 } from '../src/features/study-flow/progress';
 
 describe('Study Flow catalog', () => {
-  it('contains four complete bilingual 15–20 minute sessions with valid relations', () => {
+  it('preserves the four Phase 1 sessions and validates every 15–20 minute session', () => {
     expect(learningSessionsSchema.parse(learningSessions)).toEqual(learningSessions);
-    expect(learningSessions).toHaveLength(4);
+    expect(learningSessions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'browser-event-loop-mechanics' }),
+        expect.objectContaining({ id: 'browser-event-loop-prediction' }),
+        expect.objectContaining({ id: 'browser-rendering-critical-path' }),
+        expect.objectContaining({ id: 'react-fiber-render-commit' }),
+      ]),
+    );
     for (const session of learningSessions) {
       expect(session.estimatedMinutes).toBeGreaterThanOrEqual(15);
       expect(session.estimatedMinutes).toBeLessThanOrEqual(20);
@@ -33,6 +42,37 @@ describe('Study Flow catalog', () => {
       expect.arrayContaining(['browser-event-loop', 'browser-rendering-pipeline', 'react-fiber']),
     );
     expect(learningSessions.flatMap(({ sourceExerciseIds }) => sourceExerciseIds)).toContain('01');
+  });
+
+  it('covers the complete bilingual AI Engineering track', () => {
+    const aiTopics = preparationTopics.filter(({ category }) => category === 'ai-engineering');
+    const aiExercises = interviewExercises.filter(({ category }) => category === 'ai-engineering');
+    const aiSessions = learningSessions.filter(({ category }) => category === 'ai-engineering');
+    const coveredTopics = new Set(aiSessions.flatMap(({ sourceTopicIds }) => sourceTopicIds));
+    const coveredExercises = new Set(
+      aiSessions.flatMap(({ sourceExerciseIds }) => sourceExerciseIds),
+    );
+
+    expect(aiTopics.length).toBeGreaterThanOrEqual(20);
+    expect(new Set(aiTopics.map(({ interviewLevel }) => interviewLevel))).toEqual(
+      new Set(['basic', 'middle', 'senior']),
+    );
+    expect(aiExercises).toHaveLength(4);
+    expect(new Set(aiSessions.map(({ module }) => module))).toEqual(
+      new Set([
+        'llm-fundamentals',
+        'rag',
+        'ai-agents',
+        'ai-architecture',
+        'ai-first-sdd',
+        'production-ai',
+      ]),
+    );
+    expect(aiTopics.every(({ id }) => coveredTopics.has(id))).toBe(true);
+    expect(aiExercises.every(({ id }) => coveredExercises.has(id))).toBe(true);
+    expect(
+      aiSessions.flatMap(({ cards }) => cards).filter(({ diagram }) => diagram).length,
+    ).toBeGreaterThanOrEqual(5);
   });
 });
 

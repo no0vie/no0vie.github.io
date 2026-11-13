@@ -26,7 +26,7 @@ describe('Interview Preparation content model', () => {
     expect(preparationTopics.map(({ slug }) => slug)).toEqual([...preparationTopicSlugs]);
   });
 
-  it('provides five senior paths and a non-evaluative weak-spots recovery path', () => {
+  it('provides senior paths, a non-evaluative recovery path, and AI Engineering', () => {
     expect(learningPaths.map(({ id }) => id)).toEqual([
       'senior-javascript-browser',
       'senior-react-frontend',
@@ -34,6 +34,7 @@ describe('Interview Preparation content model', () => {
       'senior-system-design',
       'senior-fullstack',
       'weak-spots',
+      'ai-engineering',
     ]);
     for (const path of learningPaths) {
       expect(path.topicIds.length).toBeGreaterThan(0);

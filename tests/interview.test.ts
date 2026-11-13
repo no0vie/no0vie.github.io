@@ -32,14 +32,18 @@ const requiredSlugs = [
   'frontend-security-review',
   'resumable-large-file-upload',
   'realtime-messaging-system',
+  'build-simple-rag',
+  'tool-calling-agent',
+  'typescript-ai-gateway-sdk',
+  'ai-evaluation-suite',
 ];
 
 describe('Interview Lab content', () => {
-  it('contains exactly 15 complete, uniquely addressable bilingual exercises', () => {
+  it('contains 19 complete, uniquely addressable bilingual exercises', () => {
     expect(interviewExercisesSchema.parse(interviewExercises)).toEqual(interviewExercises);
     expect(interviewExercises.map(({ slug }) => slug)).toEqual(requiredSlugs);
-    expect(new Set(interviewExercises.map(({ id }) => id)).size).toBe(15);
-    expect(new Set(interviewExercises.map(({ slug }) => slug)).size).toBe(15);
+    expect(new Set(interviewExercises.map(({ id }) => id)).size).toBe(19);
+    expect(new Set(interviewExercises.map(({ slug }) => slug)).size).toBe(19);
 
     for (const exercise of interviewExercises) {
       expect(exercise.tags.length).toBeGreaterThan(0);
