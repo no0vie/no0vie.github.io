@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { aiLearningSessions } from './study-flow-ai';
+import { seniorLearningSessions } from './study-flow-senior';
 
 const localized = z.object({ ru: z.string().min(1), en: z.string().min(1) }).strict();
 const cardKinds = [
@@ -41,7 +42,18 @@ export const learningSessionSchema = z
     version: z.number().int().positive(),
     title: localized,
     goal: localized,
-    category: z.enum(['browser', 'react', 'ai-engineering']),
+    category: z.enum([
+      'browser',
+      'react',
+      'ai-engineering',
+      'web-fundamentals',
+      'postgresql',
+      'backend-architecture',
+      'performance',
+      'behavioral',
+      'rails',
+    ]),
+    priority: z.enum(['P0', 'P1', 'P2']).default('P1'),
     module: z
       .enum([
         'llm-fundamentals',
@@ -508,6 +520,7 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
     ],
   },
   ...aiLearningSessions,
+  ...seniorLearningSessions,
 ]);
 
 export const learningSessionIds = learningSessions.map(({ id }) => id);

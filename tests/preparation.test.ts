@@ -35,6 +35,7 @@ describe('Interview Preparation content model', () => {
       'senior-fullstack',
       'weak-spots',
       'ai-engineering',
+      'senior-software-engineer-sprint-2026',
     ]);
     for (const path of learningPaths) {
       expect(path.topicIds.length).toBeGreaterThan(0);

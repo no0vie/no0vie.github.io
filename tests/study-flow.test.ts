@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { learningSessions, learningSessionsSchema } from '../src/content/study-flow';
-import { preparationTopics } from '../src/content/preparation';
+import { learningPaths, preparationTopics } from '../src/content/preparation';
 import { interviewExercises } from '../src/content/interview';
 import {
   generateEventLoopChallenge,
@@ -35,6 +35,53 @@ describe('Study Flow catalog', () => {
         session.estimatedMinutes,
       );
     }
+  });
+
+  it('validates the enriched senior catalog and its prerequisite graph', () => {
+    const requiredCategories = new Set<string>([
+      'web-fundamentals',
+      'postgresql',
+      'backend-architecture',
+      'performance',
+      'behavioral',
+      'rails',
+    ]);
+    expect([...new Set(learningSessions.map(({ category }) => category))]).toEqual(
+      expect.arrayContaining([...requiredCategories]),
+    );
+    expect(learningSessions.some(({ id }) => id === 'backend-message-email-outbox')).toBe(true);
+    expect(
+      learningSessions.filter(({ category }) => category === 'behavioral').length,
+    ).toBeGreaterThanOrEqual(2);
+
+    for (const session of learningSessions) {
+      expect(new Set(session.cards.map(({ id }) => id)).size).toBe(session.cards.length);
+      expect(session.priority).toMatch(/^P[0-2]$/);
+      if (requiredCategories.has(session.category)) {
+        expect(session.cards.some(({ kind }) => kind === 'mini-task')).toBe(true);
+        expect(session.cards.some(({ kind }) => kind === 'answer')).toBe(true);
+      }
+    }
+
+    const visiting = new Set<string>();
+    const visited = new Set<string>();
+    const byId = new Map(learningSessions.map((session) => [session.id, session]));
+    const visit = (id: string) => {
+      if (visiting.has(id)) throw new Error(`prerequisite cycle at ${id}`);
+      if (visited.has(id)) return;
+      visiting.add(id);
+      for (const prerequisite of byId.get(id)?.prerequisiteSessionIds ?? []) visit(prerequisite);
+      visiting.delete(id);
+      visited.add(id);
+    };
+    for (const session of learningSessions) visit(session.id);
+  });
+
+  it('provides the Senior Software Engineer Interview Sprint 2026 path', () => {
+    const sprint = learningPaths.find(({ id }) => id === 'senior-software-engineer-sprint-2026');
+    expect(sprint?.title.ru).toContain('Interview Sprint 2026');
+    expect(sprint?.sessionIds?.length).toBeGreaterThanOrEqual(12);
+    expect(sprint?.sessionIds).toEqual(expect.arrayContaining(['backend-message-email-outbox']));
   });
 
   it('preserves Phase 1 source provenance', () => {

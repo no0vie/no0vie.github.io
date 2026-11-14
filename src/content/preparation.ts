@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { interviewExercises, type InterviewExercise } from './interview';
 import { notes } from './notes';
 import { aiEngineeringTopics } from './preparation-ai-engineering';
+import { seniorLearningSessions } from './study-flow-senior';
 
 const localizedText = z
   .object({ ru: z.string().trim().min(1), en: z.string().trim().min(1) })
@@ -352,6 +353,7 @@ export const learningPaths = [
     exerciseIds: [...exerciseIds],
     recommendedOrder: [...topicIds, ...exerciseIds],
     estimatedMinutes: topicIds.length * 45 + exerciseIds.length * 60,
+    sessionIds: undefined,
   })),
   {
     id: 'ai-engineering',
@@ -366,6 +368,38 @@ export const learningPaths = [
     recommendedOrder: [...aiEngineeringTopics.map(({ id }) => id), '16', '17', '18', '19'],
     estimatedMinutes:
       aiEngineeringTopics.reduce((sum, item) => sum + item.estimatedMinutes, 0) + 330,
+    sessionIds: undefined,
+  },
+  {
+    id: 'senior-software-engineer-sprint-2026',
+    title: {
+      ru: 'Senior Software Engineer — Interview Sprint 2026',
+      en: 'Senior Software Engineer — Interview Sprint 2026',
+    },
+    description: {
+      ru: 'Приоритетный маршрут на ноябрь–декабрь 2026: Web, PostgreSQL, backend/system design, performance, behavioral и AI Engineering без Rails в ежедневной нагрузке.',
+      en: 'A November–December 2026 priority route covering Web, PostgreSQL, backend/system design, performance, behavioral, and AI Engineering, excluding Rails from the daily load.',
+    },
+    targetRole: 'Senior Software Engineer / Fullstack Engineer',
+    topicIds: [
+      'url-navigation',
+      'browser-rendering-pipeline',
+      'node-event-loop',
+      'postgresql-concurrency',
+      'idempotency',
+      'reliable-messaging',
+      ...aiEngineeringTopics.map(({ id }) => id),
+    ],
+    exerciseIds: ['03', '09', '12', '13', '15', '16', '17', '18', '19'],
+    recommendedOrder: seniorLearningSessions
+      .filter(({ priority, category }) => priority !== 'P2' && category !== 'rails')
+      .map(({ id }) => id),
+    estimatedMinutes: seniorLearningSessions
+      .filter(({ priority, category }) => priority !== 'P2' && category !== 'rails')
+      .reduce((sum, session) => sum + session.estimatedMinutes, 0),
+    sessionIds: seniorLearningSessions
+      .filter(({ priority, category }) => priority !== 'P2' && category !== 'rails')
+      .map(({ id }) => id),
   },
 ];
 

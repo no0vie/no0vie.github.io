@@ -1,5 +1,14 @@
 # Decisions and phase log
 
+## Study Flow — Senior Software Engineer Interview Sprint 2026 (2026-11-15)
+
+- Audited the existing Study Flow, canonical preparation/practice layers, Engineering Notes, routes, localStorage migration, ranking, RU/EN model, unit/E2E coverage and static GitHub Pages generation. The repository remains one Study Flow; all ten existing session IDs, card IDs, routes and `study-flow:v1` records remain compatible.
+- Added sixteen bilingual 18-minute sessions to the same catalog: three Web Fundamentals, four PostgreSQL, four backend architecture/reliability, two production performance, two behavioral leadership and one optional Rails reference. Every added session has priority, prerequisites/relations, concise theory, a structured diagram with text alternative, practice, progressive hints, a reference solution, pitfalls, senior follow-ups, self-check and an authoritative source.
+- The Message → Email sequence progresses from transaction boundaries through jobs/delivery semantics to Transactional Outbox and idempotency/resilience. It explicitly preserves the distinction between database commit and queue delivery and does not claim exactly-once delivery to an external email provider.
+- Added `senior-software-engineer-sprint-2026` as a curated November–December route. P0/P1 sessions are included without adding the P2 Rails reference to the daily route. Existing AI sessions are reused rather than duplicated; their canonical 22-topic/four-exercise track remains intact.
+- Behavioral examples are templates anchored only in verified résumé facts. Free-form personal answers are deliberately not persisted by the public site because `STUDY_FLOW_SPEC.md` excludes sensitive free text from default localStorage; users are directed to private notes.
+- New catalog validation covers priorities, unique card IDs, required practice/solution cards for new domains, relation integrity and prerequisite-cycle detection. Existing broad content gaps remain: the original exercises `02–15` still need full contract/implementation/test/review session chains, and the seven compact canonical topics still require deeper reference-layer rewrites.
+
 ## Resume 2.0 — AI-first Engineering and RU/EN parity (2026-11-13)
 
 - Audited the shared typed source, SSR routes, project and case records, clipboard exports, print CSS, PDF generation and tests. RU and EN use the same localized records; the source already had equivalent current experience and current Pantry, Magic Ball and brnchly descriptions. The reported live date mismatch is not present in source: both locales derive `profile.updated` and PDF filenames from one value, so an older EN date indicates a stale deployed artifact rather than a second locale record.
