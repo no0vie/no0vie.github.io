@@ -190,6 +190,7 @@ export const skillGroupSchema = z
       'testing-tooling',
       'backend-data',
       'prior-specialized',
+      'engineering-practices',
     ]),
     label: localizedSchema,
     skills: z.array(textSchema).min(1),

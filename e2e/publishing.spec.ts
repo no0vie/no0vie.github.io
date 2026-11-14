@@ -56,7 +56,7 @@ for (const locale of ['ru', 'en']) {
     const href = await downloadLink.getAttribute('href');
     await expect(downloadLink).toHaveAttribute(
       'download',
-      `eugene-novikov-sse-2026-11-06-${locale}.pdf`,
+      `eugene-novikov-sse-2026-11-13-${locale}.pdf`,
     );
     const pdf = await request.get(href!);
     expect(pdf.status()).toBe(200);
@@ -66,7 +66,7 @@ for (const locale of ['ru', 'en']) {
     const downloadPromise = page.waitForEvent('download');
     await downloadLink.click();
     const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe(`eugene-novikov-sse-2026-11-06-${locale}.pdf`);
+    expect(download.suggestedFilename()).toBe(`eugene-novikov-sse-2026-11-13-${locale}.pdf`);
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.site-header')).toBeHidden();
     await expect(page.locator('#education')).toBeVisible();

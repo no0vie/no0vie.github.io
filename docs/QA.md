@@ -1,5 +1,16 @@
 # Current QA status
 
+## Resume 2.0 verification (2026-11-13)
+
+- `npm run format:check`: passed.
+- `npm run lint`: passed with zero warnings.
+- `npm run typecheck`: passed.
+- `npm test`: 95 tests passed across 14 files.
+- `npm run build`: the sandboxed attempt generated the Vite/static output but Chromium was closed before PDF rendering; the required unsandboxed retry passed and generated static RU/EN pages, SEO and both validated PDFs dated `2026-11-13`.
+- `npm run test:e2e`: 46 tests passed, covering RU/EN static content and downloads, print behavior, axe checks, keyboard navigation, reduced motion, themes, and responsive layouts from 320 to 1440 px.
+- Editor diagnostics: no errors or warnings.
+- Build retained pre-existing non-fatal Rollup warnings for Zod annotations and the main chunk size; no application-source build error was reported.
+
 Last updated: 2026-10-27 after Interview Preparation Hub phases 0–3.
 
 ## Current automated verification

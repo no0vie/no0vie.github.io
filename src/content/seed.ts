@@ -42,8 +42,8 @@ export const seedContent = {
       'Senior Software Engineer (Frontend-focused)',
     ),
     about: localized(
-      'Разрабатываю программные продукты с 2015 года — от ПО для информационных табло до крупных веб-платформ. Проектирую расширяемую архитектуру фронтенда, улучшаю продуктовые сценарии и участвую в обеспечении надёжности production-систем. Провожу код-ревью и помогаю коллегам развиваться.',
-      'I have been building software since 2015, from digital signage applications to large-scale web platforms. I design extensible frontend architectures, improve product workflows, and help keep production systems reliable. I review code and mentor fellow engineers.',
+      'Разрабатываю программные продукты с 2015 года — от ПО для информационных табло до крупных веб-платформ. Проектирую расширяемую архитектуру, развиваю продуктовые сценарии и участвую в обеспечении надёжности production-систем. Провожу код-ревью и помогаю коллегам развиваться. Применяю AI-first Engineering и Spec-Driven Development в коммерческой разработке и собственных проектах: формализую требования и архитектурные решения, использую AI-агентов для реализации, анализа изменений и подготовки тестов, сохраняя инженерный контроль над результатом.',
+      'I have been building software products since 2015, from information display systems to large-scale web platforms. I design extensible architectures, improve product workflows, and contribute to production reliability. I review code and mentor fellow engineers. I apply AI-first engineering and Spec-Driven Development in commercial and personal projects, using specifications to clarify requirements and architectural decisions and AI agents to support implementation, change analysis, and testing while retaining engineering ownership of the result.',
     ),
     education: localized(
       'Ярославский государственный университет им. П. Г. Демидова. Бакалавр по направлению «Прикладная математика и информатика», 2018. Английский — B1 (самооценка): читаю техническую документацию и уверенно общаюсь по рабочим вопросам.',
@@ -55,7 +55,7 @@ export const seedContent = {
       telegram: 'https://t.me/no_0vie',
       whatsapp: 'https://wa.me/qr/XFZZQSNXJCSBL1',
     },
-    updated: '2026-11-06',
+    updated: '2026-11-13',
   },
   availability: {
     status: 'available',
@@ -138,6 +138,11 @@ export const seedContent = {
           'crm-trends-landing',
           'С использованием ИИ-инструментов разработал лендинг для отраслевого мероприятия за один вечер.',
           'Built a landing page for an industry event in one evening using AI-assisted development tools.',
+        ),
+        achievement(
+          'ai-first-sdd',
+          'Применяю AI-first Engineering и Spec-Driven Development в коммерческой разработке: формализую требования и архитектурные решения, использую AI-агентов для реализации, анализа изменений, подготовки тестов и проверки результатов, сохраняя инженерный контроль.',
+          'Apply AI-first engineering and Spec-Driven Development in commercial software delivery: formalize requirements and architectural decisions, and use AI agents to support implementation, change analysis, test preparation, and result verification while retaining engineering ownership.',
         ),
       ],
       technologies: [

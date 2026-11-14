@@ -1,5 +1,13 @@
 # Decisions and phase log
 
+## Resume 2.0 — AI-first Engineering and RU/EN parity (2026-11-13)
+
+- Audited the shared typed source, SSR routes, project and case records, clipboard exports, print CSS, PDF generation and tests. RU and EN use the same localized records; the source already had equivalent current experience and current Pantry, Magic Ball and brnchly descriptions. The reported live date mismatch is not present in source: both locales derive `profile.updated` and PDF filenames from one value, so an older EN date indicates a stale deployed artifact rather than a second locale record.
+- Expanded the bilingual About copy and MTS Web Services experience with owner-approved AI-first Engineering and Spec-Driven Development practices. Wording keeps the Senior Software Engineer positioning, retains human ownership of architecture and quality, and makes no company-wide adoption, autonomy, cost or delivery-speed claim.
+- Added a compact Engineering Practices group. It contains only practices approved for publication; learning topics such as RAG, MCP, LangChain and vector databases are not presented as résumé competencies.
+- QA Flow remains unpublished. The repository confirms Playwright usage and educational AI-agent material, but does not confirm the commercial workflow's implemented scope, production status, automated test generation or repair behavior. Revisit only with publication-safe implementation evidence.
+- Updated the canonical content date to `2026-11-13`; both locale pages and generated PDF filenames continue to derive from that single field.
+
 ## Versioned pre-push validation (2026-11-13)
 
 - Keep the local push gate in the tracked `.githooks/pre-push` file and configure `core.hooksPath` during non-CI dependency installation. This avoids relying on unversioned per-clone files under `.git/hooks`.

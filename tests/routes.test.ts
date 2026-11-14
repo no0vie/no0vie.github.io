@@ -62,12 +62,12 @@ describe('static page routes', () => {
   });
 
   it('links to dated locale-specific PDFs under the deployment base', () => {
-    expect(pdfFileName('ru')).toBe('eugene-novikov-sse-2026-11-06-ru.pdf');
-    expect(pdfFileName('en')).toBe('eugene-novikov-sse-2026-11-06-en.pdf');
+    expect(pdfFileName('ru')).toBe('eugene-novikov-sse-2026-11-13-ru.pdf');
+    expect(pdfFileName('en')).toBe('eugene-novikov-sse-2026-11-13-en.pdf');
     expect(pdfPath('ru', '/career/')).toBe(
-      '/career/downloads/eugene-novikov-sse-2026-11-06-ru.pdf',
+      '/career/downloads/eugene-novikov-sse-2026-11-13-ru.pdf',
     );
-    expect(pdfPath('en', '/')).toBe('/downloads/eugene-novikov-sse-2026-11-06-en.pdf');
+    expect(pdfPath('en', '/')).toBe('/downloads/eugene-novikov-sse-2026-11-13-en.pdf');
   });
 });
 
@@ -89,8 +89,8 @@ describe('server-rendered resume', () => {
       expect(html).toContain(escapedText(availability.label[locale]));
       expect(html).toContain('class="availability-status"');
       expect(html).toContain('https://wa.me/qr/XFZZQSNXJCSBL1');
-      expect(html).toContain(`downloads/eugene-novikov-sse-2026-11-06-${locale}.pdf`);
-      expect(html).toContain(`download="eugene-novikov-sse-2026-11-06-${locale}.pdf"`);
+      expect(html).toContain(`downloads/eugene-novikov-sse-2026-11-13-${locale}.pdf`);
+      expect(html).toContain(`download="eugene-novikov-sse-2026-11-13-${locale}.pdf"`);
       expect(html).toContain('id="main"');
       expect(html).not.toContain('<details');
     },

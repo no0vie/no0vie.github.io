@@ -262,8 +262,12 @@ describe('approved bilingual content', () => {
       ru: 'Старший разработчик ПО (фокус на фронтенде)',
       en: 'Senior Software Engineer (Frontend-focused)',
     });
-    expect(profile.about.ru).toMatch(/2015|архитектур|продукт|дежур|настав/i);
-    expect(profile.about.en).toMatch(/2015|architect|product|on-call|mentor/i);
+    expect(profile.about.ru).toMatch(/2015|архитектур|продукт|production|код-ревью/i);
+    expect(profile.about.en).toMatch(/2015|architect|product|production|review code/i);
+    expect(profile.about.ru).toMatch(/AI-first.*Spec-Driven Development.*AI-агент/i);
+    expect(profile.about.en).toMatch(/AI-first.*Spec-Driven Development.*AI agents/i);
+    expect(profile.about.ru).toMatch(/инженерн.*контрол/i);
+    expect(profile.about.en).toMatch(/engineering ownership/i);
     expect(profile.education.ru).toMatch(/B1.*самооцен/i);
     expect(profile.education.en).toMatch(/B1.*self-assessed/i);
     expect(profile.education.en).toMatch(/technical documentation.*communicat/i);
@@ -272,7 +276,15 @@ describe('approved bilingual content', () => {
     const mtsSurfaces = JSON.stringify([highlights[0], mts]);
     expect(mts?.employer).toEqual({ ru: 'МТС Веб Сервисы', en: 'MTS Web Services' });
     expect(mts?.role).toEqual({ ru: 'Ведущий разработчик', en: 'Senior Developer' });
-    expect(mts?.achievements).toHaveLength(5);
+    expect(mts?.achievements).toHaveLength(6);
+    expect(mts?.achievements.find(({ id }) => id === 'ai-first-sdd')?.text).toEqual({
+      ru: 'Применяю AI-first Engineering и Spec-Driven Development в коммерческой разработке: формализую требования и архитектурные решения, использую AI-агентов для реализации, анализа изменений, подготовки тестов и проверки результатов, сохраняя инженерный контроль.',
+      en: 'Apply AI-first engineering and Spec-Driven Development in commercial software delivery: formalize requirements and architectural decisions, and use AI agents to support implementation, change analysis, test preparation, and result verification while retaining engineering ownership.',
+    });
+    expect(new Set(mts?.achievements.map(({ text }) => text.ru))).toHaveLength(
+      mts?.achievements.length ?? 0,
+    );
+    expect(JSON.stringify(mts)).not.toMatch(/company-wide|team-wide|автономн|сократил.*срок/i);
     expect(mts?.outcome).toEqual({
       ru: 'Мастер каскадных кампаний был реализован в согласованные сроки, оправдал ожидания заказчика и показал положительный коммерческий результат.',
       en: "The cascade campaign wizard was delivered on schedule, met the customer's expectations, and achieved a positive commercial outcome.",
@@ -342,6 +354,7 @@ describe('approved bilingual content', () => {
       'testing-tooling',
       'backend-data',
       'prior-specialized',
+      'engineering-practices',
     ]);
     expect(skillGroups.every((group) => skillGroupSchema.safeParse(group).success)).toBe(true);
     expect(skillGroups.flatMap(({ skills }) => skills)).toEqual(
@@ -354,8 +367,19 @@ describe('approved bilingual content', () => {
         'NestJS',
         'PostgreSQL',
         'WaSaby',
+        'AI-assisted Engineering',
+        'Spec-Driven Development',
+        'AI Agents / Agentic Workflows',
+        'Code Review',
+        'Automated Testing',
       ]),
     );
+    const practices = skillGroups.find(({ id }) => id === 'engineering-practices');
+    expect(practices?.label).toEqual({
+      ru: 'Инженерные практики',
+      en: 'Engineering Practices',
+    });
+    expect(JSON.stringify(practices)).not.toMatch(/RAG|MCP|LangChain|Vector Databases/i);
   });
 
   it('keeps confidential and unsupported performance claims out of editorial copy', () => {

@@ -140,6 +140,17 @@ export const skillGroups = [
     label: { ru: 'Предыдущий специализированный опыт', en: 'Prior specialized experience' },
     skills: ['WaSaby', 'Less', 'Vue 3', 'Vue Router'],
   },
+  {
+    id: 'engineering-practices',
+    label: { ru: 'Инженерные практики', en: 'Engineering Practices' },
+    skills: [
+      'AI-assisted Engineering',
+      'Spec-Driven Development',
+      'AI Agents / Agentic Workflows',
+      'Code Review',
+      'Automated Testing',
+    ],
+  },
 ] satisfies SkillGroup[];
 
 skillGroups.forEach((group) => skillGroupSchema.parse(group));
