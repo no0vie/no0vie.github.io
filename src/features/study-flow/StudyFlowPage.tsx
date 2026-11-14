@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Locale } from '../../content';
 import { learningSessions } from '../../content/study-flow';
+import { algorithmPatterns, algorithmProblems } from '../../content/algorithmic-patterns';
 import { preparationPath } from '../../app/routes';
 import { generateEventLoopChallenge } from './challenges';
 import {
@@ -8,6 +9,7 @@ import {
   rankSessions,
   readStudyProgress,
   recordCardVisit,
+  recordAlgorithmAttempt,
   writeStudyProgress,
   type Confidence,
   type StudyProgress,
@@ -36,6 +38,17 @@ const text = {
     minutes: 'мин',
     diagram: 'Текстовая альтернатива',
     criteria: 'Критерии ответа',
+    modes: 'Режим обучения',
+    recognize: 'Угадай паттерн',
+    solve: 'Решить',
+    learn: 'Изучить',
+    choosePattern: 'Выберите подход',
+    explain: 'Объясните выбор и оцените сложность',
+    feedback: 'Обратная связь',
+    optimal: 'Оптимальный подход',
+    alternatives: 'Допустимые альтернативы',
+    solution: 'Полное решение',
+    checkAnswer: 'Проверить выбор',
   },
   en: {
     title: 'Study Flow',
@@ -59,6 +72,17 @@ const text = {
     minutes: 'min',
     diagram: 'Text alternative',
     criteria: 'Answer criteria',
+    modes: 'Learning mode',
+    recognize: 'Recognize pattern',
+    solve: 'Solve',
+    learn: 'Learn',
+    choosePattern: 'Choose an approach',
+    explain: 'Explain the choice and estimate complexity',
+    feedback: 'Feedback',
+    optimal: 'Optimal approach',
+    alternatives: 'Accepted alternatives',
+    solution: 'Full solution',
+    checkAnswer: 'Check choice',
   },
 } as const;
 
@@ -160,14 +184,40 @@ function Session({
           '1',
       ) || 1,
   );
+  const initialMode = new URLSearchParams(
+    typeof location === 'undefined' ? '' : location.search,
+  ).get('mode');
+  const [mode, setMode] = useState<'learn' | 'recognize' | 'solve'>(
+    initialMode === 'recognize' || initialMode === 'solve' ? initialMode : 'learn',
+  );
+  const [selectedPattern, setSelectedPattern] = useState('');
+  const [explanation, setExplanation] = useState('');
+  const [checked, setChecked] = useState(false);
   const [ready, setReady] = useState(false);
   const touch = useRef<{ x: number; y: number } | null>(null);
   const card = session.cards[index];
+  const patternId = session.id.startsWith('algorithm-')
+    ? session.id.slice('algorithm-'.length)
+    : undefined;
+  const pattern = algorithmPatterns.find((item) => item.id === patternId);
+  const practiceProblems =
+    pattern?.practiceProblemIds
+      .map((id) => algorithmProblems.find((problem) => problem.id === id))
+      .filter((problem) => problem !== undefined) ?? [];
+  const problem = practiceProblems[Math.abs(seed) % Math.max(1, practiceProblems.length)];
+  const recognitionOptions = pattern
+    ? [
+        ...algorithmPatterns
+          .filter((item) => item.priority === pattern.priority && item.id !== pattern.id)
+          .slice(0, 3),
+        pattern,
+      ].sort((a, b) => a.id.localeCompare(b.id))
+    : [];
   function move(next: number, replace = false) {
     const bounded = Math.max(0, Math.min(session.cards.length - 1, next));
     setIndex(bounded);
     setRevealed(false);
-    const url = `${preparationPath(locale, `session/${session.id}`)}?card=${session.cards[bounded]?.id}${seed ? `&seed=${seed}` : ''}`;
+    const url = `${preparationPath(locale, `session/${session.id}`)}?card=${session.cards[bounded]?.id}${seed ? `&seed=${seed}` : ''}${mode !== 'learn' ? `&mode=${mode}` : ''}`;
     if (typeof history !== 'undefined')
       history[replace ? 'replaceState' : 'pushState']({}, '', url);
     onProgress(recordCardVisit(progress, session.id, session.version, session.cards[bounded].id));
@@ -225,6 +275,28 @@ function Session({
         </p>
         <h1 id="session-title">{session.title[locale]}</h1>
         <p>{session.goal[locale]}</p>
+        {pattern && (
+          <nav className="study-mode-switch" aria-label={t.modes}>
+            {(['learn', 'recognize', 'solve'] as const).map((value) => (
+              <button
+                type="button"
+                key={value}
+                aria-pressed={mode === value}
+                onClick={() => {
+                  setMode(value);
+                  setChecked(false);
+                  history.replaceState(
+                    {},
+                    '',
+                    `${preparationPath(locale, `session/${session.id}`)}?card=${card.id}&seed=${seed}${value === 'learn' ? '' : `&mode=${value}`}`,
+                  );
+                }}
+              >
+                {t[value]}
+              </button>
+            ))}
+          </nav>
+        )}
         <div className="study-progress" aria-label={`${index + 1}/${session.cards.length}`}>
           <span>
             {index + 1}/{session.cards.length}
@@ -237,7 +309,101 @@ function Session({
           {card.kind} · {card.estimatedMinutes} {t.minutes}
         </p>
         <h2 id="card-title">{card.title[locale]}</h2>
-        <p>{card.body[locale]}</p>
+        {mode === 'learn' || !pattern || !problem ? (
+          <p>{card.body[locale]}</p>
+        ) : (
+          <section className="algorithm-practice" aria-labelledby="algorithm-prompt">
+            <h3 id="algorithm-prompt">
+              {mode === 'recognize' ? t.choosePattern : problem.title[locale]}
+            </h3>
+            <p>{problem.prompt[locale]}</p>
+            {mode === 'recognize' ? (
+              <>
+                <fieldset>
+                  <legend>{t.choosePattern}</legend>
+                  {recognitionOptions.map((option) => (
+                    <label key={option.id}>
+                      <input
+                        type="radio"
+                        name="pattern"
+                        value={option.id}
+                        checked={selectedPattern === option.id}
+                        onChange={() => {
+                          setSelectedPattern(option.id);
+                          setChecked(false);
+                        }}
+                      />
+                      {option.name[locale]}
+                    </label>
+                  ))}
+                </fieldset>
+                <label>
+                  {t.explain}
+                  <textarea
+                    value={explanation}
+                    onChange={(event) => setExplanation(event.target.value)}
+                  />
+                </label>
+                <button
+                  type="button"
+                  disabled={!selectedPattern}
+                  onClick={() => {
+                    setChecked(true);
+                    const correct = problem.acceptedPatternIds.includes(selectedPattern as never);
+                    onProgress(
+                      recordAlgorithmAttempt(progress, problem.id, {
+                        mode: 'recognize',
+                        result: correct ? 'correct' : 'incorrect',
+                        errorKinds: correct ? [] : ['pattern-recognition'],
+                        attemptedAt: new Date().toISOString(),
+                      }),
+                    );
+                  }}
+                >
+                  {t.checkAnswer}
+                </button>
+              </>
+            ) : (
+              <>
+                <p>
+                  <strong>{problem.input[locale]}</strong>
+                </p>
+                <ul>
+                  {problem.edgeCases.map((item, i) => (
+                    <li key={i}>{item[locale]}</li>
+                  ))}
+                </ul>
+                <button type="button" aria-expanded={checked} onClick={() => setChecked(!checked)}>
+                  {t.solution}
+                </button>
+              </>
+            )}
+            {checked && (
+              <div className="algorithm-feedback" aria-live="polite">
+                <h4>{t.feedback}</h4>
+                <p>
+                  <strong>{t.optimal}:</strong>{' '}
+                  {
+                    algorithmPatterns.find((item) => item.id === problem.primaryPatternId)?.name[
+                      locale
+                    ]
+                  }{' '}
+                  · {problem.timeComplexity} / {problem.spaceComplexity}
+                </p>
+                <p>
+                  <strong>{t.alternatives}:</strong>{' '}
+                  {problem.alternatives.map((item) => item[locale]).join(' ')}
+                </p>
+                <p>{problem.explanation[locale]}</p>
+                {mode === 'solve' && (
+                  <pre>
+                    <code>{problem.solutionTypeScript}</code>
+                  </pre>
+                )}
+              </div>
+            )}
+          </section>
+        )}
         {card.diagram && (
           <figure className="study-diagram">
             <ol>

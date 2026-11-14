@@ -17,12 +17,29 @@ const sessionSchema = z
     answers: z.record(z.string(), z.boolean()).default({}),
   })
   .strict();
+const algorithmErrorKindSchema = z.enum([
+  'pattern-recognition',
+  'suboptimal-approach',
+  'implementation',
+  'edge-cases',
+  'complexity',
+]);
+const algorithmAttemptSchema = z
+  .object({
+    mode: z.enum(['recognize', 'solve']),
+    result: z.enum(['correct', 'partial', 'incorrect', 'skipped']),
+    errorKinds: z.array(algorithmErrorKindSchema),
+    attemptedAt: z.string().datetime(),
+  })
+  .strict();
+export type AlgorithmAttempt = z.infer<typeof algorithmAttemptSchema>;
 const progressSchema = z
   .object({
     schemaVersion: z.literal(1),
     sessions: z.record(z.string(), sessionSchema),
     queueHistory: z.array(z.string()).max(20),
     lastCategory: z.string().optional(),
+    algorithmAttempts: z.record(z.string(), z.array(algorithmAttemptSchema).max(20)).default({}),
   })
   .strict();
 export type StudyProgress = z.infer<typeof progressSchema>;
@@ -36,6 +53,7 @@ export const createEmptyStudyProgress = (): StudyProgress => ({
   schemaVersion: 1,
   sessions: {},
   queueHistory: [],
+  algorithmAttempts: {},
 });
 export function parseStudyProgress(value: string | null): StudyProgress {
   if (!value) return createEmptyStudyProgress();
@@ -164,6 +182,22 @@ export function completeSession(
     },
   };
 }
+export function recordAlgorithmAttempt(
+  progress: StudyProgress,
+  problemId: string,
+  attempt: AlgorithmAttempt,
+): StudyProgress {
+  const parsed = algorithmAttemptSchema.parse(attempt);
+  const previous = progress.algorithmAttempts[problemId] ?? [];
+  return {
+    ...progress,
+    algorithmAttempts: {
+      ...progress.algorithmAttempts,
+      [problemId]: [...previous, parsed].slice(-20),
+    },
+  };
+}
+
 export interface RankedSession {
   session: LearningSession;
   score: number;

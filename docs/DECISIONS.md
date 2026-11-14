@@ -1,5 +1,13 @@
 # Decisions and phase log
 
+## Study Flow — Algorithmic Patterns & Problem Recognition (2026-11-15)
+
+- Audited the canonical preparation, Interview Lab and Study Flow layers before adding content. Classical interview patterns were absent; only exercise `08` (`groupBy/indexBy`) overlaps HashMap practice, so it is linked as provenance rather than copied. Event Loop, backend queues and architecture graphs are not treated as algorithm-pattern coverage.
+- Added one typed canonical catalog with 18 P0–P2 patterns and 30 bilingual problems. Each problem records its primary and accepted alternative patterns, constraints, edge cases, hints, TypeScript solution, complexity, trade-offs and tests; prompts are original summaries rather than copied commercial-platform statements.
+- Added 18 stable 15-minute sessions to the existing Study Flow. Learn, Recognize and Solve share the existing `/interview/session/:sessionId` route; `?mode=recognize|solve` is a progressive-enhancement deep link, while old URLs remain Learn mode.
+- Recognition feedback accepts every declared valid pattern rather than comparing only with one reference answer. Free-form explanations are self-checked against visible criteria and are not persisted or presented as AI scoring.
+- Extended validated `study-flow:v1` records compatibly with bounded algorithm attempts and five remediation classes: pattern recognition, suboptimal approach, implementation, edge cases and complexity. No existing session/card ID was changed and no previous progress is erased.
+
 ## Study Flow — Senior Software Engineer Interview Sprint 2026 (2026-11-15)
 
 - Audited the existing Study Flow, canonical preparation/practice layers, Engineering Notes, routes, localStorage migration, ranking, RU/EN model, unit/E2E coverage and static GitHub Pages generation. The repository remains one Study Flow; all ten existing session IDs, card IDs, routes and `study-flow:v1` records remain compatible.

@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { learningSessions, learningSessionsSchema } from '../src/content/study-flow';
+import {
+  algorithmPatterns,
+  algorithmProblems,
+  algorithmProblemSchema,
+  getRecognitionQueue,
+} from '../src/content/algorithmic-patterns';
 import { learningPaths, preparationTopics } from '../src/content/preparation';
 import { interviewExercises } from '../src/content/interview';
 import {
@@ -13,6 +19,7 @@ import {
   readStudyProgress,
   recordCardVisit,
   rankSessions,
+  recordAlgorithmAttempt,
 } from '../src/features/study-flow/progress';
 
 describe('Study Flow catalog', () => {
@@ -123,6 +130,45 @@ describe('Study Flow catalog', () => {
   });
 });
 
+describe('Algorithmic Patterns catalog', () => {
+  it('covers every requested P0–P2 pattern without duplicate IDs', () => {
+    expect(algorithmPatterns).toHaveLength(18);
+    expect(new Set(algorithmPatterns.map(({ id }) => id)).size).toBe(18);
+    expect(algorithmPatterns.filter(({ priority }) => priority === 'P0')).toHaveLength(8);
+    expect(algorithmPatterns.filter(({ priority }) => priority === 'P1')).toHaveLength(6);
+    expect(algorithmPatterns.filter(({ priority }) => priority === 'P2')).toHaveLength(4);
+    for (const pattern of algorithmPatterns) {
+      expect(pattern.name.ru).toBeTruthy();
+      expect(pattern.name.en).toBeTruthy();
+      expect(pattern.recognitionSignals.length).toBeGreaterThanOrEqual(3);
+      expect(pattern.canonicalTypeScript).toContain('function');
+      expect(pattern.practiceProblemIds).toHaveLength(3);
+      expect(pattern.checkQuestions.length).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it('provides at least 30 complete bilingual problems with executable-looking TS solutions', () => {
+    expect(algorithmProblems.length).toBeGreaterThanOrEqual(30);
+    expect(new Set(algorithmProblems.map(({ id }) => id)).size).toBe(algorithmProblems.length);
+    for (const problem of algorithmProblems) {
+      expect(algorithmProblemSchema.parse(problem)).toEqual(problem);
+      expect(problem.solutionTypeScript).toMatch(/function|class/);
+      expect(problem.tests.length).toBeGreaterThanOrEqual(2);
+      expect(problem.acceptedPatternIds).toContain(problem.primaryPatternId);
+      expect(problem.explanation.ru).toBeTruthy();
+      expect(problem.explanation.en).toBeTruthy();
+    }
+  });
+
+  it('shuffles recognition prompts deterministically without exposing pattern names', () => {
+    const first = getRecognitionQueue(42, 12);
+    expect(getRecognitionQueue(42, 12)).toEqual(first);
+    expect(getRecognitionQueue(43, 12)).not.toEqual(first);
+    expect(first).toHaveLength(12);
+    expect(first.every(({ prompt }) => !prompt.en.includes('Pattern:'))).toBe(true);
+  });
+});
+
 describe('Study Flow progress and recommendations', () => {
   it('does not complete a session merely by visiting its final card', () => {
     const visited = recordCardVisit(
@@ -169,6 +215,19 @@ describe('Study Flow progress and recommendations', () => {
     values.set(STUDY_FLOW_PROGRESS_KEY, '{broken');
     values.delete('interview-lab-progress-v1');
     expect(readStudyProgress(storage)).toEqual(createEmptyStudyProgress());
+  });
+
+  it('records bounded algorithm attempts with distinct remediation signals', () => {
+    const attempted = recordAlgorithmAttempt(createEmptyStudyProgress(), 'two-sum', {
+      mode: 'recognize',
+      result: 'partial',
+      errorKinds: ['pattern-recognition', 'complexity'],
+      attemptedAt: '2026-11-15T12:00:00.000Z',
+    });
+    expect(attempted.algorithmAttempts['two-sum']?.[0]?.errorKinds).toEqual([
+      'pattern-recognition',
+      'complexity',
+    ]);
   });
 
   it('ranks prerequisites, due reviews and new categories deterministically', () => {

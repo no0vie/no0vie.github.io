@@ -146,11 +146,12 @@ describe('server-rendered resume', () => {
         interviewComponent: InterviewPage,
       }),
     );
-    expect(catalog.match(/class="study-session-card"/g)).toHaveLength(26);
+    expect(catalog.match(/class="study-session-card"/g)).toHaveLength(44);
     expect(catalog).toContain('Study Flow');
     expect(catalog).toContain('href="/en/interview/session/browser-event-loop-mechanics"');
     expect(catalog).toContain('href="/en/interview/session/ai-rag-engineering"');
     expect(catalog).toContain('href="/en/interview/session/backend-message-email-outbox"');
+    expect(catalog).toContain('href="/en/interview/session/algorithm-hash-map-set"');
     expect(catalog).toContain('href="/en/interview/practice"');
 
     const practice = renderToStaticMarkup(

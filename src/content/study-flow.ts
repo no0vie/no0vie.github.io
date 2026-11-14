@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { aiLearningSessions } from './study-flow-ai';
 import { seniorLearningSessions } from './study-flow-senior';
+import { algorithmLearningSessions } from './study-flow-algorithms';
 
 const localized = z.object({ ru: z.string().min(1), en: z.string().min(1) }).strict();
 const cardKinds = [
@@ -52,6 +53,7 @@ export const learningSessionSchema = z
       'performance',
       'behavioral',
       'rails',
+      'algorithms',
     ]),
     priority: z.enum(['P0', 'P1', 'P2']).default('P1'),
     module: z
@@ -62,6 +64,7 @@ export const learningSessionSchema = z
         'ai-architecture',
         'ai-first-sdd',
         'production-ai',
+        'algorithmic-patterns',
       ])
       .optional(),
     tags: z.array(z.string()).min(1),
@@ -521,6 +524,7 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
   },
   ...aiLearningSessions,
   ...seniorLearningSessions,
+  ...algorithmLearningSessions,
 ]);
 
 export const learningSessionIds = learningSessions.map(({ id }) => id);
