@@ -404,6 +404,18 @@ export function App({
             >
               {t.projects}
             </a>
+            <a
+              href={localePath(locale, 'interview')}
+              aria-current={kind.startsWith('interview') ? 'page' : undefined}
+            >
+              {locale === 'ru' ? 'Подготовка' : 'Preparation'}
+            </a>
+            <a
+              href={notePath(locale)}
+              aria-current={kind === 'notes' || kind === 'note' ? 'page' : undefined}
+            >
+              {locale === 'ru' ? 'Заметки' : 'Notes'}
+            </a>
 
             {enableEvolution && (
               <a

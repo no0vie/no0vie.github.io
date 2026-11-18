@@ -27,6 +27,8 @@ npm run test:e2e
 
 `npm run build` invokes `tsx scripts/build.ts`: Vite client build → Vite SSR of validated App content → static HTML and SEO → mandatory RU/EN PDFs. Missing Chromium, invalid content or PDF errors fail the build. `npm run preview` is convenient for browsing, but Vite preview is not a Pages 404 emulator. For production-faithful status codes use `npx tsx scripts/server.ts` (localhost:4173, automatically stops after three minutes). E2E starts/stops this server itself.
 
+The shared header exposes localized Preparation and Notes links alongside Resume and Projects; learning materials remain separate from the résumé body and PDF.
+
 ## Static output and PDF
 
 - `dist/ru/index.html`, `dist/en/index.html`: complete resumes without JavaScript.

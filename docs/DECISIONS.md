@@ -1,5 +1,10 @@
 # Decisions and phase log
 
+## Restore preparation and notes navigation (2026-11-19)
+
+- Restore bilingual Preparation and Notes links in the shared site header, including the résumé, using existing localized routes and active-page semantics. Full learning content remains outside the résumé body and print layout.
+- Reuse the existing responsive menu; do not add dependencies, duplicate content or change route/storage contracts.
+
 ## Study Flow — Phase 2 navigation stabilization (2026-11-19)
 
 - The canonical session URL owns `card`, bounded integer `seed` and optional `mode`; persisted `study-flow:v1` owns progress only. Missing or invalid URL state is normalized with `replaceState`, while explicit card/seed navigation uses guarded `pushState`. Browser Back/Forward never creates a new history entry.
