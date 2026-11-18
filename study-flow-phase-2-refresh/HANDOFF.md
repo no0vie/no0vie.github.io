@@ -10,30 +10,30 @@
 
 ## Phase 2.0 baseline (commands/results)
 
-| Command | Result |
-| --- | --- |
-| `npm run format:check` | PASS |
-| `npm run lint` | PASS |
-| `npm run typecheck` | PASS |
-| `npm test` | PASS, 101 tests before changes |
-| `npm run build` (sandboxed) | FAIL after successful Vite output at PDF `browser.newPage`: browser closed |
-| `npm run test:e2e` (sandboxed) | TIMEOUT; browser page setup timed out |
+| Command                                     | Result                                                                               |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `npm run format:check`                      | PASS                                                                                 |
+| `npm run lint`                              | PASS                                                                                 |
+| `npm run typecheck`                         | PASS                                                                                 |
+| `npm test`                                  | PASS, 101 tests before changes                                                       |
+| `npm run build` (sandboxed)                 | FAIL after successful Vite output at PDF `browser.newPage`: browser closed           |
+| `npm run test:e2e` (sandboxed)              | TIMEOUT; browser page setup timed out                                                |
 | standalone Chromium with `DEBUG=pw:browser` | Confirmed environment cause: `MachPortRendezvousServer ... Permission denied (1100)` |
 
 The sandboxed Chromium failure is tooling-specific. No PDF work was skipped and no build exception was introduced. Approved unsandboxed reruns are recorded below.
 
 ## Defect register (ID, repro, root cause, fix, test)
 
-| ID | Severity | Reproduction / actual result | Root cause | Fix | Regression evidence |
-| --- | --- | --- | --- | --- | --- |
-| SF-N01 | High | Open missing/invalid `card` or malformed/oversized `seed`; UI selected fallback without canonical safe URL | URL parsing was distributed across state initializers with permissive `Number(...)` handling | Central bounded parser and deterministic canonical URL; invalid card uses first card and seed uses `1` | Unit navigation policy; E2E invalid URL |
-| SF-N02 | High | Navigate cards, then Back/Forward; only card changed while seed/mode stayed stale | `popstate` read only `card` | Parse and restore card/seed/mode from URL; canonicalize invalid pop target with replace only | E2E Back/Forward |
-| SF-N03 | Medium | Press previous on first card or next on last through shortcuts; duplicate same-URL history entries were possible | Bounded move still called `pushState` | Return on unchanged bounded index and guard equal canonical URLs | URL helper unit test; E2E focused/boundary behavior |
-| SF-N04 | High | Switch RU↔EN on a seeded card; query was dropped | Global locale link generated only the localized pathname | Session locale click preserves canonical query | E2E locale switch retains card/seed |
-| SF-N05 | Medium | Arrow keys while a button/link/contenteditable control had focus could navigate cards | Keyboard filter covered only input/textarea/select | Ignore modifiers, prevented events, contenteditable and interactive ancestors | E2E focused Finish button |
-| SF-N06 | Medium | Horizontal gesture beginning on controls/code could navigate; selected text was ignored | Swipe recognizer tracked coordinates only | Ignore interactive origins and active text selection; retain horizontal-intent threshold | Existing touch test plus implementation guard |
-| SF-N07 | Medium | Confidence action remained visible after completion and could be activated again | Completion handler left completion controls open | Close completion panel after writing one explicit event | Existing explicit-completion E2E; full browser suite |
-| SF-B01 | Environment | All Chromium setup/PDF attempts failed only in sandbox | macOS Mach service registration denied by terminal sandbox | No application workaround or skipped stage; run browser checks unsandboxed | Build and all E2E pass unsandboxed |
+| ID     | Severity    | Reproduction / actual result                                                                                     | Root cause                                                                                   | Fix                                                                                                    | Regression evidence                                  |
+| ------ | ----------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| SF-N01 | High        | Open missing/invalid `card` or malformed/oversized `seed`; UI selected fallback without canonical safe URL       | URL parsing was distributed across state initializers with permissive `Number(...)` handling | Central bounded parser and deterministic canonical URL; invalid card uses first card and seed uses `1` | Unit navigation policy; E2E invalid URL              |
+| SF-N02 | High        | Navigate cards, then Back/Forward; only card changed while seed/mode stayed stale                                | `popstate` read only `card`                                                                  | Parse and restore card/seed/mode from URL; canonicalize invalid pop target with replace only           | E2E Back/Forward                                     |
+| SF-N03 | Medium      | Press previous on first card or next on last through shortcuts; duplicate same-URL history entries were possible | Bounded move still called `pushState`                                                        | Return on unchanged bounded index and guard equal canonical URLs                                       | URL helper unit test; E2E focused/boundary behavior  |
+| SF-N04 | High        | Switch RU↔EN on a seeded card; query was dropped                                                                 | Global locale link generated only the localized pathname                                     | Session locale click preserves canonical query                                                         | E2E locale switch retains card/seed                  |
+| SF-N05 | Medium      | Arrow keys while a button/link/contenteditable control had focus could navigate cards                            | Keyboard filter covered only input/textarea/select                                           | Ignore modifiers, prevented events, contenteditable and interactive ancestors                          | E2E focused Finish button                            |
+| SF-N06 | Medium      | Horizontal gesture beginning on controls/code could navigate; selected text was ignored                          | Swipe recognizer tracked coordinates only                                                    | Ignore interactive origins and active text selection; retain horizontal-intent threshold               | Existing touch test plus implementation guard        |
+| SF-N07 | Medium      | Confidence action remained visible after completion and could be activated again                                 | Completion handler left completion controls open                                             | Close completion panel after writing one explicit event                                                | Existing explicit-completion E2E; full browser suite |
+| SF-B01 | Environment | All Chromium setup/PDF attempts failed only in sandbox                                                           | macOS Mach service registration denied by terminal sandbox                                   | No application workaround or skipped stage; run browser checks unsandboxed                             | Build and all E2E pass unsandboxed                   |
 
 No separate verified visual defect was found. The existing fluid layout, contained code overflow, 48px session controls and no fixed maximum card height passed the representative browser matrix, so no speculative CSS rewrite was made.
 
@@ -51,12 +51,12 @@ No separate verified visual defect was found. The existing fluid layout, contain
 
 No CSS changes were necessary after browser verification. Playwright report attachments were captured for this representative matrix:
 
-| Viewport | Locale | Theme | Card type |
-| --- | --- | --- | --- |
-| 375×812 | RU | dark | seeded interactive prediction/code |
-| 768×1024 | EN | light | Event Loop timing diagram |
-| 1024×768 | RU | light | rendering pipeline diagram |
-| 1440×900 | EN | dark | Fiber architecture diagram |
+| Viewport | Locale | Theme | Card type                          |
+| -------- | ------ | ----- | ---------------------------------- |
+| 375×812  | RU     | dark  | seeded interactive prediction/code |
+| 768×1024 | EN     | light | Event Loop timing diagram          |
+| 1024×768 | RU     | light | rendering pipeline diagram         |
+| 1440×900 | EN     | dark  | Fiber architecture diagram         |
 
 Each case asserts no document-level horizontal overflow and that the card bounding box remains inside the viewport. Existing full-suite responsive checks additionally cover 320/375/768/1024/1280/1440, light/dark and reduced motion.
 
@@ -69,15 +69,15 @@ Each case asserts no document-level horizontal overflow and that the card boundi
 
 ## Test results (unit, lint, typecheck, E2E, build/PDF)
 
-| Command | Final result |
-| --- | --- |
-| `npm run format:check` | PASS |
-| `npm run lint` | PASS |
-| `npm run typecheck` | PASS |
-| `npm test` | PASS, 14 files / 104 tests |
-| `npx playwright test e2e/study-flow.spec.ts --workers=1 --reporter=line` | PASS, 5 tests including visual matrix |
-| `npm run test:e2e` | PASS unsandboxed, 48 tests in 32.3s |
-| `npm run build` | PASS unsandboxed; static pages, SEO and both mandatory PDFs generated |
+| Command                                                                  | Final result                                                          |
+| ------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| `npm run format:check`                                                   | PASS                                                                  |
+| `npm run lint`                                                           | PASS                                                                  |
+| `npm run typecheck`                                                      | PASS                                                                  |
+| `npm test`                                                               | PASS, 14 files / 104 tests                                            |
+| `npx playwright test e2e/study-flow.spec.ts --workers=1 --reporter=line` | PASS, 5 tests including visual matrix                                 |
+| `npm run test:e2e`                                                       | PASS unsandboxed, 48 tests in 32.3s                                   |
+| `npm run build`                                                          | PASS unsandboxed; static pages, SEO and both mandatory PDFs generated |
 
 The final browser/build commands required unsandboxed execution solely because of the confirmed macOS Mach service restriction. Application validation itself is green.
 
