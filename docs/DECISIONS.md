@@ -1,5 +1,12 @@
 # Decisions and phase log
 
+## Study Flow — Phase 2 navigation stabilization (2026-11-19)
+
+- The canonical session URL owns `card`, bounded integer `seed` and optional `mode`; persisted `study-flow:v1` owns progress only. Missing or invalid URL state is normalized with `replaceState`, while explicit card/seed navigation uses guarded `pushState`. Browser Back/Forward never creates a new history entry.
+- Existing session/card IDs, routes and `study-flow:v1`, `interview-lab-progress-v1` and `interview-lab-progress-v2` keys remain unchanged. No content migration or storage-version change was required.
+- Locale switching on a Study Flow session preserves its canonical query state. Keyboard and swipe navigation ignore interactive controls, text selection and vertical touch intent; explicit completion closes its controls after one confidence event to prevent accidental duplicates.
+- The macOS editor terminal sandbox blocks Chromium Mach rendezvous registration. Browser/PDF checks therefore require an approved unsandboxed run; this is an environment limitation, not an application build exception. The unsandboxed production build, five targeted Study Flow E2E cases and the full 48-test browser suite passed.
+
 ## Study Flow — Algorithmic Patterns & Problem Recognition (2026-11-15)
 
 - Audited the canonical preparation, Interview Lab and Study Flow layers before adding content. Classical interview patterns were absent; only exercise `08` (`groupBy/indexBy`) overlaps HashMap practice, so it is linked as provenance rather than copied. Event Loop, backend queues and architecture graphs are not treated as algorithm-pattern coverage.
