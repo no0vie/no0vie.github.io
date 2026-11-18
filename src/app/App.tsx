@@ -340,6 +340,10 @@ export function App({
   const otherLocale = locale === 'ru' ? 'en' : 'ru';
   const [menuOpen, setMenuOpen] = useState(false);
   const [copyMode, setCopyMode] = useState(false);
+  function syncLocaleLink(event: React.SyntheticEvent<HTMLAnchorElement>) {
+    if (kind === 'interview-session')
+      event.currentTarget.href = `${localePath(otherLocale, page)}${window.location.search}`;
+  }
   useEffect(() => {
     if (kind === 'evolution')
       void import('./evolution').then(({ enhanceEvolution }) => enhanceEvolution());
@@ -424,6 +428,10 @@ export function App({
                     ? localePath(otherLocale, page)
                     : localePath(otherLocale, kind === 'not-found' ? '' : page)
               }
+              onFocus={syncLocaleLink}
+              onPointerDown={syncLocaleLink}
+              onContextMenu={syncLocaleLink}
+              onClick={syncLocaleLink}
               hrefLang={otherLocale}
               lang={otherLocale}
               aria-label={

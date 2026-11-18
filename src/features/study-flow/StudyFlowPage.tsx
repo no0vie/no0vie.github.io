@@ -4,6 +4,7 @@ import { learningSessions } from '../../content/study-flow';
 import { algorithmPatterns, algorithmProblems } from '../../content/algorithmic-patterns';
 import { preparationPath } from '../../app/routes';
 import { generateEventLoopChallenge } from './challenges';
+import { createStudyFlowUrl, parseStudyFlowLocation, type StudyMode } from './navigation';
 import {
   completeSession,
   rankSessions,
@@ -169,32 +170,28 @@ function Session({
 }) {
   const t = text[locale];
   const saved = progress.sessions[session.id];
-  const requestedCard =
-    typeof location === 'undefined' ? null : new URLSearchParams(location.search).get('card');
-  const initial = Math.max(
-    0,
-    session.cards.findIndex(({ id }) => id === (requestedCard ?? saved?.lastCardId)),
+  const cardIds = useMemo(() => session.cards.map(({ id }) => id), [session.cards]);
+  const initialNavigation = useMemo(
+    () =>
+      parseStudyFlowLocation(
+        typeof location === 'undefined' ? '' : location.search,
+        cardIds,
+        saved?.lastCardId,
+      ),
+    // The initial persisted card is hydration input; later progress writes must not override the URL.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [cardIds, session.id],
   );
+  const initial = session.cards.findIndex(({ id }) => id === initialNavigation.cardId);
   const [index, setIndex] = useState(initial);
   const [revealed, setRevealed] = useState(false);
-  const [seed, setSeed] = useState(
-    () =>
-      Number(
-        new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get('seed') ??
-          '1',
-      ) || 1,
-  );
-  const initialMode = new URLSearchParams(
-    typeof location === 'undefined' ? '' : location.search,
-  ).get('mode');
-  const [mode, setMode] = useState<'learn' | 'recognize' | 'solve'>(
-    initialMode === 'recognize' || initialMode === 'solve' ? initialMode : 'learn',
-  );
+  const [seed, setSeed] = useState(initialNavigation.seed);
+  const [mode, setMode] = useState<StudyMode>(initialNavigation.mode);
   const [selectedPattern, setSelectedPattern] = useState('');
   const [explanation, setExplanation] = useState('');
   const [checked, setChecked] = useState(false);
   const [ready, setReady] = useState(false);
-  const touch = useRef<{ x: number; y: number } | null>(null);
+  const touch = useRef<{ x: number; y: number; interactive: boolean } | null>(null);
   const card = session.cards[index];
   const patternId = session.id.startsWith('algorithm-')
     ? session.id.slice('algorithm-'.length)
@@ -213,24 +210,58 @@ function Session({
         pattern,
       ].sort((a, b) => a.id.localeCompare(b.id))
     : [];
-  function move(next: number, replace = false) {
+  const sessionPath = preparationPath(locale, `session/${session.id}`);
+  function replaceUrl(nextIndex: number, nextSeed = seed, nextMode = mode) {
+    const url = createStudyFlowUrl(sessionPath, {
+      cardId: session.cards[nextIndex].id,
+      seed: nextSeed,
+      mode: nextMode,
+    });
+    if (typeof history !== 'undefined' && `${location.pathname}${location.search}` !== url)
+      history.replaceState({}, '', url);
+  }
+  function move(next: number) {
     const bounded = Math.max(0, Math.min(session.cards.length - 1, next));
+    if (bounded === index) return;
     setIndex(bounded);
     setRevealed(false);
-    const url = `${preparationPath(locale, `session/${session.id}`)}?card=${session.cards[bounded]?.id}${seed ? `&seed=${seed}` : ''}${mode !== 'learn' ? `&mode=${mode}` : ''}`;
-    if (typeof history !== 'undefined')
-      history[replace ? 'replaceState' : 'pushState']({}, '', url);
+    const url = createStudyFlowUrl(sessionPath, {
+      cardId: session.cards[bounded].id,
+      seed,
+      mode,
+    });
+    if (typeof history !== 'undefined' && `${location.pathname}${location.search}` !== url)
+      history.pushState({}, '', url);
     onProgress(recordCardVisit(progress, session.id, session.version, session.cards[bounded].id));
   }
   useEffect(() => {
+    if (initialNavigation.needsCanonicalization) replaceUrl(initial, seed, mode);
+    // Canonicalization is intentionally an initial-load operation only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
     const pop = () => {
-      const id = new URLSearchParams(location.search).get('card');
-      const next = session.cards.findIndex((card) => card.id === id);
-      if (next >= 0) setIndex(next);
+      const nextLocation = parseStudyFlowLocation(location.search, cardIds);
+      const next = session.cards.findIndex((card) => card.id === nextLocation.cardId);
+      setIndex(next);
+      setSeed(nextLocation.seed);
+      setMode(nextLocation.mode);
+      setRevealed(false);
+      if (nextLocation.needsCanonicalization)
+        replaceUrl(next, nextLocation.seed, nextLocation.mode);
     };
     const key = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
-      if (/INPUT|TEXTAREA|SELECT/.test(target.tagName)) return;
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        target.isContentEditable ||
+        target.closest('input, textarea, select, button, a, [role="button"]')
+      )
+        return;
       if (event.key === 'ArrowRight') move(index + 1);
       if (event.key === 'ArrowLeft') move(index - 1);
       if (event.key === 'Escape') location.href = preparationPath(locale);
@@ -243,13 +274,13 @@ function Session({
     };
     // `move` intentionally follows the current card index; listeners are refreshed per card.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, locale, session.id, session.cards]);
+  }, [cardIds, index, locale, mode, progress, seed, session.id, session.cards]);
   const challenge = card.challengeTemplateId ? generateEventLoopChallenge(seed) : undefined;
   function finish(confidence: Confidence, skipped = false) {
     onProgress(
       completeSession(progress, session.id, session.version, confidence, new Date(), skipped),
     );
-    setReady(true);
+    setReady(false);
   }
   return (
     <article
@@ -257,13 +288,23 @@ function Session({
       aria-labelledby="session-title"
       onTouchStart={(e) => {
         const p = e.touches[0];
-        if (p) touch.current = { x: p.clientX, y: p.clientY };
+        const target = e.target as HTMLElement;
+        if (p)
+          touch.current = {
+            x: p.clientX,
+            y: p.clientY,
+            interactive: Boolean(
+              target.closest(
+                'button, a, input, textarea, select, pre, code, [contenteditable="true"]',
+              ),
+            ),
+          };
       }}
       onTouchEnd={(e) => {
         const start = touch.current,
           p = e.changedTouches[0];
         touch.current = null;
-        if (!start || !p) return;
+        if (!start || !p || start.interactive || getSelection()?.toString()) return;
         const dx = p.clientX - start.x,
           dy = p.clientY - start.y;
         if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) move(index + (dx < 0 ? 1 : -1));
@@ -285,11 +326,7 @@ function Session({
                 onClick={() => {
                   setMode(value);
                   setChecked(false);
-                  history.replaceState(
-                    {},
-                    '',
-                    `${preparationPath(locale, `session/${session.id}`)}?card=${card.id}&seed=${seed}${value === 'learn' ? '' : `&mode=${value}`}`,
-                  );
+                  replaceUrl(index, seed, value);
                 }}
               >
                 {t[value]}
@@ -424,9 +461,11 @@ function Session({
             <button
               type="button"
               onClick={() => {
-                const next = seed + 1;
+                const next = seed >= 2_147_483_647 ? 0 : seed + 1;
                 setSeed(next);
-                history.replaceState({}, '', `?card=${card.id}&seed=${next}`);
+                const url = createStudyFlowUrl(sessionPath, { cardId: card.id, seed: next, mode });
+                if (`${location.pathname}${location.search}` !== url)
+                  history.pushState({}, '', url);
               }}
             >
               {t.seed} (seed {seed})

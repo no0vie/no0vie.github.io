@@ -12,6 +12,7 @@ import {
   generateEventLoopChallenge,
   validateEventLoopChallenge,
 } from '../src/features/study-flow/challenges';
+import { createStudyFlowUrl, parseStudyFlowLocation } from '../src/features/study-flow/navigation';
 import {
   STUDY_FLOW_PROGRESS_KEY,
   completeSession,
@@ -169,6 +170,38 @@ describe('Algorithmic Patterns catalog', () => {
   });
 });
 
+describe('Study Flow navigation policy', () => {
+  const cardIds = ['hook', 'generated', 'recap'] as const;
+
+  it('lets a valid URL override persisted state and canonicalizes invalid input', () => {
+    expect(parseStudyFlowLocation('?card=generated&seed=42', cardIds, 'recap')).toMatchObject({
+      cardId: 'generated',
+      seed: 42,
+      needsCanonicalization: false,
+    });
+    expect(parseStudyFlowLocation('?card=missing&seed=Infinity', cardIds, 'recap')).toEqual({
+      cardId: 'hook',
+      seed: 1,
+      mode: 'learn',
+      needsCanonicalization: true,
+    });
+  });
+
+  it('uses persisted state only when the URL omits a card and builds stable URLs', () => {
+    expect(parseStudyFlowLocation('', cardIds, 'recap')).toMatchObject({
+      cardId: 'recap',
+      needsCanonicalization: true,
+    });
+    expect(
+      createStudyFlowUrl('/en/interview/session/example', {
+        cardId: 'generated',
+        seed: 42,
+        mode: 'recognize',
+      }),
+    ).toBe('/en/interview/session/example?card=generated&seed=42&mode=recognize');
+  });
+});
+
 describe('Study Flow progress and recommendations', () => {
   it('does not complete a session merely by visiting its final card', () => {
     const visited = recordCardVisit(
@@ -228,6 +261,22 @@ describe('Study Flow progress and recommendations', () => {
       'pattern-recognition',
       'complexity',
     ]);
+  });
+
+  it('does not immediately recommend a freshly completed session ahead of new topics', () => {
+    const progress = completeSession(
+      createEmptyStudyProgress(),
+      'browser-event-loop-mechanics',
+      1,
+      'good',
+      new Date('2026-10-29T12:00:00.000Z'),
+      false,
+    );
+    const ranked = rankSessions(learningSessions, progress, new Date('2026-10-29T12:01:00.000Z'));
+    expect(ranked[0]?.session.id).not.toBe('browser-event-loop-mechanics');
+    expect(
+      ranked.find(({ session }) => session.id === 'browser-event-loop-mechanics')?.score,
+    ).toBeLessThan(500);
   });
 
   it('ranks prerequisites, due reviews and new categories deterministically', () => {
