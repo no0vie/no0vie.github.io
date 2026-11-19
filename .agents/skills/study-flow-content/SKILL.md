@@ -5,7 +5,7 @@ description: Adds, splits, or reorganizes bilingual Study Flow sessions, source 
 
 # Study Flow content workflow
 
-1. Read `STUDY_FLOW_SPEC.md`, `src/content/study-flow.ts`, canonical source content, and `SOURCE_AUDIT.json`. Treat the JSON as inventory only; derive claims and solutions from canonical source files.
+1. Read `STUDY_FLOW_SPEC.md`, `src/content/study-flow.ts`, canonical source content, and the Study Flow decisions/open checks in `docs/DECISIONS.md` and `docs/QA.md`. If a source audit JSON is supplied, treat it as inventory only; no `SOURCE_AUDIT.json` is currently committed or required. Derive claims and solutions from canonical source files.
 2. Inventory source topic/exercise IDs, current sessions, durations, prerequisites, related links, concepts, generators, and localStorage versions. Report source coverage before editing.
 3. Decide whether new input should enrich an existing card/session, split an overloaded session, or create a session. One session has one objective, 4–8 cards, and 15–20 total minutes including one reflection/navigation minute.
 4. Preserve stable session/card/source IDs. If an ID or version must change, add an explicit migration map and keep old deep links compatible. Never erase progress merely because content was reordered.

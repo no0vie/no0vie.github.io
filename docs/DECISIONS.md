@@ -1,5 +1,11 @@
 # Decisions and phase log
 
+## Documentation cleanup (2026-11-19)
+
+- Removed the completed five-file Study Flow navigation refresh task package. Its lasting navigation policy is recorded below; historical verification and still-open checks are consolidated in `docs/QA.md`.
+- Removed the completed initial implementation phase instructions from `SPEC.md` and `AGENTS.md`; retained product constraints and approved facts used by the career-update workflow.
+- Retained `STUDY_FLOW_SPEC.md` with an explicit partially implemented status: navigation stabilization and added tracks do not complete the original full source migration. Historical logs remain evidence, not current task instructions.
+
 ## Restore preparation and notes navigation (2026-11-19)
 
 - Restore bilingual Preparation and Notes links in the shared site header, including the résumé, using existing localized routes and active-page semantics. Full learning content remains outside the résumé body and print layout.
@@ -8,6 +14,7 @@
 ## Study Flow — Phase 2 navigation stabilization (2026-11-19)
 
 - The canonical session URL owns `card`, bounded integer `seed` and optional `mode`; persisted `study-flow:v1` owns progress only. Missing or invalid URL state is normalized with `replaceState`, while explicit card/seed navigation uses guarded `pushState`. Browser Back/Forward never creates a new history entry.
+- URL details: `seed` is a decimal integer in `0..2147483647`, defaulting to `1`. A valid `card` overrides saved progress; an omitted `card` resumes the saved card, while an invalid card selects the first card. Explicit card moves and seed regeneration push history; mode changes replace it. First/last boundary moves are no-ops. Locale navigation retains query state.
 - Existing session/card IDs, routes and `study-flow:v1`, `interview-lab-progress-v1` and `interview-lab-progress-v2` keys remain unchanged. No content migration or storage-version change was required.
 - Locale switching on a Study Flow session preserves its canonical query state. Keyboard and swipe navigation ignore interactive controls, text selection and vertical touch intent; explicit completion closes its controls after one confidence event to prevent accidental duplicates.
 - The macOS editor terminal sandbox blocks Chromium Mach rendezvous registration. Browser/PDF checks therefore require an approved unsandboxed run; this is an environment limitation, not an application build exception. The unsandboxed production build, five targeted Study Flow E2E cases and the full 48-test browser suite passed.

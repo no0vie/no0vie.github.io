@@ -81,7 +81,17 @@ For a custom domain: configure DNS and the domain in Pages settings, enforce HTT
 
 ## Infrastructure decisions and limitations
 
-Architecture and publication decisions are maintained in `docs/DECISIONS.md`; measured quality results and remaining limitations are recorded in `docs/QA.md`.
+Documentation responsibilities:
+
+- `README.md`: current implementation, development, content editing and deployment.
+- `SPEC.md`: enduring product constraints and approved public facts, not a completed-phase task list.
+- `STUDY_FLOW_SPEC.md`: partially implemented Study Flow requirements, including the unfinished full source migration; navigation stabilization is not that migration.
+- `docs/CONTENT_POLICY.md`: publication and privacy rules.
+- `docs/DECISIONS.md`: architecture decisions and historical implementation log, including the current Study Flow navigation contract.
+- `docs/QA.md`: dated verification evidence, remaining limitations and open checks.
+- `docs/career-graph.md`: career graph maintenance.
+
+Completed one-off task/specification packages are removed after their lasting decisions and verification evidence are consolidated here and in `docs/`.
 
 - Reuse existing React App and Vite SSR rather than add an SSG dependency or maintain duplicate resume templates.
 - Inline head theme initialization uses the same `theme` storage key as the UI, before CSS rendering; invalid/blocked storage falls back to system styling.

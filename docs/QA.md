@@ -1,4 +1,34 @@
-# Current QA status
+# QA evidence and open checks
+
+## Documentation cleanup verification (2026-11-19)
+
+- Only documentation and agent instructions changed; the completed navigation task package was deleted after consolidation.
+- Prettier check of all seven edited Markdown files passed. `npm run format:check` itself failed because `scripts/check-format.mjs` passes deleted-but-still-indexed paths from `git ls-files` to Prettier. The index was not modified; the script was not changed as part of this documentation task.
+- `npm run lint` and `npm run typecheck` passed; `npm test` passed all 104 tests across 14 files.
+- Sandboxed `npm run build` failed at Chromium `browser.newPage` after Vite output. The approved unsandboxed retry passed, including mandatory RU/EN PDFs; `npm run test:e2e` then passed all 49 tests.
+- Build retained non-fatal Zod annotation and large-chunk warnings. Removed task filenames have no remaining references; `git diff --check` passed.
+
+## Study Flow navigation stabilization — historical verification (2026-11-19)
+
+Consolidated from the completed task handoff, not a new run during documentation cleanup. Environment: macOS, Node 24.16.0, npm 11.13.0, Playwright 1.64.1, bundled Chromium 156.0.8078.4.
+
+- Formatting, lint and typecheck passed; unit suite passed with 104 tests across 14 files.
+- Five targeted Study Flow E2E tests and the full 48-test E2E suite passed outside the sandbox; the production build generated static pages, SEO and both mandatory PDFs.
+- Sandboxed build/browser attempts failed or timed out due to Chromium Mach rendezvous registration being denied. These were not successful PDF/browser runs, and no build exception was added.
+- Navigation fixes covered URL normalization, history restoration, locale query retention, boundary guards, keyboard/control isolation, swipe guards and closing explicit completion controls. No session/card IDs, storage keys or schema versions changed.
+- Representative screenshots: 375×812 RU/dark prediction, 768×1024 EN/light Event Loop diagram, 1024×768 RU/light rendering diagram, 1440×900 EN/dark Fiber diagram. Assertions checked horizontal overflow and card bounds. This is not every card type in both themes at every viewport, nor an approved visual baseline.
+
+### Open Study Flow work and verification gaps
+
+Navigation stabilization is not completion of the full source migration in `STUDY_FLOW_SPEC.md`. Preserve these follow-ups; missing automated evidence does not by itself establish a runtime defect.
+
+- Finish the original 16-topic/15-practice migration with explicit source coverage, preserved full references, review of the seven shallow topics and manually calibrated durations. Additional tracks do not prove original-source coverage.
+- Complete or explicitly revise the planned scheduler diversity/path preferences, next-session flow, progress import/export/reset controls and remaining challenge generators/variant banks.
+- Protect a newer stored schema from being replaced by a v1 fallback; current strict parsing alone does not provide that protection. Verify focus and scroll placement after card changes, including long cards and keyboard/screen-reader use.
+- Expand history tests to distinct seed/mode states, cross-session/path navigation and duplicate-entry prevention at boundaries; verify repeated visits after completion do not create unintended completion events.
+- Test vertical gestures, gestures originating on code/controls and selected text; blocked/quota storage, unknown IDs, stale/newer schemas and idempotent migration with both legacy keys retained.
+- Verify all four 1/3/7/14-day intervals, boundary seeds and generator correctness against an independent oracle; the existing 100-seed checks are not a substitute for those cases.
+- Review every card type at 375 and 1440 px in both themes, with 768/1024 px checks, diagram readability, focus, contrast, reduced motion and print. Representative screenshots alone do not close this matrix.
 
 ## Resume 2.0 verification (2026-11-13)
 
@@ -11,9 +41,9 @@
 - Editor diagnostics: no errors or warnings.
 - Build retained pre-existing non-fatal Rollup warnings for Zod annotations and the main chunk size; no application-source build error was reported.
 
-Last updated: 2026-10-27 after Interview Preparation Hub phases 0–3.
+## Historical automated verification (2026-10-27)
 
-## Current automated verification
+The following results predate the dated updates above; they are not current test counts.
 
 Environment: macOS, Node 24.16.0, Playwright Chromium. Production output is static HTML plus mandatory local RU/EN PDF generation; no remote print service is used.
 

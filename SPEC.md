@@ -1,9 +1,9 @@
-# Personal Career Website — Codex implementation specification
+# Personal Career Website — product constraints and approved facts
 
-Status: current canonical specification v4.1 (2026-10-22)
+Status: maintained product and public-fact reference; initial implementation completed. Documentation cleanup: 2026-11-19.
 Owner: portfolio owner; GitHub: https://github.com/no0vie
 
-This file incorporates the approved Portfolio Update v4 requirements and is the single product and public-fact specification. Historical implementation decisions belong in `docs/DECISIONS.md`; actual verification results belong in `docs/QA.md`.
+This file preserves the approved Portfolio Update v4 requirements and public-fact baseline. Current implementation and operational workflows belong in `README.md`; typed content and schemas are canonical for rendered data. Historical implementation decisions belong in `docs/DECISIONS.md`; dated verification results and open checks belong in `docs/QA.md`. The initial implementation phase checklist has been removed; do not restart completed phases. Suggested structures and model examples below are design context, not an inventory of current files or a replacement for the actual schemas.
 
 ## 1. Product definition
 
@@ -235,23 +235,7 @@ GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https:/
 - GitHub Actions: install with lockfile, lint, typecheck, unit, build, Playwright smoke, artifact upload; deploy GitHub Pages only after green checks.
 - README: install, dev, test, content update, deploy, custom domain, add a case/project, regenerate PDF.
 
-## 12. Implementation stages (Codex must follow)
-
-**Phase 0 — Audit:** inspect repository; report current structure, dependencies, actual GitHub project state (if network accessible), design reference availability, and unresolved facts. Never silently overwrite existing code. Write `docs/DECISIONS.md`.
-
-**Phase 1 — Content:** implement Zod schemas, validated bilingual seed data, evidence/publishability gates, editorial content; flag uncertain English level, A/B outcomes and AI-skills status as TODOs not public facts.
-
-**Phase 2 — Resume-first MVP:** layout, RU/EN, dark/light, responsive, accessible content, routing, semantic sections. Keep it polished and usable without optional features.
-
-**Phase 3 — Export and publishing:** PDF RU/EN, print CSS, SEO, GitHub Pages CI/CD, 404 handling, content links, README.
-
-**Phase 4 — Projects and case studies:** confirmed public projects, career case pages, diagrams redrawn from non-confidential abstract concepts, no internal assets.
-
-**Phase 5 — Optional Evolution:** Spore-inspired skill tree/timeline with keyboard/mobile/reduced-motion fallback. Feature flag. No impact on core performance.
-
-**Phase 6 — QA:** accessibility, Lighthouse measurement, Playwright E2E, content audit, screenshot QA, dead-link check, PDF review, final report with verified and remaining TODOs.
-
-## 13. Definition of Done
+## 12. Ongoing acceptance criteria
 
 1. RU and EN resume pages are complete, factually aligned, include FRUCT before Tensor, and are readable without opening the evolution mode.
 2. Both themes work and persist; system theme honored by default.
@@ -264,6 +248,6 @@ GitHub: https://github.com/no0vie. Audited public repositories: Pantry (`https:/
 9. Optional evolution view is keyboard-accessible, respects reduced motion and has mobile fallback.
 10. README explains every setup step and content-editing workflow.
 
-## 14. Instructions to Codex
+## 13. Maintenance
 
-Implement incrementally, with working checkpoints per phase. Start by inspecting the repository and writing a short plan. Make reasonable implementation decisions without repeatedly asking for cosmetic choices, but **ask for approval before publishing personal contact data, confidential company information, unverifiable performance metrics, or unverified external links**. Do not manufacture proof. Keep the project buildable at every phase. After each phase run available validation and report exact results. If a dependency, design reference or GitHub access is unavailable, document the limitation and continue with a graceful fallback. Avoid overengineering. When this specification changes, update `AGENTS.md`, the relevant project skill, README, decisions and QA only where their responsibilities are affected; do not add another competing current specification.
+Inspect the existing implementation before making focused incremental changes. Preserve publication approval boundaries and keep the project buildable. Run applicable validation and report actual results, including unavailable checks. When requirements change, update `AGENTS.md`, the relevant project skill, README, decisions and QA only where their responsibilities are affected; do not add competing current specifications.
