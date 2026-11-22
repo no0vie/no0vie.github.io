@@ -1,5 +1,17 @@
 # Decisions and phase log
 
+## Study Flow handoff cleanup (2026-11-22)
+
+- Remove only the completed one-off project-status audit request after consolidating its findings and open checks into the checkpoint reports. Preserve the unfinished integration specification, partially completed execution handoff and all legacy examples; topical overlap is not proof of application integration.
+- Record the full removal/keep inventory in `docs/study-flow/FILE-DISPOSITION.md`. Update active handoff references; retain historical snapshot filenames in the provenance registry. No source, progress, routing or publication-policy changes.
+
+## Study Flow audit checkpoint (2026-11-22)
+
+- Follow the handoff's audit-first gate: no production changes, legacy publication or extraction until Phase 2 acceptance and source clearance are explicit. Full migration remains incomplete; navigation stabilization is not a substitute.
+- Record current evidence in `docs/study-flow/STATUS-AND-FUTURE-REPORT.md`, with separate architecture, fragment-registry and browser appendices. The 26 untracked examples contain 93 fragments; 11 filename/subject mappings differ from the supplied static report. Identify candidates by current path/hash, not the old filename mapping.
+- Keep the portfolio deployment for now. A package/workspace boundary (like the existing build-time brnchly integration) and separate deployment are distinct future decisions, not authorized refactors.
+- Preserve all IDs, routes and progress keys. Report lint and runtime failures without suppressing them; prioritize hydration, guarded storage acquisition, persisted history/resume semantics and provenance validation in a separately scoped test-first increment.
+
 ## Documentation cleanup (2026-11-19)
 
 - Removed the completed five-file Study Flow navigation refresh task package. Its lasting navigation policy is recorded below; historical verification and still-open checks are consolidated in `docs/QA.md`.

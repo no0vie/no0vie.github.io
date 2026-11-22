@@ -1,5 +1,19 @@
 # QA evidence and open checks
 
+## Study Flow handoff cleanup verification (2026-11-22)
+
+- Removed only the completed one-off audit request; `docs/study-flow/FILE-DISPOSITION.md` records all retained unstaged source/input groups and the removed request's permanent evidence homes. Active handoff links updated; historical provenance snapshot references retained intentionally.
+- Formatting of cleanup documents and `npm run format:check` passed; typecheck passed; unit tests passed 104/104; production build passed with both PDFs; full Playwright suite passed 49/49 (17.9 seconds), outside the sandbox under the existing approval. `git diff --check` passed.
+- Lint still fails on the same 41 legacy-example errors. Prior hydration/storage/history findings remain unresolved; no production behavior changed and no supplemental runtime probes were rerun. Non-fatal build warnings remain.
+
+## Study Flow audit checkpoint (2026-11-22)
+
+- Fresh environment: macOS ARM64, Node 24.16.0, npm 11.13.0, Playwright 1.64.1, measured Chromium 156.0.8078.4. Details and acceptance matrix: `docs/study-flow/STATUS-AND-FUTURE-REPORT.md`.
+- `npm run format:check` and `npm run typecheck` passed; `npm test` passed 104 tests in 14 files. Full lint failed with 41 errors in the untracked legacy `examples/` folder; no ignore or historical-source fixes were introduced.
+- Sandboxed build failed at Chromium `browser.newPage`; approved outside-sandbox retry passed with both mandatory PDFs. Full Playwright suite passed 49 tests, including five Study Flow cases. Zod annotation and chunk-size warnings remain.
+- Supplemental reduced-motion matrix passed 64 representative layout checks across four widths, two locales, two themes and four code/diagram cards, but captured 64 React hydration errors. Fault injection reproduced a blank page on a throwing `localStorage` getter; Back followed by bare-route reentry reproduced stale resume state. Existing green E2E is not clean runtime acceptance. See `docs/study-flow/browser-audit.md` and ignored `playwright-report/checkpoint-1/` artifacts.
+- Metadata-only verification confirmed all 26 registry hashes/byte counts/line counts and complete non-overlapping coverage by 93 fragments. No raw snippet executed. Publication clearance, full migration, physical touch, exhaustive editorial/accessibility review, fresh PDF pagination review and live deployment remain open. Checkpoint 2 is blocked.
+
 ## Documentation cleanup verification (2026-11-19)
 
 - Only documentation and agent instructions changed; the completed navigation task package was deleted after consolidation.
