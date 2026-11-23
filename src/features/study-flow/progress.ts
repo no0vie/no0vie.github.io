@@ -107,11 +107,43 @@ export function readStudyProgress(storage: ProgressStorage | undefined): StudyPr
     const raw = storage.getItem(STUDY_FLOW_PROGRESS_KEY);
     if (raw) return parseStudyProgress(raw);
     const migrated = migrateLegacy(storage);
-    storage.setItem(STUDY_FLOW_PROGRESS_KEY, JSON.stringify(migrated));
+    writeStudyProgress(storage, migrated);
     return migrated;
   } catch {
     return createEmptyStudyProgress();
   }
+}
+
+// A present but unreadable payload belongs to the user; only an explicit recovery may replace it.
+export function openStudyProgress(host: { readonly localStorage: ProgressStorage } | undefined): {
+  progress: StudyProgress;
+  write: (progress: StudyProgress) => void;
+} {
+  let storage: ProgressStorage;
+  let raw: string | null;
+  try {
+    if (!host) throw new Error('Storage unavailable');
+    storage = host.localStorage;
+    raw = storage.getItem(STUDY_FLOW_PROGRESS_KEY);
+  } catch {
+    return { progress: createEmptyStudyProgress(), write: () => undefined };
+  }
+  if (raw !== null) {
+    let value: unknown;
+    try {
+      value = JSON.parse(raw) as unknown;
+    } catch {
+      value = null;
+    }
+    const parsed = progressSchema.safeParse(value);
+    if (!parsed.success) {
+      return { progress: migrateLegacy(storage), write: () => undefined };
+    }
+    return { progress: parsed.data, write: (progress) => writeStudyProgress(storage, progress) };
+  }
+  const progress = migrateLegacy(storage);
+  writeStudyProgress(storage, progress);
+  return { progress, write: (next) => writeStudyProgress(storage, next) };
 }
 export function writeStudyProgress(
   storage: ProgressStorage | undefined,

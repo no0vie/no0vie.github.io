@@ -197,13 +197,21 @@ function publishProgress(progress: InterviewProgress) {
   for (const listener of progressListeners) listener();
 }
 
+function interviewStorage(): Storage | undefined {
+  try {
+    return window.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
 function subscribeProgress(listener: () => void) {
   progressListeners.add(listener);
-  const stored = readProgress(window.localStorage);
+  const stored = readProgress(interviewStorage());
   if (JSON.stringify(stored) !== JSON.stringify(progressSnapshot)) publishProgress(stored);
   const syncAcrossTabs = (event: StorageEvent) => {
     if (event.key === INTERVIEW_PROGRESS_KEY || event.key === LEGACY_INTERVIEW_PROGRESS_KEY)
-      publishProgress(readProgress(window.localStorage));
+      publishProgress(readProgress(interviewStorage()));
   };
   window.addEventListener('storage', syncAcrossTabs);
   return () => {
@@ -220,11 +228,11 @@ function useProgress() {
   );
   const setStatus = (slug: string, status: ProgressStatus) => {
     const next = updateProgress(progressSnapshot, slug, status);
-    writeProgress(window.localStorage, next);
+    writeProgress(interviewStorage(), next);
     publishProgress(next);
   };
   const clear = () => {
-    resetProgress(window.localStorage);
+    resetProgress(interviewStorage());
     publishProgress(emptyProgress);
   };
   return { progress, setStatus, clear };

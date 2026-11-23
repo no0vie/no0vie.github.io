@@ -1,5 +1,11 @@
 # Decisions and phase log
 
+## Study Flow Phase 2R — R0 evidence and provisional quarantine (2026-11-23)
+
+- Captured current commit/toolchain and a dated, non-overwriting lint failure log and metadata-only exact-byte registry check in `docs/study-flow/readiness/`. These are R0 evidence, not runtime remediation or release acceptance. Concurrent application/test edits made the fresh lint result time-specific; do not replace previous audit counts with an unqualified new baseline.
+- Recommend retaining the untracked `examples/` privately without execution, import, publication, deletion or silent lint exclusion until the owner agrees an immutable archive, rights and CI/lint boundary. This is a **provisional hold**, not approval to publish or to archive elsewhere. All 26 text hashes and 93 fragment ranges match the dated registry snapshot; rehash before any pilot.
+- Keep Phase 2 navigation/UX reliability distinct from Phase 2 Full original-source migration, as already specified; neither gets new acceptance from R0. Subsequent R1/R2 runtime/provenance changes passed targeted checks, but R3, migration, legacy pilot and extraction remain separately gated. See `docs/study-flow/readiness/READINESS-REPORT.md` for actual gate results and owner questions.
+
 ## Study Flow handoff cleanup (2026-11-22)
 
 - Remove only the completed one-off project-status audit request after consolidating its findings and open checks into the checkpoint reports. Preserve the unfinished integration specification, partially completed execution handoff and all legacy examples; topical overlap is not proof of application integration.

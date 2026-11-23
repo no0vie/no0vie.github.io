@@ -1,6 +1,206 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
+for (const locale of ['en', 'ru'] as const) {
+  for (const mode of ['recognize', 'solve'] as const) {
+    test(`direct ${locale} ${mode} URL hydrates with and without saved progress`, async ({
+      page,
+    }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      page.on('console', (message) => {
+        if (message.type() === 'error') errors.push(message.text());
+      });
+      const url = `${locale}/interview/session/algorithm-hash-map-set?card=practice&seed=42&mode=${mode}`;
+      await page.goto(url);
+      await expect(page.locator('.study-progress')).toContainText('4/5');
+      await expect(page.locator('.study-card')).toBeVisible();
+      await expect(page).toHaveURL(new RegExp(`card=practice&seed=42&mode=${mode}`));
+      expect(errors).toEqual([]);
+      await page.evaluate(() =>
+        localStorage.setItem(
+          'study-flow:v1',
+          JSON.stringify({
+            schemaVersion: 1,
+            sessions: {
+              'algorithm-hash-map-set': {
+                version: 1,
+                visitCount: 1,
+                completedCount: 0,
+                lastCardId: 'recognize',
+                answers: {},
+              },
+            },
+            queueHistory: [],
+            algorithmAttempts: {},
+          }),
+        ),
+      );
+      errors.length = 0;
+      await page.reload();
+      await expect(page.locator('.study-progress')).toContainText('4/5');
+      await expect(page.locator('.study-card')).toBeVisible();
+      await expect(page).toHaveURL(new RegExp(`card=practice&seed=42&mode=${mode}`));
+      expect(errors).toEqual([]);
+    });
+  }
+}
+
+test('direct navigation reveals only the requested card after hydration', async ({ page }) => {
+  await page.addInitScript(() => {
+    const seen: string[] = [];
+    Object.defineProperty(window, '__studyCardsSeen', { value: seen });
+    new MutationObserver(() => {
+      const progress = document.querySelector('.study-progress')?.textContent?.trim();
+      if (progress && seen.at(-1) !== progress) seen.push(progress);
+    }).observe(document, { childList: true, subtree: true, characterData: true });
+  });
+  await page.goto('en/interview/session/algorithm-hash-map-set?card=practice&seed=42&mode=solve');
+  await expect(page.locator('.study-progress')).toContainText('4/5');
+  expect(
+    await page.evaluate(() =>
+      (window as Window & { __studyCardsSeen?: string[] }).__studyCardsSeen?.map((value) =>
+        value.replace(/\s+/g, ' '),
+      ),
+    ),
+  ).toEqual(['4/5']);
+});
+
+test('cross-session Back and Forward restore each destination card', async ({ page }) => {
+  await page.goto('en/interview/session/browser-event-loop-prediction?card=generated&seed=7');
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  await page.goto('en/interview/session/algorithm-hash-map-set?card=practice&seed=42&mode=solve');
+  await expect(page.locator('.study-progress')).toContainText('4/5');
+  await page.goBack();
+  await expect(page).toHaveURL(/browser-event-loop-prediction\?card=generated&seed=7$/);
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  await page.goForward();
+  await expect(page).toHaveURL(/algorithm-hash-map-set\?card=practice&seed=42&mode=solve$/);
+  await expect(page.locator('.study-progress')).toContainText('4/5');
+});
+
+test('skipping the final self-check schedules review only on explicit confirmation', async ({
+  page,
+}) => {
+  await page.goto('en/interview/session/browser-event-loop-prediction?card=check&seed=1');
+  await expect(page.locator('.study-progress')).toContainText('5/5');
+  await page.getByRole('button', { name: 'Finish' }).click();
+  await page.getByRole('button', { name: 'Skip self-check' }).click();
+  const state = await page.evaluate(() => {
+    const parsed: unknown = JSON.parse(localStorage.getItem('study-flow:v1') ?? '{}');
+    return (
+      parsed as {
+        sessions?: Record<
+          string,
+          { completedCount?: number; skippedCheck?: boolean; confidence?: string }
+        >;
+      }
+    ).sessions?.['browser-event-loop-prediction'];
+  });
+  expect(state).toMatchObject({ completedCount: 1, skippedCheck: true, confidence: 'hard' });
+});
+
+test('mode changes add a history step and Back restores the URL mode', async ({ page }) => {
+  await page.goto('en/interview/session/algorithm-hash-map-set?card=practice&seed=42');
+  await expect(page.locator('.study-progress')).toContainText('4/5');
+  await page.getByRole('button', { name: 'Recognize pattern' }).click();
+  await expect(page).toHaveURL(/mode=recognize$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/card=practice&seed=42$/);
+  await expect(page.getByRole('button', { name: 'Learn' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('blocked storage getter and methods leave session usable', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        throw new DOMException('blocked', 'SecurityError');
+      },
+    });
+  });
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('en/interview/session/browser-event-loop-prediction?card=generated&seed=42');
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(page.locator('.study-progress')).toContainText('3/5');
+  expect(errors).toEqual([]);
+});
+
+test('throwing storage methods fall back to ephemeral navigation', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        return {
+          getItem() {
+            throw new Error('read blocked');
+          },
+          setItem() {
+            throw new Error('write blocked');
+          },
+          removeItem() {
+            throw new Error('remove blocked');
+          },
+        };
+      },
+    });
+  });
+  const errors: string[] = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.goto('en/interview/session/browser-event-loop-prediction?card=generated&seed=42');
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(page.locator('.study-progress')).toContainText('3/5');
+  expect(errors).toEqual([]);
+});
+
+test('newer stored schema survives a visible visit unchanged', async ({ page }) => {
+  const original = JSON.stringify({ schemaVersion: 2, sessions: { future: { value: true } } });
+  await page.addInitScript((raw) => localStorage.setItem('study-flow:v1', raw), original);
+  await page.goto('en/interview/session/browser-event-loop-prediction?card=generated&seed=42');
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(page.locator('.study-progress')).toContainText('3/5');
+  expect(await page.evaluate(() => localStorage.getItem('study-flow:v1'))).toBe(original);
+});
+
+test('an explicit direct visit becomes the bare-route resume card without auto-completion', async ({
+  page,
+}) => {
+  await page.goto('ru/interview/session/browser-event-loop-prediction?card=generated&seed=42');
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  await page.goto('ru/interview/session/browser-event-loop-prediction');
+  await expect(page).toHaveURL(/card=generated&seed=1$/);
+  await expect(page.locator('.study-progress')).toContainText('2/5');
+  const count = await page.evaluate(() => {
+    const parsed: unknown = JSON.parse(localStorage.getItem('study-flow:v1') ?? '{}');
+    return (parsed as { sessions?: Record<string, { completedCount?: number }> }).sessions?.[
+      'browser-event-loop-prediction'
+    ]?.completedCount;
+  });
+  expect(count).toBe(0);
+});
+
+test('Back visit becomes bare-route resume without completing the session', async ({ page }) => {
+  await page.goto('en/interview/session/browser-event-loop-prediction');
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.goBack();
+  await expect(page.locator('.study-progress')).toContainText('1/5');
+  await page.goto('en/interview/session/browser-event-loop-prediction');
+  await expect(page.locator('.study-progress')).toContainText('1/5');
+  await expect(page).toHaveURL(/card=contract&seed=1$/);
+  const state = await page.evaluate(() => {
+    const parsed: unknown = JSON.parse(localStorage.getItem('study-flow:v1') ?? '{}');
+    if (!parsed || typeof parsed !== 'object' || !('sessions' in parsed)) return null;
+    const sessions = (
+      parsed as { sessions: Record<string, { lastCardId?: string; completedCount?: number }> }
+    ).sessions;
+    return sessions['browser-event-loop-prediction'];
+  });
+  expect(state?.lastCardId).toBe('contract');
+  expect(state?.completedCount).toBe(0);
+});
+
 test('Study Flow supports deep links, keyboard, reload, explicit completion and accessibility', async ({
   page,
 }) => {

@@ -1,5 +1,13 @@
 # QA evidence and open checks
 
+## Phase 2R R1/R2 concurrent checkpoint (2026-11-23)
+
+- Current worktree adds hydration-safe Study Flow startup, guarded storage and visible-visit persistence, plus typed provenance and build-time reference/prerequisite validation; see [`study-flow/readiness/READINESS-REPORT.md`](study-flow/readiness/READINESS-REPORT.md) and [`study-flow/readiness/RUNTIME-FIXES.md`](study-flow/readiness/RUNTIME-FIXES.md). R0 evidence remains a separate historical snapshot. A focused storage test was reported failing before its fix and focused E2E passed 16; no other RED results claimed.
+- Parent-reported fresh gates: `npm run format:check` exit 1 on tracked `study-flow-next/01-REFLECTION-AND-INTEGRATION.md`; explicit Prettier check of readiness docs and `scripts/study-flow-provenance.ts` exit 0. `npm run lint` exit 1 with 41 errors, all in untouched untracked `examples/`. `npm run typecheck` exit 0; `npm test` exit 0, 110 tests in 14 files.
+- Sandboxed `npm run build` exit 1 after Vite when Chromium `browser.newPage` closed; sandboxed `npm run test:e2e` timed out at 180s. Unsandboxed `npm run build` exit 0 with both RU/EN PDFs; unsandboxed `npm run test:e2e` exit 0, 60 passed in 19.2s. PDF generation/download checks are not page-by-page visual or independent text/link/format inspection.
+- Outside-sandbox `BASE_PATH=/career/ npm run build` generated static pages and both PDFs; the targeted `/career/` Study Flow/publishing E2E run passed 42/42 in 11.5s. See the [dated command summary](study-flow/readiness/evidence/2026-11-23-r3/COMMANDS.md); full stdout and passing-test traces were not preserved.
+- **NO-GO** pending owner archive/rights agreement. Full storage/error and viewport matrix, physical touch, PDF visual quality and live Pages remain unverified. No release/CI approval inferred.
+
 ## Study Flow handoff cleanup verification (2026-11-22)
 
 - Removed only the completed one-off audit request; `docs/study-flow/FILE-DISPOSITION.md` records all retained unstaged source/input groups and the removed request's permanent evidence homes. Active handoff links updated; historical provenance snapshot references retained intentionally.
@@ -38,9 +46,9 @@ Navigation stabilization is not completion of the full source migration in `STUD
 
 - Finish the original 16-topic/15-practice migration with explicit source coverage, preserved full references, review of the seven shallow topics and manually calibrated durations. Additional tracks do not prove original-source coverage.
 - Complete or explicitly revise the planned scheduler diversity/path preferences, next-session flow, progress import/export/reset controls and remaining challenge generators/variant banks.
-- Protect a newer stored schema from being replaced by a v1 fallback; current strict parsing alone does not provide that protection. Verify focus and scroll placement after card changes, including long cards and keyboard/screen-reader use.
-- Expand history tests to distinct seed/mode states, cross-session/path navigation and duplicate-entry prevention at boundaries; verify repeated visits after completion do not create unintended completion events.
-- Test vertical gestures, gestures originating on code/controls and selected text; blocked/quota storage, unknown IDs, stale/newer schemas and idempotent migration with both legacy keys retained.
+- The subsequent R1/R2 checkpoint protects newer/malformed `study-flow:v1` bytes and tests direct visit/Back resume and some blocked-storage paths; still verify explicit recovery policy and focus/scroll placement after card changes, including long cards and keyboard/screen-reader use.
+- Expand history tests to distinct seed/mode states, Forward, cross-session/path navigation and duplicate-entry prevention at boundaries; verify repeated visits after completion do not create unintended completion events.
+- Test vertical gestures, gestures originating on code/controls and selected text; quota/read-only storage, unknown IDs, stale schemas and idempotent migration with both legacy keys retained.
 - Verify all four 1/3/7/14-day intervals, boundary seeds and generator correctness against an independent oracle; the existing 100-seed checks are not a substitute for those cases.
 - Review every card type at 375 and 1440 px in both themes, with 768/1024 px checks, diagram readability, focus, contrast, reduced motion and print. Representative screenshots alone do not close this matrix.
 
@@ -118,7 +126,7 @@ Automated checks cover:
 
 ## Current PDF status
 
-The latest generated files reported by macOS metadata:
+The following page counts and sizes are from an earlier macOS metadata report, **not** a measurement of the 2026-11-23 generated PDFs:
 
 | PDF | Pages |          Size |
 | --- | ----: | ------------: |

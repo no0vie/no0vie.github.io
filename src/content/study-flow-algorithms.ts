@@ -23,8 +23,12 @@ export const algorithmLearningSessions: LearningSession[] = algorithmPatterns.ma
       tags: ['algorithms', 'problem-recognition', pattern.id],
       difficulty: index < 8 ? 'hard' : 'senior',
       estimatedMinutes: 15,
-      sourceTopicIds: pattern.id === 'hash-map-set' ? ['algorithm-pattern-hash-map-set'] : [],
+      sourceTopicIds: [],
       sourceExerciseIds: pattern.id === 'hash-map-set' ? ['08'] : [],
+      sourceReferences: [
+        { kind: 'pattern', id: pattern.id },
+        ...(pattern.id === 'hash-map-set' ? [{ kind: 'exercise' as const, id: '08' }] : []),
+      ],
       prerequisiteSessionIds: [],
       relatedSessionIds: [],
       conceptIds: [`algorithm-pattern:${pattern.id}`],

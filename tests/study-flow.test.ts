@@ -8,6 +8,7 @@ import {
 } from '../src/content/algorithmic-patterns';
 import { learningPaths, preparationTopics } from '../src/content/preparation';
 import { interviewExercises } from '../src/content/interview';
+import { validateStudyFlowProvenance } from '../scripts/study-flow-provenance';
 import {
   generateEventLoopChallenge,
   validateEventLoopChallenge,
@@ -18,6 +19,7 @@ import {
   completeSession,
   createEmptyStudyProgress,
   readStudyProgress,
+  openStudyProgress,
   recordCardVisit,
   rankSessions,
   recordAlgorithmAttempt,
@@ -90,6 +92,155 @@ describe('Study Flow catalog', () => {
     expect(sprint?.title.ru).toContain('Interview Sprint 2026');
     expect(sprint?.sessionIds?.length).toBeGreaterThanOrEqual(12);
     expect(sprint?.sessionIds).toEqual(expect.arrayContaining(['backend-message-email-outbox']));
+  });
+
+  it('resolves typed topic, exercise and pattern references without treating patterns as topics', () => {
+    expect(() => validateStudyFlowProvenance(learningSessions)).not.toThrow();
+    const hashMap = learningSessions.find(({ id }) => id === 'algorithm-hash-map-set');
+    expect(hashMap?.sourceTopicIds).toEqual([]);
+    expect(hashMap?.sourceExerciseIds).toEqual(['08']);
+    expect(hashMap?.sourceReferences).toContainEqual({ kind: 'pattern', id: 'hash-map-set' });
+    expect(
+      learningSessions.every(
+        ({ sourceTopicIds }) => !sourceTopicIds.includes('algorithm-pattern-hash-map-set'),
+      ),
+    ).toBe(true);
+  });
+
+  it('rejects unknown sources in typed and legacy fields with session context', () => {
+    const original = learningSessions[0];
+    for (const changed of [
+      { sourceReferences: [{ kind: 'pattern', id: 'missing-pattern' }] },
+      { sourceTopicIds: ['missing-topic'] },
+      { sourceExerciseIds: ['99'] },
+      {
+        sourceReferences: [
+          {
+            kind: 'fragment',
+            id: 'legacy-F99-a',
+            path: 'examples/async.js',
+            sha256: '0af5352b52617c8d34f89e0befb5a58fbcbcb6f291a0942f13377ecba08b1d4d',
+            startLine: 1,
+            endLine: 19,
+            snapshotRevision: '2026-11-22',
+          },
+        ],
+      },
+    ]) {
+      expect(() =>
+        validateStudyFlowProvenance(
+          learningSessions.map((session) =>
+            session.id === original.id ? { ...original, ...changed } : session,
+          ),
+        ),
+      ).toThrow(/browser-event-loop-mechanics.*(missing-pattern|missing-topic|99|legacy-F99-a)/);
+    }
+  });
+
+  it('resolves a registry fragment by immutable metadata without publishing its source', () => {
+    const original = learningSessions[0];
+    expect(() =>
+      validateStudyFlowProvenance(
+        learningSessions.map((session) =>
+          session.id === original.id
+            ? {
+                ...original,
+                sourceReferences: [
+                  ...original.sourceReferences,
+                  {
+                    kind: 'fragment',
+                    id: 'legacy-F04-a',
+                    path: 'examples/async.js',
+                    sha256: '0af5352b52617c8d34f89e0befb5a58fbcbcb6f291a0942f13377ecba08b1d4d',
+                    startLine: 1,
+                    endLine: 19,
+                    snapshotRevision: '2026-11-22',
+                  },
+                ],
+              }
+            : session,
+        ),
+      ),
+    ).not.toThrow();
+    for (const metadata of [
+      { path: 'examples/final.js' },
+      { sha256: '1'.repeat(64) },
+      { startLine: 2 },
+      { snapshotRevision: '2026-11-23' },
+    ]) {
+      expect(() =>
+        validateStudyFlowProvenance(
+          learningSessions.map((session) =>
+            session.id === original.id
+              ? {
+                  ...original,
+                  sourceReferences: [
+                    ...original.sourceReferences,
+                    {
+                      kind: 'fragment',
+                      id: 'legacy-F04-a',
+                      path: 'examples/async.js',
+                      sha256: '0af5352b52617c8d34f89e0befb5a58fbcbcb6f291a0942f13377ecba08b1d4d',
+                      startLine: 1,
+                      endLine: 19,
+                      snapshotRevision: '2026-11-22',
+                      ...metadata,
+                    },
+                  ],
+                }
+              : session,
+          ),
+        ),
+      ).toThrow(/legacy-F04-a/);
+    }
+  });
+
+  it('requires a typed mirror for each retained legacy topic and exercise ID', () => {
+    const original = learningSessions.find(({ id }) => id === 'browser-event-loop-prediction')!;
+    expect(() =>
+      validateStudyFlowProvenance(
+        learningSessions.map((session) =>
+          session.id === original.id
+            ? {
+                ...original,
+                sourceReferences: [{ kind: 'topic', id: 'browser-event-loop' }],
+              }
+            : session,
+        ),
+      ),
+    ).toThrow(/browser-event-loop-prediction.*legacy exercise 01/);
+  });
+
+  it('rejects broken prerequisites and directed cycles, including self cycles', () => {
+    const first = learningSessions[0];
+    const second = learningSessions[1];
+    expect(() =>
+      validateStudyFlowProvenance(
+        learningSessions.map((session) =>
+          session.id === first.id
+            ? { ...first, prerequisiteSessionIds: ['missing-session'] }
+            : session,
+        ),
+      ),
+    ).toThrow(/missing-session/);
+    expect(() =>
+      validateStudyFlowProvenance(
+        learningSessions.map((session) =>
+          session.id === first.id ? { ...first, prerequisiteSessionIds: [first.id] } : session,
+        ),
+      ),
+    ).toThrow(/cycle/i);
+    expect(() =>
+      validateStudyFlowProvenance(
+        learningSessions.map((session) =>
+          session.id === first.id
+            ? { ...first, prerequisiteSessionIds: [second.id] }
+            : session.id === second.id
+              ? { ...second, prerequisiteSessionIds: [first.id] }
+              : session,
+        ),
+      ),
+    ).toThrow(/cycle/i);
   });
 
   it('preserves Phase 1 source provenance', () => {
@@ -248,6 +399,59 @@ describe('Study Flow progress and recommendations', () => {
     values.set(STUDY_FLOW_PROGRESS_KEY, '{broken');
     values.delete('interview-lab-progress-v1');
     expect(readStudyProgress(storage)).toEqual(createEmptyStudyProgress());
+  });
+
+  it('guards storage acquisition, preserves invalid payloads and keeps migrated state when writes fail', () => {
+    const blocked = {
+      get localStorage(): Storage {
+        throw new Error('denied');
+      },
+    };
+    expect(openStudyProgress(blocked).progress).toEqual(createEmptyStudyProgress());
+    const raw = JSON.stringify({ schemaVersion: 2, sessions: { future: true } });
+    const values = new Map([['study-flow:v1', raw]]);
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+      removeItem: (key: string) => values.delete(key),
+    };
+    const opened = openStudyProgress({ localStorage: storage });
+    opened.write(createEmptyStudyProgress());
+    expect(values.get('study-flow:v1')).toBe(raw);
+    values.set('study-flow:v1', '{broken');
+    openStudyProgress({ localStorage: storage }).write(createEmptyStudyProgress());
+    expect(values.get('study-flow:v1')).toBe('{broken');
+    const migrated = openStudyProgress({
+      localStorage: {
+        getItem: (key: string) =>
+          key === 'interview-lab-progress-v1'
+            ? JSON.stringify({ version: 1, statuses: { '01': 'completed' } })
+            : null,
+        setItem: () => {
+          throw new Error('read only');
+        },
+        removeItem: () => {
+          throw new Error('read only');
+        },
+      },
+    });
+    expect(migrated.progress.sessions['browser-event-loop-prediction']?.completedCount).toBe(1);
+    expect(() => migrated.write(migrated.progress)).not.toThrow();
+    expect(
+      openStudyProgress({
+        localStorage: {
+          getItem: () => {
+            throw new Error('blocked');
+          },
+          setItem: () => {
+            throw new Error('blocked');
+          },
+          removeItem: () => {
+            throw new Error('blocked');
+          },
+        },
+      }).progress,
+    ).toEqual(createEmptyStudyProgress());
   });
 
   it('records bounded algorithm attempts with distinct remediation signals', () => {

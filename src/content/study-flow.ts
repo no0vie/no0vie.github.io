@@ -37,6 +37,26 @@ const cardSchema = z
   })
   .strict();
 
+// A fragment is an audit identity, not a publication or execution permission.
+export const sourceReferenceSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('topic'), id: z.string().min(1) }).strict(),
+  z.object({ kind: z.literal('exercise'), id: z.string().min(1) }).strict(),
+  z.object({ kind: z.literal('pattern'), id: z.string().min(1) }).strict(),
+  z
+    .object({
+      kind: z.literal('fragment'),
+      id: z.string().regex(/^legacy-F\d{2}-[a-z]$/),
+      path: z.string().regex(/^examples\/[a-zA-Z0-9.-]+\.(js|ts|html)$/),
+      sha256: z.string().regex(/^[a-f0-9]{64}$/),
+      startLine: z.number().int().positive(),
+      endLine: z.number().int().positive(),
+      snapshotRevision: z.string().date(),
+    })
+    .strict()
+    .refine(({ startLine, endLine }) => startLine <= endLine, 'Invalid fragment range'),
+]);
+export type SourceReference = z.infer<typeof sourceReferenceSchema>;
+
 export const learningSessionSchema = z
   .object({
     id: z.string().regex(/^[a-z][a-z0-9-]*$/),
@@ -73,6 +93,7 @@ export const learningSessionSchema = z
     cards: z.array(cardSchema).min(4).max(8),
     sourceTopicIds: z.array(z.string()),
     sourceExerciseIds: z.array(z.string()),
+    sourceReferences: z.array(sourceReferenceSchema),
     prerequisiteSessionIds: z.array(z.string()),
     relatedSessionIds: z.array(z.string()),
     conceptIds: z.array(z.string()).min(1),
@@ -132,6 +153,7 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
     estimatedMinutes: 17,
     sourceTopicIds: ['browser-event-loop'],
     sourceExerciseIds: [],
+    sourceReferences: [{ kind: 'topic', id: 'browser-event-loop' }],
     prerequisiteSessionIds: [],
     relatedSessionIds: ['browser-event-loop-prediction'],
     conceptIds: ['call-stack', 'task', 'microtask', 'rendering-opportunity'],
@@ -239,6 +261,10 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
     estimatedMinutes: 18,
     sourceTopicIds: ['browser-event-loop'],
     sourceExerciseIds: ['01'],
+    sourceReferences: [
+      { kind: 'topic', id: 'browser-event-loop' },
+      { kind: 'exercise', id: '01' },
+    ],
     prerequisiteSessionIds: ['browser-event-loop-mechanics'],
     relatedSessionIds: ['browser-event-loop-mechanics'],
     conceptIds: ['task', 'microtask'],
@@ -335,6 +361,7 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
     estimatedMinutes: 17,
     sourceTopicIds: ['browser-rendering-pipeline'],
     sourceExerciseIds: [],
+    sourceReferences: [{ kind: 'topic', id: 'browser-rendering-pipeline' }],
     prerequisiteSessionIds: [],
     relatedSessionIds: ['browser-event-loop-mechanics'],
     conceptIds: ['dom', 'cssom', 'layout', 'paint', 'composite'],
@@ -437,6 +464,7 @@ export const learningSessions: LearningSession[] = learningSessionsSchema.parse(
     estimatedMinutes: 18,
     sourceTopicIds: ['react-fiber'],
     sourceExerciseIds: [],
+    sourceReferences: [{ kind: 'topic', id: 'react-fiber' }],
     prerequisiteSessionIds: [],
     relatedSessionIds: ['browser-event-loop-mechanics'],
     conceptIds: ['fiber', 'render-phase', 'commit-phase'],

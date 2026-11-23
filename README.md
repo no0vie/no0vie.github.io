@@ -91,7 +91,8 @@ Documentation responsibilities:
 - `docs/QA.md`: dated verification evidence, remaining limitations and open checks.
 - `docs/career-graph.md`: career graph maintenance.
 - `docs/STUDY_FLOW_EXAMPLES_REPORT.md`: static audit of all 26 `examples/` files and a handoff for a future incremental Study Flow specification; not an approved implementation plan.
-- `docs/study-flow/STATUS-AND-FUTURE-REPORT.md`: fresh 2026-11-22 checkpoint, original-source coverage, fragment registry, browser findings and extraction options. Full migration and the legacy pilot remain blocked; the static report has 11 filename/subject mismatches against the current examples. The untracked examples currently cause 41 lint errors and are not approved for publication.
+- `docs/study-flow/STATUS-AND-FUTURE-REPORT.md`: 2026-11-22 checkpoint, original-source coverage, fragment registry, browser findings and extraction options. Full migration and the legacy pilot remain blocked; the static report has 11 filename/subject mismatches against the current examples. The untracked examples are not approved for publication.
+- `docs/study-flow/readiness/READINESS-REPORT.md`: 2026-11-23 Phase 2R R0 evidence, seven-document planning package and later R1/R2 checkpoint. Runtime/provenance fixes and browser checks passed, including targeted `/career/` deep links; full lint and format gates remain red, and archive/publication approval and further R3 checks are pending. Do not publish the untracked `examples/`.
 
 Completed one-off task/specification packages are removed after their lasting decisions and verification evidence are consolidated here and in `docs/`. See `docs/study-flow/FILE-DISPOSITION.md` for the current unstaged-file cleanup: the completed audit request was removed, but the unfinished integration spec, handoff, evidence and all 26 legacy examples remain. No legacy example is proven fully integrated into application sources.
 

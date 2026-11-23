@@ -1163,6 +1163,7 @@ export const seniorLearningSessions = specs.map((spec) => ({
   ],
   sourceTopicIds: [],
   sourceExerciseIds: [],
+  sourceReferences: [],
   prerequisiteSessionIds: spec.prerequisites ?? [],
   relatedSessionIds: spec.related ?? [],
   conceptIds: spec.concepts,

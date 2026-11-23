@@ -1,0 +1,8 @@
+Checking formatting...
+[warn] docs/study-flow/readiness/DECISIONS-REQUIRED.md
+[warn] docs/study-flow/readiness/LEGACY-PILOT-PLAN.md
+[warn] docs/study-flow/readiness/MIGRATION-ACCEPTANCE-MATRIX.md
+[warn] docs/study-flow/readiness/MODULARIZATION-OPTIONS.md
+[warn] docs/study-flow/readiness/READINESS-REPORT.md
+[warn] docs/study-flow/readiness/RUNTIME-FIXES.md
+[warn] Code style issues found in 6 files. Run Prettier with --write to fix.

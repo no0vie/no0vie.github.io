@@ -1,0 +1,30 @@
+F01 examples/acync.js MATCH 4051726398366622e4cb726070d34b650df4ab2b949043d317dd513cc744d1c0 bytes 218 lines 12
+F02 examples/anagramms.js MATCH 7113f6ea50c915e3301a93a4bc2a8e656ed38bcd3970beb5d90b38a3832d4c1f bytes 656 lines 24
+F03 examples/arrays.js MATCH b694b0e2cf92b68fc1fbd6b4bb40103ee699e4a236c0ca30a643ec3a4a7457ad bytes 4814 lines 149
+F04 examples/async.js MATCH 0af5352b52617c8d34f89e0befb5a58fbcbcb6f291a0942f13377ecba08b1d4d bytes 313 lines 19
+F05 examples/conntext.js MATCH 9b1fcea608f71ed9134ef17b2d59e20ad498cd9e23b2a3a2be2de340d9107012 bytes 244 lines 19
+F06 examples/contexts.js MATCH a46fbb8b35bbe4191a8a2d27bf76c8d928c0f5f4a37495c383d5508862ac5708 bytes 468 lines 30
+F07 examples/doubles.js MATCH 871744a18e549f8ddeca2ecab2b94a4fa19360f94da34026f8b3d26441877622 bytes 363 lines 16
+F08 examples/final.js MATCH 41c63d0fc4331aab25df4c8b107fdcad2aec35d9e56dc42dcd8766ac18fdcc52 bytes 1806 lines 69
+F09 examples/generators.js MATCH 5482c719e3129d83130ee1e85cad4953fd350288186b082e0031ae7ed854067f bytes 620 lines 29
+F10 examples/index.html MATCH f0719364ac723892d3ebc289db98f91b769bb31983949f0fc087d2e3c7f0acc0 bytes 354 lines 10
+F11 examples/jewels.js MATCH 6c674ba8e797f203ddc75e7b462c8256322c980c7425bd682f20405fabdce50d bytes 456 lines 19
+F12 examples/mergedArrays.js MATCH 714c1fc2c3c81d2a13baf48e4a4c79b5112b6dbd3df93a6e17d336b13e3a1c50 bytes 1221 lines 46
+F13 examples/mts.ts MATCH 4c53792eb748ca85fb8d4e1aa262efe2c713c07f793c5e8f6b236204a8594569 bytes 1599 lines 59
+F14 examples/numbers.js MATCH ffc443e559fe87b4f42de7204ee4f281ffcc587ce56611312749ad7b40e93e9a bytes 532 lines 27
+F15 examples/scopes.js MATCH 5c9de6bbb5aa32ebeab16113ed5774079695f0e4c6a116f02d3d46b0db9ada6a bytes 903 lines 46
+F16 examples/sorts.js MATCH fea1c43a70b4feb6759f1823e2a59a7dc6e8a701cf3b9a4a45297377a1bf133c bytes 3960 lines 79
+F17 examples/structures.js MATCH a16780d201027596bbaac4938f67e598430c257f925a6bbc2cd06f544b52f6cb bytes 402 lines 23
+F18 examples/test.js MATCH 1a9c25ac0637f4b5a09fc1b33c48471372e04a17fabac2d0d60b7a8da4608408 bytes 2025 lines 31
+F19 examples/trees.js MATCH b5f826595b14bec8eeb1193fdf3cccadde02866ece0278175a7bb36a2d41794c bytes 447 lines 21
+F20 examples/types.js MATCH 2cfa25931cf89b554309372a65293c51b50cf9415c15126630591c7ccd067181 bytes 566 lines 26
+F21 examples/way.js MATCH 1ba8c0b1417f8e012ad61d11441622bc586248899649d9b30a1c785c3a5ef097 bytes 419 lines 18
+F22 examples/yandex1.js MATCH 19fd2151f995a1b6c3c3fbe965e74fca885ec45e28d9e56c03ca4e80c02d5cdb bytes 2526 lines 93
+F23 examples/yandex2.js MATCH 1d5e927dede02a47b66622812b2dac6c2aa207a4f3dd71c85fe01c1ea4b6afee bytes 2360 lines 109
+F24 examples/yandex3.js MATCH 3604837ba288e827a968da151b6edca76125247d8bb1ba626ec8778fb44ec68b bytes 3966 lines 132
+F25 examples/yandex4.js MATCH ce3ebe313df3215de96829de7ef577699c3ccd776a0d63368f8fede087a69e3e bytes 3369 lines 142
+F26 examples/yandex5.js MATCH 045fec332d3f6a7d91684f4880bfe89ba3c8cd783945dfd1520d320dc83f6786 bytes 2043 lines 81
+M01 examples/.DS_Store MATCH 768226777efc2fb42645e91468b4921d752b4f80e25afeb4eae2f32bcfd356f8 bytes 8196 lines binary
+manifest 27 disk 27
+fragments 93 files 26 coverage PASS
+errors []

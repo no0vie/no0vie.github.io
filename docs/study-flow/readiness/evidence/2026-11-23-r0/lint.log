@@ -1,0 +1,102 @@
+
+> lint
+> eslint . --max-warnings=0
+
+
+/Users/no_ovie/Repos/no0vie.github.io/e2e/study-flow.spec.ts
+  50:9    error  Unsafe assignment of an `any` value                     @typescript-eslint/no-unsafe-assignment
+  50:43   error  Unsafe return of a value of type `any`                  @typescript-eslint/no-unsafe-return
+  50:101  error  Unsafe member access .sessions on an `any` value        @typescript-eslint/no-unsafe-member-access
+  51:17   error  Unsafe member access .lastCardId on an `any` value      @typescript-eslint/no-unsafe-member-access
+  52:17   error  Unsafe member access .completedCount on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/arrays.js
+   21:7   error  'temp' is assigned a value but never used     no-unused-vars
+   58:19  error  Unexpected comma in middle of array           no-sparse-arrays
+   66:5   error  'roots' is assigned a value but never used    no-unused-vars
+   82:5   error  'sum' is assigned a value but never used      no-unused-vars
+   96:5   error  'citrus' is assigned a value but never used   no-unused-vars
+  101:34  error  'index' is defined but never used             no-unused-vars
+  101:41  error  'array' is defined but never used             no-unused-vars
+  138:5   error  'removed' is assigned a value but never used  no-unused-vars
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/conntext.js
+  19:1  error  Empty block statement  no-empty
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/contexts.js
+  1:5  error  'x' is assigned a value but never used  no-unused-vars
+  4:9  error  'x' is assigned a value but never used  no-unused-vars
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/final.js
+  1:39  error  Parsing error: Unexpected token ..
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/mts.ts
+  0:0  error  Parsing error: /Users/no_ovie/Repos/no0vie.github.io/examples/mts.ts was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/sorts.js
+   9:10  error  'BubbleSort' is defined but never used     no-unused-vars
+  36:10  error  'SelectionSort' is defined but never used  no-unused-vars
+  53:10  error  'ShellSort' is defined but never used      no-unused-vars
+  72:10  error  'QuickSort' is defined but never used      no-unused-vars
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/trees.js
+   1:10  error  'preOrder' is defined but never used   no-unused-vars
+   8:12  error  'inOrder' is defined but never used    no-unused-vars
+  15:12  error  'postOrder' is defined but never used  no-unused-vars
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/types.js
+  18:22  error  Unexpected constant binary expression. Compares constantly with the left-hand side of the `==`   no-constant-binary-expression
+  19:22  error  Unexpected constant binary expression. Compares constantly with the left-hand side of the `==`   no-constant-binary-expression
+  20:22  error  Unexpected constant binary expression. Compares constantly with the left-hand side of the `==`   no-constant-binary-expression
+  24:13  error  Unexpected constant binary expression. Compares constantly with the right-hand side of the `==`  no-constant-binary-expression
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/way.js
+  12:12  error  'start' is assigned a value but never used   no-unused-vars
+  12:19  error  'end' is assigned a value but never used     no-unused-vars
+  13:11  error  'power' is assigned a value but never used   no-unused-vars
+  14:11  error  'count' is assigned a value but never used   no-unused-vars
+  15:11  error  'cities' is assigned a value but never used  no-unused-vars
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/yandex1.js
+   8:13  error  'alert' is not defined               no-undef
+  17:10  error  'count' is defined but never used    no-unused-vars
+  44:10  error  'rle' is defined but never used      no-unused-vars
+  61:13  error  'count' is constant                  no-const-assign
+  63:13  error  'res' is constant                    no-const-assign
+  64:13  error  'count' is constant                  no-const-assign
+  66:9   error  'currItem' is constant               no-const-assign
+  71:14  error  'resolve' is defined but never used  no-unused-vars
+  71:23  error  'reject' is defined but never used   no-unused-vars
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/yandex2.js
+  73:12  error  Parsing error: Identifier 'sum' has already been declared
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/yandex3.js
+  97:10  error  Parsing error: Identifier 'get' has already been declared
+
+/Users/no_ovie/Repos/no0vie.github.io/examples/yandex5.js
+  64:10  error  Parsing error: Identifier 'groupAnagrams' has already been declared
+
+/Users/no_ovie/Repos/no0vie.github.io/tests/study-flow.test.ts
+   97:18  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+   97:18  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+  106:22  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+  113:20  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+  113:20  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+  118:22  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+  119:18  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+  119:18  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+  122:18  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+  122:18  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+  128:19  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+  129:20  error  This assertion is unnecessary since it does not change the type of the expression  @typescript-eslint/no-unnecessary-type-assertion
+  130:18  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+  130:18  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+  131:18  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+  131:18  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+  132:18  error  Unsafe return of a value of type error                                             @typescript-eslint/no-unsafe-return
+  132:18  error  Unsafe call of a type that could not be resolved                                   @typescript-eslint/no-unsafe-call
+
+✖ 64 problems (64 errors, 0 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

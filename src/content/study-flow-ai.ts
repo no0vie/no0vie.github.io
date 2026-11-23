@@ -231,6 +231,10 @@ export const aiLearningSessions = specs.map(
       cards,
       sourceTopicIds: [...topicIds],
       sourceExerciseIds: exerciseId ? [exerciseId] : [],
+      sourceReferences: [
+        ...topicIds.map((id) => ({ kind: 'topic' as const, id })),
+        ...(exerciseId ? [{ kind: 'exercise' as const, id: exerciseId }] : []),
+      ],
       prerequisiteSessionIds: moduleIndex ? [specs[moduleIndex - 1][0]] : [],
       relatedSessionIds: [specs[(moduleIndex + 1) % specs.length][0]],
       conceptIds: [...topicIds],

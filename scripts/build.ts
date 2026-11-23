@@ -4,6 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 
 import { publishingConfig, normalizePdf, validatePdf } from './publishing';
+import { validateStudyFlowProvenance } from './study-flow-provenance';
 import { serve } from './server';
 import type { App as AppType } from '../src/app/App';
 import type { InterviewPage as InterviewPageType } from '../src/features/interview/InterviewPage';
@@ -38,6 +39,7 @@ const escape = (value: string) =>
     /[&<>"']/g,
     (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!,
   );
+validateStudyFlowProvenance(learningSessions);
 await build();
 const template = await readFile('dist/index.html', 'utf8');
 const ssr = await createServer({ server: { middlewareMode: true }, appType: 'custom' });

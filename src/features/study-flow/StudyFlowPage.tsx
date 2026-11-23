@@ -8,10 +8,10 @@ import { createStudyFlowUrl, parseStudyFlowLocation, type StudyMode } from './na
 import {
   completeSession,
   rankSessions,
-  readStudyProgress,
+  openStudyProgress,
+  createEmptyStudyProgress,
   recordCardVisit,
   recordAlgorithmAttempt,
-  writeStudyProgress,
   type Confidence,
   type StudyProgress,
 } from './progress';
@@ -89,9 +89,15 @@ const text = {
 
 export function StudyFlowPage({ locale, sessionId }: { locale: Locale; sessionId?: string }) {
   const t = text[locale];
-  const [progress, setProgress] = useState<StudyProgress>(() =>
-    readStudyProgress(typeof window === 'undefined' ? undefined : window.localStorage),
-  );
+  // The static HTML has no query or browser storage; hydrate that same snapshot first.
+  const [progress, setProgress] = useState<StudyProgress>(createEmptyStudyProgress);
+  const [ready, setReady] = useState(false);
+  const storage = useRef<ReturnType<typeof openStudyProgress> | null>(null);
+  useEffect(() => {
+    storage.current = openStudyProgress(window);
+    setProgress(storage.current.progress);
+    setReady(true);
+  }, []);
   const session = learningSessions.find(({ id }) => id === sessionId);
   const ranked = useMemo(() => rankSessions(learningSessions, progress, new Date()), [progress]);
   if (!session)
@@ -144,14 +150,24 @@ export function StudyFlowPage({ locale, sessionId }: { locale: Locale; sessionId
         </section>
       </main>
     );
+  if (!ready)
+    return (
+      <main
+        id="main"
+        className="study-session"
+        aria-busy="true"
+        aria-label={session.title[locale]}
+      />
+    );
   return (
     <Session
+      key={session.id}
       locale={locale}
       session={session}
       progress={progress}
       onProgress={(next) => {
         setProgress(next);
-        writeStudyProgress(typeof window === 'undefined' ? undefined : window.localStorage, next);
+        storage.current?.write(next);
       }}
     />
   );
@@ -169,21 +185,15 @@ function Session({
   onProgress: (value: StudyProgress) => void;
 }) {
   const t = text[locale];
-  const saved = progress.sessions[session.id];
   const cardIds = useMemo(() => session.cards.map(({ id }) => id), [session.cards]);
   const initialNavigation = useMemo(
     () =>
-      parseStudyFlowLocation(
-        typeof location === 'undefined' ? '' : location.search,
-        cardIds,
-        saved?.lastCardId,
-      ),
-    // The initial persisted card is hydration input; later progress writes must not override the URL.
+      parseStudyFlowLocation(location.search, cardIds, progress.sessions[session.id]?.lastCardId),
+    // Session is keyed by ID; this navigation snapshot belongs to this mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cardIds, session.id],
+    [],
   );
-  const initial = session.cards.findIndex(({ id }) => id === initialNavigation.cardId);
-  const [index, setIndex] = useState(initial);
+  const [index, setIndex] = useState(() => cardIds.indexOf(initialNavigation.cardId));
   const [revealed, setRevealed] = useState(false);
   const [seed, setSeed] = useState(initialNavigation.seed);
   const [mode, setMode] = useState<StudyMode>(initialNavigation.mode);
@@ -235,18 +245,27 @@ function Session({
     onProgress(recordCardVisit(progress, session.id, session.version, session.cards[bounded].id));
   }
   useEffect(() => {
-    if (initialNavigation.needsCanonicalization) replaceUrl(initial, seed, mode);
-    // Canonicalization is intentionally an initial-load operation only.
+    if (initialNavigation.needsCanonicalization)
+      replaceUrl(index, initialNavigation.seed, initialNavigation.mode);
+    onProgress(recordCardVisit(progress, session.id, session.version, initialNavigation.cardId));
+    // Session is keyed by ID; visible-visit initialization happens once per mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     const pop = () => {
-      const nextLocation = parseStudyFlowLocation(location.search, cardIds);
+      if (location.pathname !== sessionPath) return;
+      const nextLocation = parseStudyFlowLocation(
+        location.search,
+        cardIds,
+        progress.sessions[session.id]?.lastCardId,
+      );
       const next = session.cards.findIndex((card) => card.id === nextLocation.cardId);
       setIndex(next);
       setSeed(nextLocation.seed);
       setMode(nextLocation.mode);
       setRevealed(false);
+      if (next !== index)
+        onProgress(recordCardVisit(progress, session.id, session.version, nextLocation.cardId));
       if (nextLocation.needsCanonicalization)
         replaceUrl(next, nextLocation.seed, nextLocation.mode);
     };
@@ -326,7 +345,13 @@ function Session({
                 onClick={() => {
                   setMode(value);
                   setChecked(false);
-                  replaceUrl(index, seed, value);
+                  const url = createStudyFlowUrl(sessionPath, {
+                    cardId: card.id,
+                    seed,
+                    mode: value,
+                  });
+                  if (`${location.pathname}${location.search}` !== url)
+                    history.pushState({}, '', url);
                 }}
               >
                 {t[value]}
