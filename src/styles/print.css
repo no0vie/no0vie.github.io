@@ -11,6 +11,10 @@
     --muted: #333 !important;
     --border: #ccc !important;
     --accent: #000 !important;
+    /* Preserve the pre-alignment PDF palette until the site direction is approved. */
+    --accent-strong: #084daf !important;
+    --accent-soft: #dceaff !important;
+    --decorative-accent: #1769e0 !important;
     --tint: #fff !important;
   }
   body {

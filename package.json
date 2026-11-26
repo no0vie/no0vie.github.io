@@ -13,6 +13,7 @@
     "format:check": "node scripts/check-format.mjs",
     "prepare": "node scripts/install-git-hooks.mjs",
     "assets:og": "tsx scripts/generate-og.ts",
+    "screenshots:visual": "tsx scripts/capture-visual-refresh.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "build": "tsx scripts/build.ts",

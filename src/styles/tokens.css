@@ -1,0 +1,113 @@
+:root {
+  /* Industrial Arctic primitives. Keep these stable for future versioned-token sync. */
+  --color-graphite: #151c25;
+  --color-nickel: #bfcbd4;
+  --color-copper: #df925d;
+  --color-arctic: #eef3f6;
+
+  color-scheme: light;
+  --background: var(--color-arctic);
+  --page-background: var(--background);
+  --surface: #fafbfc;
+  --surface-elevated: #ffffff;
+  --surface-strong: var(--surface-elevated);
+  --text: var(--color-graphite);
+  --muted: #485563;
+  --border: var(--color-nickel);
+  --border-subtle: #d5dee5;
+  --accent: #a6532d;
+  --accent-strong: #853f20;
+  --accent-soft: #f8e7da;
+  --decorative-accent: var(--color-copper);
+  --focus: #a6532d;
+  --primary-button-background: var(--color-copper);
+  --primary-button-text: var(--color-graphite);
+  --primary-button-hover: #d8844d;
+  --primary-button-active: #c87440;
+  --primary-button-active-filter: none;
+  --primary-button-disabled: var(--color-nickel);
+  --personal-mark-background: var(--color-copper);
+  --personal-mark-text: var(--color-graphite);
+  --personal-mark-shadow: none;
+  --card-background: var(--surface-elevated);
+  --card-border: var(--border-subtle);
+  --card-shadow: none;
+  --tint: #e7edf1;
+  --inverse: #ffffff;
+  --glow: transparent;
+  --shadow: transparent;
+  --shadow-strong: rgba(21, 28, 37, 0.12);
+  --code-background: #151c25;
+  --code-surface: #25323d;
+  --code-border: #52616d;
+  --code-text: #eef3f6;
+  --code-muted: #bfcbd4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --background: var(--color-graphite);
+    --page-background:
+      radial-gradient(circle at 85% 8%, var(--glow), transparent 28rem), var(--background);
+    --surface: #202b36;
+    --surface-elevated: var(--surface);
+    --surface-strong: #2a3742;
+    --text: var(--color-arctic);
+    --muted: var(--color-nickel);
+    --border: #52616d;
+    --border-subtle: var(--border);
+    --accent: var(--color-copper);
+    --accent-strong: #f3b98f;
+    --accent-soft: #3b2c27;
+    --decorative-accent: var(--color-copper);
+    --focus: var(--color-copper);
+    --primary-button-background: var(--color-copper);
+    --primary-button-text: var(--color-graphite);
+    --primary-button-active-filter: brightness(1.1);
+    --personal-mark-background: var(--color-copper);
+    --personal-mark-text: var(--color-graphite);
+    --personal-mark-shadow: 0 8px 24px var(--glow);
+    --card-background: linear-gradient(145deg, var(--surface), var(--tint));
+    --card-border: var(--border);
+    --card-shadow: 0 12px 34px var(--shadow);
+    --tint: #25323d;
+    --inverse: var(--color-graphite);
+    --glow: rgba(223, 146, 93, 0.2);
+    --shadow: rgba(0, 0, 0, 0.2);
+    --shadow-strong: rgba(0, 0, 0, 0.32);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --background: var(--color-graphite);
+  --page-background:
+    radial-gradient(circle at 85% 8%, var(--glow), transparent 28rem), var(--background);
+  --surface: #202b36;
+  --surface-elevated: var(--surface);
+  --surface-strong: #2a3742;
+  --text: var(--color-arctic);
+  --muted: var(--color-nickel);
+  --border: #52616d;
+  --border-subtle: var(--border);
+  --accent: var(--color-copper);
+  --accent-strong: #f3b98f;
+  --accent-soft: #3b2c27;
+  --decorative-accent: var(--color-copper);
+  --focus: var(--color-copper);
+  --primary-button-background: var(--color-copper);
+  --primary-button-text: var(--color-graphite);
+  --primary-button-active-filter: brightness(1.1);
+  --personal-mark-background: var(--color-copper);
+  --personal-mark-text: var(--color-graphite);
+  --personal-mark-shadow: 0 8px 24px var(--glow);
+  --card-background: linear-gradient(145deg, var(--surface), var(--tint));
+  --card-border: var(--border);
+  --card-shadow: 0 12px 34px var(--shadow);
+  --tint: #25323d;
+  --inverse: var(--color-graphite);
+  --glow: rgba(223, 146, 93, 0.2);
+  --shadow: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.32);
+}
