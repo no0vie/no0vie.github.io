@@ -9,9 +9,15 @@ describe('print theme', () => {
     expect(printCss).toContain('--print-text: var(--color-graphite)');
     expect(printCss).toContain('--print-muted: var(--color-slate)');
     expect(printCss).toContain('--print-accent: var(--color-copper)');
-    expect(printCss).toContain('--print-accent-text: var(--color-deep-copper)');
+    expect(printCss).toContain('--print-link: var(--color-graphite)');
     expect(printCss).toContain('--print-border: var(--color-nickel)');
-    expect(printCss).not.toMatch(/#(?:084daf|1769e0|dceaff)/i);
+    expect(printCss).not.toMatch(/#(?:084daf|1769e0|dceaff|853f20)|deep-copper/i);
+  });
+
+  it('adds CV dynamics with a restrained Copper experience marker', () => {
+    expect(printCss).toMatch(
+      /#cv-experience::before\s*\{[^}]*background:\s*var\(--print-accent\)/s,
+    );
   });
 
   it('removes availability from print while preserving the shared web markup', () => {

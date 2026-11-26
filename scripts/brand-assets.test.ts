@@ -23,7 +23,6 @@ describe('brand assets', () => {
       graphite: '#151C25',
       nickel: '#BFCBD4',
       copper: '#DF925D',
-      deepCopper: '#853F20',
       slate: '#485563',
       arctic: '#EEF3F6',
     });
@@ -52,6 +51,10 @@ describe('brand assets', () => {
         text: brandPalette.core.graphite,
       },
     });
+  });
+
+  it('never exposes Deep Copper as a standalone brand role', () => {
+    expect(JSON.stringify(brandPalette)).not.toMatch(/853F20|deepCopper/i);
   });
 
   it.each([
