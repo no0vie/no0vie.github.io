@@ -222,7 +222,7 @@ for (const width of [320, 375, 768, 1024, 1280, 1440]) {
         path: info.outputPath(`resume-${width}-${colorScheme}.png`),
         fullPage: true,
       });
-      const menu = page.getByRole('button', { name: /Menu/ });
+      const menu = page.getByRole('button', { name: 'Open menu' });
       if (await menu.isVisible()) await menu.click();
       await page
         .getByRole('navigation', { name: 'Main navigation' })

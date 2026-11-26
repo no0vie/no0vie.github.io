@@ -1,5 +1,13 @@
 # Decisions and phase log
 
+## Responsive header and navigation Quick Fix 01 (2026-11-27)
+
+- Keep menu state local to `App`; reset it with one cleaned-up `resize` listener when the viewport crosses above the existing 760 px CSS breakpoint. Do not persist or globalize this transient UI state.
+- Keep one typed navigation configuration for desktop and mobile. Stable item IDs own the optional `beta` status, so localization, URLs and active-route detection remain independent from the badge.
+- Keep the locale link outside the collapsible `nav` and reuse the existing localized route helpers, including Study Flow query synchronization and Notes fallback behavior. Theme persistence remains owned by the existing `ThemeButton`/`localStorage` mechanism.
+- Use minimal inline decorative SVG paths for hamburger/close states because the project has no general icon dependency. The semantic button owns localized labels, expanded state and focus restoration.
+- Preserve the existing 760 px breakpoint. Visual and automated checks at 759/760/761 px showed no need for a breakpoint change.
+
 ## Study Flow Phase 2R — R0 evidence and provisional quarantine (2026-11-23)
 
 - Captured current commit/toolchain and a dated, non-overwriting lint failure log and metadata-only exact-byte registry check in `docs/study-flow/readiness/`. These are R0 evidence, not runtime remediation or release acceptance. Concurrent application/test edits made the fresh lint result time-specific; do not replace previous audit counts with an unqualified new baseline.
