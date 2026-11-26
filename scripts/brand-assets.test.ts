@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { brandPalette, createFaviconSvg } from './brand-assets.js';
+import { brandPalette, createFaviconSvg, createIco } from './brand-assets.js';
 
 const relativeLuminance = (hex: string) => {
   const channels = hex
@@ -23,6 +23,8 @@ describe('brand assets', () => {
       graphite: '#151C25',
       nickel: '#BFCBD4',
       copper: '#DF925D',
+      deepCopper: '#853F20',
+      slate: '#485563',
       arctic: '#EEF3F6',
     });
     expect(brandPalette.light).toMatchObject({
@@ -68,14 +70,28 @@ describe('brand assets', () => {
     expect(contrastRatio(foreground, background)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('generates a personal theme-aware favicon without corporate branding', () => {
-    const favicon = createFaviconSvg();
+  it('derives a high-contrast favicon from the canonical mark without changing its paths', () => {
+    const source =
+      '<svg viewBox="0 0 120 120"><title>Temporary name</title><path d="M1 2Z" fill="#BFCBD4"/><path d="M3 4Z" fill="#DF925D"/></svg>';
+    const favicon = createFaviconSvg(source);
 
-    expect(favicon).toContain('#151C25');
-    expect(favicon).toContain('#DF925D');
-    expect(favicon).toContain(`.tile { fill: ${brandPalette.core.copper}; }`);
-    expect(favicon).toContain(`.letters { fill: ${brandPalette.core.graphite}; }`);
+    expect(favicon).toContain(`fill="${brandPalette.core.graphite}"`);
+    expect(favicon).toContain('<path d="M1 2Z" fill="#BFCBD4"/>');
+    expect(favicon).toContain('<path d="M3 4Z" fill="#DF925D"/>');
     expect(favicon).toContain('Eugene Novikov');
-    expect(favicon).not.toMatch(/Norilsk|Норильск/i);
+    expect(favicon).not.toContain('Temporary name');
+  });
+
+  it('packages PNG favicon sizes into a valid multi-image ICO', () => {
+    const ico = createIco([
+      { size: 16, data: Buffer.from('16px') },
+      { size: 32, data: Buffer.from('32px') },
+      { size: 48, data: Buffer.from('48px') },
+    ]);
+
+    expect(ico.readUInt16LE(2)).toBe(1);
+    expect(ico.readUInt16LE(4)).toBe(3);
+    expect([ico.readUInt8(6), ico.readUInt8(22), ico.readUInt8(38)]).toEqual([16, 32, 48]);
+    expect(ico.subarray(-4).toString()).toBe('48px');
   });
 });
