@@ -10,7 +10,7 @@
     --print-text: var(--color-graphite);
     --print-muted: var(--color-slate);
     --print-accent: var(--color-copper);
-    --print-accent-text: var(--color-deep-copper);
+    --print-link: var(--color-graphite);
     --print-border: var(--color-nickel);
     --background: var(--print-background) !important;
     --surface: var(--print-background) !important;
@@ -19,8 +19,8 @@
     --muted: var(--print-muted) !important;
     --border: var(--print-border) !important;
     --border-subtle: var(--print-border) !important;
-    --accent: var(--print-accent-text) !important;
-    --accent-strong: var(--print-accent-text) !important;
+    --accent: var(--print-text) !important;
+    --accent-strong: var(--print-text) !important;
     --accent-soft: #f8e7da !important;
     --decorative-accent: var(--print-accent) !important;
     --tint: var(--print-background) !important;
@@ -74,7 +74,7 @@
 
   .eyebrow {
     margin-bottom: 2mm !important;
-    color: var(--print-accent-text) !important;
+    color: var(--print-muted) !important;
     font-size: 9.5pt !important;
   }
 
@@ -154,7 +154,7 @@
 
   h2 {
     margin-bottom: 2.5mm !important;
-    color: var(--print-accent-text) !important;
+    color: var(--print-muted) !important;
     font-size: 13pt !important;
   }
 
@@ -268,8 +268,8 @@
   }
 
   a {
-    color: var(--print-accent-text) !important;
-    text-decoration: none !important;
+    color: var(--print-link) !important;
+    text-decoration: underline !important;
   }
 
   .text-link {
@@ -283,7 +283,7 @@
 
   .text-link[href^='https://']::after {
     content: attr(href);
-    color: var(--print-accent-text);
+    color: var(--print-link);
     font-size: 8.5pt;
     font-weight: 400;
   }
@@ -382,7 +382,7 @@
 
   .cv-role {
     margin: 0;
-    color: var(--print-accent-text);
+    color: var(--print-muted);
     font-size: 10pt;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -427,7 +427,8 @@
   .cv-work-links a,
   .cv-projects a,
   .cv-portfolio-link a {
-    color: var(--print-accent-text) !important;
+    color: var(--print-link) !important;
+    text-decoration: underline !important;
     overflow-wrap: anywhere;
   }
 
@@ -453,6 +454,21 @@
     margin: 0 0 2mm !important;
     color: var(--print-muted) !important;
     font-size: 13.5pt !important;
+  }
+
+  #cv-experience {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+  }
+
+  #cv-experience::before {
+    width: 9mm;
+    height: 1.2mm;
+    flex: 0 0 auto;
+    background: var(--print-accent);
+    border-radius: 999px;
+    content: '';
   }
 
   .professional-cv h3 {
@@ -487,7 +503,7 @@
 
   .cv-employer {
     margin: 0 0 0.5mm;
-    color: var(--print-accent-text);
+    color: var(--print-text);
     font-size: 9.5pt;
     font-weight: 700;
   }

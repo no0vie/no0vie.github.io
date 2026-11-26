@@ -3,7 +3,6 @@ export const brandPalette = {
     graphite: '#151C25',
     nickel: '#BFCBD4',
     copper: '#DF925D',
-    deepCopper: '#853F20',
     slate: '#485563',
     arctic: '#EEF3F6',
   },

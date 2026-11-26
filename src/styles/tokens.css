@@ -3,7 +3,6 @@
   --color-graphite: #151c25;
   --color-nickel: #bfcbd4;
   --color-copper: #df925d;
-  --color-deep-copper: #853f20;
   --color-slate: #485563;
   --color-arctic: #eef3f6;
 
@@ -18,7 +17,7 @@
   --border: var(--color-nickel);
   --border-subtle: #d5dee5;
   --accent: #a6532d;
-  --accent-strong: var(--color-deep-copper);
+  --accent-strong: var(--color-graphite);
   --accent-soft: #f8e7da;
   --decorative-accent: var(--color-copper);
   --focus: #a6532d;
@@ -60,7 +59,7 @@
     --border: #52616d;
     --border-subtle: var(--border);
     --accent: var(--color-copper);
-    --accent-strong: #f3b98f;
+    --accent-strong: var(--color-arctic);
     --accent-soft: #3b2c27;
     --decorative-accent: var(--color-copper);
     --focus: var(--color-copper);
@@ -94,7 +93,7 @@
   --border: #52616d;
   --border-subtle: var(--border);
   --accent: var(--color-copper);
-  --accent-strong: #f3b98f;
+  --accent-strong: var(--color-arctic);
   --accent-soft: #3b2c27;
   --decorative-accent: var(--color-copper);
   --focus: var(--color-copper);
