@@ -1,217 +1,342 @@
 @page {
   size: A4;
-  margin: 15mm 16mm;
+  margin: 14mm 15mm;
 }
+
 @media print {
   :root {
     color-scheme: light !important;
-    --background: #fff !important;
-    --surface: #fff !important;
-    --text: #000 !important;
-    --muted: #333 !important;
-    --border: #ccc !important;
-    --accent: #000 !important;
-    /* Preserve the pre-alignment PDF palette until the site direction is approved. */
-    --accent-strong: #084daf !important;
-    --accent-soft: #dceaff !important;
-    --decorative-accent: #1769e0 !important;
-    --tint: #fff !important;
+    --print-background: #ffffff;
+    --print-text: var(--color-graphite);
+    --print-muted: var(--color-slate);
+    --print-accent: var(--color-copper);
+    --print-accent-text: var(--color-deep-copper);
+    --print-border: var(--color-nickel);
+    --background: var(--print-background) !important;
+    --surface: var(--print-background) !important;
+    --surface-elevated: var(--print-background) !important;
+    --text: var(--print-text) !important;
+    --muted: var(--print-muted) !important;
+    --border: var(--print-border) !important;
+    --border-subtle: var(--print-border) !important;
+    --accent: var(--print-accent-text) !important;
+    --accent-strong: var(--print-accent-text) !important;
+    --accent-soft: #f8e7da !important;
+    --decorative-accent: var(--print-accent) !important;
+    --tint: var(--print-background) !important;
   }
+
+  html,
   body {
-    background: #fff !important;
-    color: #000 !important;
-    font-size: 10pt !important;
-    line-height: 1.45 !important;
+    background: var(--print-background) !important;
   }
+
+  body {
+    color: var(--print-text) !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important;
+    font-size: 10pt !important;
+    line-height: 1.42 !important;
+    print-color-adjust: exact;
+  }
+
   .site-header,
   .skip-link,
   .section-navigation,
   .hero .button,
   .site-footer,
-  .copy-button {
+  .copy-button,
+  .availability-status {
     display: none !important;
   }
+
   .main-content {
     width: 100% !important;
     margin: 0 !important;
   }
+
   .hero {
-    padding: 0 0 6mm !important;
+    padding: 0 0 5mm !important;
+    border-bottom-color: var(--print-border) !important;
   }
+
   .hero h1 {
-    font-size: 32pt !important;
+    font-size: 30pt !important;
+    line-height: 1.05 !important;
   }
+
   .hero-title-row {
     align-items: flex-start !important;
   }
-  .availability-status {
-    animation: none !important;
+
+  .accent {
+    color: var(--print-accent) !important;
   }
-  .availability-status::before {
-    display: none !important;
-  }
+
   .eyebrow {
-    font-size: 10pt !important;
-    margin-bottom: 3mm !important;
+    margin-bottom: 2mm !important;
+    color: var(--print-accent-text) !important;
+    font-size: 9.5pt !important;
   }
+
   .hero-bottom {
-    margin-top: 3mm !important;
+    margin-top: 2mm !important;
   }
+
   .hero-context {
-    font-size: 10pt !important;
+    color: var(--print-muted) !important;
+    font-size: 9.5pt !important;
   }
+
   .resume-section {
     display: block !important;
-    padding: 6mm 0 !important;
+    padding: 4.5mm 0 !important;
   }
+
   .profile-section {
     display: grid !important;
-    grid-template-columns: 30mm 1fr !important;
+    grid-template-columns: 28mm 1fr !important;
     align-items: start !important;
-    gap: 6mm !important;
-    padding: 5mm 0 !important;
+    gap: 5mm !important;
+    padding: 4.5mm 0 !important;
   }
+
   .profile-portrait {
-    width: 30mm !important;
-    border-radius: 4mm !important;
+    width: 28mm !important;
+    border-radius: 3mm !important;
     box-shadow: none !important;
   }
+
   .profile-content > h2 {
-    margin-bottom: 2mm !important;
+    margin-bottom: 1.5mm !important;
   }
+
   .profile-contacts {
-    margin-top: 3mm !important;
+    margin-top: 2.5mm !important;
   }
+
   .contact-chips {
     display: block !important;
   }
+
   .contact-chips li {
     display: inline !important;
   }
+
+  .contact-chips li:not(:last-child)::after {
+    content: ' · ';
+    color: var(--print-border);
+  }
+
   .contact-chip {
     display: inline !important;
     min-height: 0 !important;
     padding: 0 !important;
     border: 0 !important;
     background: none !important;
+    color: var(--print-text) !important;
     font-size: 8.5pt !important;
     font-weight: 400 !important;
+    overflow-wrap: anywhere;
   }
-  .contact-chip svg {
+
+  .contact-chip svg,
+  .contact-chip > span {
     display: none !important;
   }
-  .contact-chip::after {
-    content: ' (' attr(href) ') · ';
+
+  .contact-chip[href^='mailto:']::after {
+    content: attr(data-print-value);
   }
+
+  .contact-chip[href^='https://']::after {
+    content: attr(href);
+  }
+
   h2 {
+    margin-bottom: 2.5mm !important;
+    color: var(--print-accent-text) !important;
     font-size: 13pt !important;
-    margin-bottom: 3mm !important;
   }
+
   h3 {
-    font-size: 12pt !important;
+    font-size: 11.5pt !important;
   }
+
   h1,
   h2,
   h3,
   .experience-heading,
-  .employer {
+  .employer,
+  .project-heading {
     break-after: avoid;
   }
+
+  .experience-heading + .overview,
+  .project-heading + p {
+    break-before: avoid;
+  }
+
   p,
   li {
     orphans: 3;
     widows: 3;
   }
+
   .lead,
   .education-copy {
     font-size: 10pt !important;
   }
+
   .highlights-section {
-    padding: 5mm 0 !important;
+    padding: 4.5mm 0 !important;
   }
+
   .highlights {
     display: block !important;
-    list-style: disc !important;
     padding-left: 5mm !important;
+    list-style: disc !important;
   }
+
   .highlights li {
     display: list-item !important;
+    margin-bottom: 1.5mm;
     padding: 0 !important;
-    margin-bottom: 2mm;
     border: 0 !important;
     background: none !important;
+    break-inside: avoid;
   }
+
   .highlights p {
     font-size: 10pt !important;
   }
+
   .highlight-number {
     display: none !important;
   }
+
   .experience-card + .experience-card {
-    margin-top: 6mm !important;
-    padding-top: 5mm !important;
+    margin-top: 4.5mm !important;
+    padding-top: 4mm !important;
+    border-top-color: var(--print-border) !important;
   }
+
   .experience-heading {
     display: block !important;
   }
+
   .employer,
-  .dates {
+  .dates,
+  .project-category,
+  .project-status {
+    color: var(--print-muted) !important;
     font-size: 9pt !important;
   }
+
   .overview {
-    margin-top: 3mm !important;
+    margin-top: 2mm !important;
   }
+
   .achievements {
-    margin: 3mm 0 !important;
+    margin: 2mm 0 !important;
   }
+
   .achievements li {
-    margin-bottom: 2mm !important;
+    margin-bottom: 1.5mm !important;
     break-inside: avoid;
   }
+
   .tags {
-    gap: 1.5mm !important;
-  }
-  .tags li {
-    font-size: 8pt !important;
-    padding: 1mm 2mm !important;
-    break-inside: avoid;
-  }
-  a {
-    color: #000 !important;
-    text-decoration: none !important;
-  }
-  .text-link {
+    display: block !important;
+    margin-top: 1.5mm !important;
     padding: 0 !important;
   }
-  .text-link[href^='https://']::after {
-    content: ' (' attr(href) ')';
-    font-weight: 400;
-    font-size: 9pt;
+
+  .tags li {
+    display: inline !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    color: var(--print-muted) !important;
+    font-size: 8.5pt !important;
+    font-weight: 400 !important;
+    break-inside: auto;
   }
+
+  .tags li:not(:last-child)::after {
+    content: ' · ';
+    color: var(--print-border);
+  }
+
+  a {
+    color: var(--print-accent-text) !important;
+    text-decoration: none !important;
+  }
+
+  .text-link {
+    padding: 0 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .text-link[href^='https://'] {
+    font-size: 0 !important;
+  }
+
+  .text-link[href^='https://']::after {
+    content: attr(href);
+    color: var(--print-accent-text);
+    font-size: 8.5pt;
+    font-weight: 400;
+  }
+
   .project-grid {
     display: block !important;
   }
+
   .project-card {
-    break-inside: avoid;
-    padding: 3mm 0 !important;
-    margin-bottom: 2mm;
+    margin-bottom: 1mm;
+    padding: 2mm 0 !important;
     border: 0 !important;
-    box-shadow: none !important;
+    border-bottom: 1px solid var(--print-border) !important;
     background: none !important;
+    box-shadow: none !important;
+    break-inside: auto;
   }
+
+  .project-heading {
+    align-items: baseline !important;
+    gap: 3mm !important;
+  }
+
+  .stage {
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    color: var(--print-muted) !important;
+    font-size: 8.5pt !important;
+    font-weight: 400 !important;
+  }
+
+  .project-links {
+    gap: 3mm !important;
+  }
+
   .skill-groups section {
     break-inside: avoid;
   }
+
   .standalone-page {
     min-height: 0 !important;
     padding: 0 !important;
   }
+
   .evolution-page {
     padding: 0 !important;
   }
+
   .evolution-layout {
     display: block !important;
   }
+
   .career-graph,
   .career-graph-placeholder,
   .evolution-map,
@@ -219,13 +344,222 @@
   .evolution-back {
     display: none !important;
   }
+
   .evolution-panel,
   .evolution-panel[hidden] {
     display: block !important;
     padding: 5mm 0 !important;
     border: 0 !important;
-    border-top: 1px solid #ccc !important;
+    border-top: 1px solid var(--print-border) !important;
     box-shadow: none !important;
+    break-inside: auto;
+  }
+
+  .professional-cv {
+    width: 100%;
+    margin: 0;
+    color: var(--print-text);
+    font-size: 10pt;
+    line-height: 1.34;
+  }
+
+  .cv-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8mm;
+    padding-bottom: 3mm;
+    border-bottom: 1px solid var(--print-border);
+  }
+
+  .cv-header h1 {
+    margin: 1mm 0;
+    color: var(--print-text);
+    font-size: 29pt !important;
+    line-height: 1;
+  }
+
+  .cv-role {
+    margin: 0;
+    color: var(--print-accent-text);
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .cv-direction {
+    margin: 0;
+    color: var(--print-muted);
+    font-size: 9.5pt;
+  }
+
+  .cv-accent {
+    color: var(--print-accent);
+  }
+
+  .cv-brand-mark {
+    display: grid !important;
+    width: 12mm;
+    height: 12mm;
+    padding: 0.8mm;
+    border-radius: 2.5mm;
+    box-shadow: none;
+  }
+
+  .cv-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2.5mm;
+    margin: 2.5mm 0 3.5mm;
+    padding: 0;
+    color: var(--print-muted);
+    font-size: 8.3pt;
+    list-style: none;
+  }
+
+  .cv-contacts li:not(:last-child)::after {
+    content: ' ·';
+    color: var(--print-border);
+  }
+
+  .cv-contacts a,
+  .cv-work-links a,
+  .cv-projects a,
+  .cv-portfolio-link a {
+    color: var(--print-accent-text) !important;
+    overflow-wrap: anywhere;
+  }
+
+  .cv-profile {
+    display: grid;
+    grid-template-columns: 24mm 1fr;
+    gap: 4.5mm;
+    align-items: start;
+    padding: 3.5mm 0;
+    border-bottom: 1px solid var(--print-border);
+  }
+
+  .cv-portrait {
+    display: block;
+    width: 24mm;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: var(--portrait-position);
+    border-radius: 2.5mm;
+  }
+
+  .professional-cv h2 {
+    margin: 0 0 2mm !important;
+    color: var(--print-muted) !important;
+    font-size: 13.5pt !important;
+  }
+
+  .professional-cv h3 {
+    margin: 0;
+    color: var(--print-text);
+    font-size: 11.5pt !important;
+  }
+
+  .cv-profile p,
+  .cv-section > p {
+    margin: 0;
+  }
+
+  .cv-section {
+    padding: 3mm 0;
+    border-bottom: 1px solid var(--print-border);
+  }
+
+  .cv-experience + .cv-experience {
+    margin-top: 2.7mm;
+    padding-top: 2.7mm;
+    border-top: 1px solid var(--print-border);
+  }
+
+  .cv-experience-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5mm;
+    break-after: avoid;
+  }
+
+  .cv-employer {
+    margin: 0 0 0.5mm;
+    color: var(--print-accent-text);
+    font-size: 9.5pt;
+    font-weight: 700;
+  }
+
+  .cv-period {
+    flex-shrink: 0;
+    margin: 0;
+    color: var(--print-muted);
+    font-size: 9pt;
+  }
+
+  .cv-overview,
+  .cv-outcome {
+    margin: 1.5mm 0;
+  }
+
+  .cv-achievements {
+    margin: 1.5mm 0;
+    padding-left: 4.5mm;
+  }
+
+  .cv-achievements li {
+    margin-bottom: 0.7mm;
     break-inside: avoid;
+  }
+
+  .cv-achievements li::marker {
+    color: var(--print-accent);
+  }
+
+  .cv-work-links,
+  .cv-technologies {
+    margin: 1.2mm 0 0;
+    color: var(--print-muted);
+    font-size: 8.5pt;
+  }
+
+  .cv-skills {
+    margin: 0;
+  }
+
+  .cv-skills > div {
+    display: grid;
+    grid-template-columns: 38mm 1fr;
+    gap: 3mm;
+    margin-bottom: 1mm;
+    break-inside: avoid;
+  }
+
+  .cv-skills dt {
+    color: var(--print-text);
+    font-weight: 700;
+  }
+
+  .cv-skills dd {
+    margin: 0;
+    color: var(--print-muted);
+  }
+
+  .cv-projects {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .cv-projects li {
+    margin: 0;
+  }
+
+  .cv-portfolio-link {
+    margin: 3mm 0 0;
+    color: var(--print-muted);
+    font-size: 8.5pt;
   }
 }

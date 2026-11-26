@@ -3,6 +3,8 @@
   --color-graphite: #151c25;
   --color-nickel: #bfcbd4;
   --color-copper: #df925d;
+  --color-deep-copper: #853f20;
+  --color-slate: #485563;
   --color-arctic: #eef3f6;
 
   color-scheme: light;
@@ -12,11 +14,11 @@
   --surface-elevated: #ffffff;
   --surface-strong: var(--surface-elevated);
   --text: var(--color-graphite);
-  --muted: #485563;
+  --muted: var(--color-slate);
   --border: var(--color-nickel);
   --border-subtle: #d5dee5;
   --accent: #a6532d;
-  --accent-strong: #853f20;
+  --accent-strong: var(--color-deep-copper);
   --accent-soft: #f8e7da;
   --decorative-accent: var(--color-copper);
   --focus: #a6532d;

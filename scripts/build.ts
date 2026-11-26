@@ -1,14 +1,17 @@
 import { build, createServer } from 'vite';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 
 import { publishingConfig, normalizePdf, validatePdf } from './publishing';
+import { generateBrandAssets, generatedBrandPaths } from './generate-brand';
 import { validateStudyFlowProvenance } from './study-flow-provenance';
 import { serve } from './server';
 import type { App as AppType } from '../src/app/App';
 import type { InterviewPage as InterviewPageType } from '../src/features/interview/InterviewPage';
 import type { copy as copyType } from '../src/app/copy';
+import type { ProfessionalCv as ProfessionalCvType } from '../src/features/export/ProfessionalCv';
 import type { cases as casesType } from '../src/content/cases';
 import { availability, profile } from '../src/content';
 import { notes } from '../src/content/notes';
@@ -20,6 +23,12 @@ import { pdfFileName } from '../src/app/routes';
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
 const config = publishingConfig();
+await generateBrandAssets();
+const brandHash = createHash('sha256');
+for (const path of ['public/branding/logo.svg', ...generatedBrandPaths])
+  brandHash.update(await readFile(path));
+const brandVersion = brandHash.digest('hex').slice(0, 12);
+const brandHead = `<link rel="icon" type="image/svg+xml" href="${config.base}branding/generated/favicon.svg?v=${brandVersion}"><link rel="icon" href="${config.base}branding/generated/favicon.ico?v=${brandVersion}" sizes="16x16 32x32 48x48"><link rel="apple-touch-icon" href="${config.base}branding/generated/apple-touch-icon.png?v=${brandVersion}">`;
 const enableEvolution = process.env.ENABLE_EVOLUTION !== 'false';
 const knownPages = [
   '',
@@ -51,6 +60,9 @@ try {
   const { copy } = (await ssr.ssrLoadModule('/src/app/copy.ts')) as {
     copy: typeof copyType;
   };
+  const { ProfessionalCv } = (await ssr.ssrLoadModule(
+    '/src/features/export/ProfessionalCv.tsx',
+  )) as { ProfessionalCv: typeof ProfessionalCvType };
 
   const { cases } = (await ssr.ssrLoadModule('/src/content/cases.ts')) as {
     cases: typeof casesType;
@@ -104,7 +116,7 @@ try {
         },
       }).replace(/</g, '\\u003c');
       const seo =
-        `<meta name="description" content="${escape(description)}"><link rel="icon" href="${config.base}favicon.svg">` +
+        `<meta name="description" content="${escape(description)}">${brandHead}` +
         (page === '404'
           ? '<meta name="robots" content="noindex">'
           : `<link rel="canonical" href="${config.url(path)}">${['ru', 'en'].map((lang) => `<link rel="alternate" hreflang="${lang}" href="${config.url(`${lang}${page ? `/${page}` : ''}`)}">`).join('')}<link rel="alternate" hreflang="x-default" href="${config.url(`ru${page ? `/${page}` : ''}`)}"><meta property="og:type" content="website"><meta property="og:title" content="${escape(title)}"><meta property="og:description" content="${escape(description)}"><meta property="og:url" content="${config.url(path)}"><meta property="og:locale" content="${locale === 'ru' ? 'ru_RU' : 'en_US'}"><meta property="og:image" content="${config.url(`og-${locale}.png`)}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${escape(`${profile.name[locale]} — ${profile.role[locale]}`)}"><meta name="twitter:card" content="summary_large_image"><script type="application/ld+json">${structuredData}</script>`);
@@ -131,11 +143,28 @@ try {
         await writeFile(`dist/${path}/index.html`, html);
       }
     }
+
+    const cvHtml = template
+      .replace('lang="ru"', `lang="${locale}"`)
+      .replace('data-page=""', 'data-page="professional-cv"')
+      .replace(/<title>.*?<\/title>/, `<title>${escape(profile.name[locale])} — CV</title>`)
+      .replace('<!--seo-->', '<meta name="robots" content="noindex">')
+      .replace(
+        '<!--app-->',
+        renderToString(
+          React.createElement(ProfessionalCv, {
+            locale,
+            siteUrl: config.url(''),
+          }),
+        ),
+      );
+    await mkdir(`dist/__cv/${locale}`, { recursive: true });
+    await writeFile(`dist/__cv/${locale}/index.html`, cvHtml);
   }
 } finally {
   await ssr.close();
 }
-const root = `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${profile.name.ru} / ${profile.name.en}</title><script>var locale='ru';try{if(localStorage.getItem('locale')==='en')locale='en'}catch{}location.replace(${JSON.stringify(config.base)}+locale)</script></head><body><main><h1>${profile.name.ru} / ${profile.name.en}</h1><p>Senior Software Engineer (Frontend-focused)</p><p><a href="${config.base}ru">Резюме на русском</a> · <a href="${config.base}en">Resume in English</a></p></main></body></html>`;
+const root = `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${profile.name.ru} / ${profile.name.en}</title>${brandHead}<script>var locale='ru';try{if(localStorage.getItem('locale')==='en')locale='en'}catch{}location.replace(${JSON.stringify(config.base)}+locale)</script></head><body><main><h1>${profile.name.ru} / ${profile.name.en}</h1><p>Senior Software Engineer (Frontend-focused)</p><p><a href="${config.base}ru">Резюме на русском</a> · <a href="${config.base}en">Resume in English</a></p></main></body></html>`;
 await writeFile('dist/index.html', root);
 // `/notes` is the public entry point; query `lang` switches its hydrated locale.
 await cp('dist/ru/notes', 'dist/notes', { recursive: true });
@@ -171,7 +200,7 @@ try {
         reducedMotion: 'reduce',
         javaScriptEnabled: false,
       });
-      await page.goto(`${server.origin}${config.base}${locale}`, {
+      await page.goto(`${server.origin}${config.base}__cv/${locale}`, {
         waitUntil: 'networkidle',
         timeout: 30_000,
       });
@@ -218,5 +247,6 @@ try {
   }
 } finally {
   await server.close();
+  await rm('dist/__cv', { recursive: true, force: true });
 }
-console.log('Static pages, SEO and both mandatory PDFs generated.');
+console.log('Static pages, SEO and both mandatory professional CV PDFs generated.');

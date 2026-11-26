@@ -17,6 +17,7 @@ import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 import { EvolutionPage } from './EvolutionPage';
 import { NotesPage } from './NotesPage';
+import { BrandMark } from './BrandMark';
 
 type Theme = 'system' | 'light' | 'dark';
 
@@ -149,15 +150,31 @@ function ContactIcon({ service }: { service: 'email' | 'telegram' | 'whatsapp' |
 
 function ContactLinks({ locale }: { locale: Locale }) {
   const links = [
-    { label: 'Gmail', href: `mailto:${profile.contacts.emails[0]}`, icon: 'email' },
+    {
+      label: 'Gmail',
+      href: `mailto:${profile.contacts.emails[0]}`,
+      printValue: profile.contacts.emails[0],
+      icon: 'email',
+    },
     {
       label: locale === 'ru' ? 'Яндекс Почта' : 'Yandex Mail',
       href: `mailto:${profile.contacts.emails[1]}`,
+      printValue: profile.contacts.emails[1],
       icon: 'email',
     },
-    { label: 'Telegram', href: profile.contacts.telegram, icon: 'telegram' },
-    { label: 'WhatsApp', href: profile.contacts.whatsapp, icon: 'whatsapp' },
-    { label: 'GitHub', href: profile.github, icon: 'github' },
+    {
+      label: 'Telegram',
+      href: profile.contacts.telegram,
+      printValue: undefined,
+      icon: 'telegram',
+    },
+    {
+      label: 'WhatsApp',
+      href: profile.contacts.whatsapp,
+      printValue: undefined,
+      icon: 'whatsapp',
+    },
+    { label: 'GitHub', href: profile.github, printValue: undefined, icon: 'github' },
   ] as const;
 
   return (
@@ -171,6 +188,7 @@ function ContactLinks({ locale }: { locale: Locale }) {
             <a
               className="contact-chip"
               href={link.href}
+              data-print-value={link.printValue}
               rel={link.href.startsWith('https://') ? 'noopener noreferrer' : undefined}
             >
               <ContactIcon service={link.icon} />
@@ -365,9 +383,7 @@ export function App({
       <header className="site-header">
         <div className="header-inner">
           <a className="wordmark" href={localePath(locale)}>
-            <span className="monogram" aria-hidden="true">
-              en.
-            </span>
+            <BrandMark />
             <span>
               {profile.name[locale]}
               <small>{profile.role[locale]}</small>
