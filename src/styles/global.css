@@ -653,6 +653,9 @@ button:hover {
   .site-navigation .theme-button {
     align-self: flex-start;
   }
+  .site-navigation > .evolution-link {
+    margin-bottom: 12px;
+  }
   .site-navigation.is-open {
     display: flex;
   }
