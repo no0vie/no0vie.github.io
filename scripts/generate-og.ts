@@ -1,6 +1,6 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { profile } from '../src/content';
-import { brandPalette, createFaviconSvg } from './brand-assets.js';
+import { brandPalette } from './brand-assets.js';
 process.env.PLAYWRIGHT_BROWSERS_PATH ??= '0';
 const { chromium } = await import('@playwright/test');
 
@@ -17,8 +17,6 @@ const content = {
     detail: 'Frontend · React · TypeScript',
   },
 } as const;
-
-await writeFile('public/favicon.svg', createFaviconSvg());
 
 const browser = await chromium.launch({ timeout: 30_000 });
 try {

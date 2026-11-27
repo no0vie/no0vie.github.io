@@ -1,5 +1,13 @@
 # QA evidence and open checks
 
+## Responsive header and navigation Quick Fix 01 (2026-11-27)
+
+- Baseline before implementation: formatting, typecheck, 136/136 unit tests, production build and 62/62 E2E passed. Whole-worktree lint failed on 41 pre-existing errors in the untouched, untracked `examples/` working set.
+- TDD evidence: the header suite first failed against the old text toggle, hidden locale link, missing BETA labels and stale responsive state. Follow-up RED checks measured the deformed Evolution control at 22 × 44 px and confirmed the wordmark left the viewport after scrolling. After implementation, 11/11 focused header scenarios pass, including RU/EN labels, Escape/focus restoration, route/theme-preserving locale change, navigation close, desktop reset, repeated toggles, hidden Tab order, fixed 44 × 44 px Evolution geometry, sticky positioning, target size and overflow checks.
+- Responsive checks cover 320, 375, 390, 430, 759, 760, 761, 768, 1024, 1280, 1440 and 1920 px in light/dark reduced-motion modes. The existing 760 px breakpoint was retained. Existing axe checks on localized resume/project routes remain green in the full suite.
+- Final gates: `npm run format:check` passed; targeted ESLint for changed E2E passed; `npm run typecheck` passed; `npm test` passed 136/136; `npm run build` passed and generated both mandatory PDFs; `npm run test:e2e` passed 73/73. Whole-worktree `npm run lint` remains red only on the same 41 baseline errors in `examples/`.
+- Before/after RU/EN desktop/mobile screenshots, mobile open/closed states, both themes and a 320 px dark sample are stored in `docs/quick-fix-01/`. Focused follow-up captures show the circular Evolution control in open mobile and dark desktop navigation plus the sticky mobile header after scrolling. Production was used as the original before source; the local production build was used for after.
+
 ## Phase 2R R1/R2 concurrent checkpoint (2026-11-23)
 
 - Current worktree adds hydration-safe Study Flow startup, guarded storage and visible-visit persistence, plus typed provenance and build-time reference/prerequisite validation; see [`study-flow/readiness/READINESS-REPORT.md`](study-flow/readiness/READINESS-REPORT.md) and [`study-flow/readiness/RUNTIME-FIXES.md`](study-flow/readiness/RUNTIME-FIXES.md). R0 evidence remains a separate historical snapshot. A focused storage test was reported failing before its fix and focused E2E passed 16; no other RED results claimed.

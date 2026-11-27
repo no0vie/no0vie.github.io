@@ -35,8 +35,5 @@ test('availability ribbon is static for reduced motion and print', async ({ page
   ).toBe('none');
 
   await page.emulateMedia({ media: 'print', reducedMotion: 'no-preference' });
-  await expect(status).toBeVisible();
-  expect(await status.evaluate((element) => getComputedStyle(element, '::before').display)).toBe(
-    'none',
-  );
+  await expect(status).toBeHidden();
 });

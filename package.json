@@ -12,6 +12,7 @@
     "format": "prettier . --write",
     "format:check": "node scripts/check-format.mjs",
     "prepare": "node scripts/install-git-hooks.mjs",
+    "assets:brand": "tsx scripts/generate-brand.ts",
     "assets:og": "tsx scripts/generate-og.ts",
     "screenshots:visual": "tsx scripts/capture-visual-refresh.ts",
     "typecheck": "tsc --noEmit",

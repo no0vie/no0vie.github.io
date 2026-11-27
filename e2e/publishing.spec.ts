@@ -69,6 +69,7 @@ for (const locale of ['ru', 'en']) {
     expect(download.suggestedFilename()).toBe(`eugene-novikov-sse-2026-11-13-${locale}.pdf`);
     await page.emulateMedia({ media: 'print' });
     await expect(page.locator('.site-header')).toBeHidden();
+    await expect(page.locator('.availability-status')).toBeHidden();
     await expect(page.locator('#education')).toBeVisible();
     await page.goto(`${locale}/projects`);
     await expect(page.locator('.project-card')).toHaveCount(5);
@@ -221,7 +222,7 @@ for (const width of [320, 375, 768, 1024, 1280, 1440]) {
         path: info.outputPath(`resume-${width}-${colorScheme}.png`),
         fullPage: true,
       });
-      const menu = page.getByRole('button', { name: /Menu/ });
+      const menu = page.getByRole('button', { name: 'Open menu' });
       if (await menu.isVisible()) await menu.click();
       await page
         .getByRole('navigation', { name: 'Main navigation' })
@@ -260,9 +261,28 @@ test('published internal links and SEO assets exist', async ({ page, request }) 
         await expect(page.locator(target.hash)).toHaveCount(1);
     }
   }
-  for (const path of ['og-ru.png', 'og-en.png', 'favicon.svg', 'robots.txt', 'sitemap.xml'])
+  for (const path of [
+    'og-ru.png',
+    'og-en.png',
+    'branding/logo.svg',
+    'branding/generated/favicon.svg',
+    'branding/generated/favicon.ico',
+    'branding/generated/apple-touch-icon.png',
+    'branding/generated/icon-192.png',
+    'branding/generated/icon-512.png',
+    'robots.txt',
+    'sitemap.xml',
+  ])
     expect((await request.get(path)).status()).toBe(200);
   await page.goto('en');
+  await expect(page.locator('.wordmark .brand-mark img')).toHaveAttribute(
+    'src',
+    /branding\/logo\.svg$/,
+  );
+  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute(
+    'href',
+    /branding\/generated\/favicon\.svg\?v=[a-f0-9]{12}$/,
+  );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og-en\.png$/);
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');

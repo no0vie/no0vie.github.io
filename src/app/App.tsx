@@ -17,10 +17,32 @@ import { CopyButton } from './copy-tools';
 import { formatAboutForClipboard, formatExperienceForClipboard } from './resume-text';
 import { EvolutionPage } from './EvolutionPage';
 import { NotesPage } from './NotesPage';
+import { BrandMark } from './BrandMark';
 
 type Theme = 'system' | 'light' | 'dark';
 
 const themes: Theme[] = ['system', 'light', 'dark'];
+
+type NavigationStatus = 'beta';
+interface NavigationItem {
+  id: 'resume' | 'projects' | 'preparation' | 'notes';
+  status?: NavigationStatus;
+}
+
+const navigationItems: readonly NavigationItem[] = [
+  { id: 'resume' },
+  { id: 'projects' },
+  { id: 'preparation', status: 'beta' },
+  { id: 'notes', status: 'beta' },
+];
+
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+    </svg>
+  );
+}
 
 function OrbitIcon() {
   return (
@@ -149,15 +171,31 @@ function ContactIcon({ service }: { service: 'email' | 'telegram' | 'whatsapp' |
 
 function ContactLinks({ locale }: { locale: Locale }) {
   const links = [
-    { label: 'Gmail', href: `mailto:${profile.contacts.emails[0]}`, icon: 'email' },
+    {
+      label: 'Gmail',
+      href: `mailto:${profile.contacts.emails[0]}`,
+      printValue: profile.contacts.emails[0],
+      icon: 'email',
+    },
     {
       label: locale === 'ru' ? 'Яндекс Почта' : 'Yandex Mail',
       href: `mailto:${profile.contacts.emails[1]}`,
+      printValue: profile.contacts.emails[1],
       icon: 'email',
     },
-    { label: 'Telegram', href: profile.contacts.telegram, icon: 'telegram' },
-    { label: 'WhatsApp', href: profile.contacts.whatsapp, icon: 'whatsapp' },
-    { label: 'GitHub', href: profile.github, icon: 'github' },
+    {
+      label: 'Telegram',
+      href: profile.contacts.telegram,
+      printValue: undefined,
+      icon: 'telegram',
+    },
+    {
+      label: 'WhatsApp',
+      href: profile.contacts.whatsapp,
+      printValue: undefined,
+      icon: 'whatsapp',
+    },
+    { label: 'GitHub', href: profile.github, printValue: undefined, icon: 'github' },
   ] as const;
 
   return (
@@ -171,6 +209,7 @@ function ContactLinks({ locale }: { locale: Locale }) {
             <a
               className="contact-chip"
               href={link.href}
+              data-print-value={link.printValue}
               rel={link.href.startsWith('https://') ? 'noopener noreferrer' : undefined}
             >
               <ContactIcon service={link.icon} />
@@ -339,11 +378,38 @@ export function App({
   const t = copy[locale];
   const otherLocale = locale === 'ru' ? 'en' : 'ru';
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const [copyMode, setCopyMode] = useState(false);
+  const languageHref =
+    kind === 'notes' || kind === 'note'
+      ? notePath(otherLocale, kind === 'note' ? page.replace(/^notes\//, '') : undefined)
+      : kind.startsWith('interview')
+        ? localePath(otherLocale, page)
+        : localePath(otherLocale, kind === 'not-found' ? '' : page);
   function syncLocaleLink(event: React.SyntheticEvent<HTMLAnchorElement>) {
     if (kind === 'interview-session')
       event.currentTarget.href = `${localePath(otherLocale, page)}${window.location.search}`;
   }
+  useEffect(() => {
+    const closeOnDesktop = () => {
+      if (window.innerWidth > 760) setMenuOpen(false);
+    };
+    closeOnDesktop();
+    window.addEventListener('resize', closeOnDesktop);
+    return () => window.removeEventListener('resize', closeOnDesktop);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
+
   useEffect(() => {
     if (kind === 'evolution')
       void import('./evolution').then(({ enhanceEvolution }) => enhanceEvolution());
@@ -365,57 +431,52 @@ export function App({
       <header className="site-header">
         <div className="header-inner">
           <a className="wordmark" href={localePath(locale)}>
-            <span className="monogram" aria-hidden="true">
-              en.
-            </span>
+            <BrandMark />
             <span>
               {profile.name[locale]}
               <small>{profile.role[locale]}</small>
             </span>
           </a>
-          <button
-            className="menu-button"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="site-navigation"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {t.menu} <span aria-hidden="true">{menuOpen ? '−' : '+'}</span>
-          </button>
           <nav
             id="site-navigation"
             className={`site-navigation${menuOpen ? ' is-open' : ''}`}
             aria-label={t.navigation}
-            onKeyDown={(event) => {
-              if (event.key === 'Escape') {
-                setMenuOpen(false);
-                event.currentTarget.parentElement
-                  ?.querySelector<HTMLButtonElement>('.menu-button')
-                  ?.focus();
-              }
-            }}
           >
-            <a href={localePath(locale)} aria-current={kind === 'resume' ? 'page' : undefined}>
-              {t.resume}
-            </a>
-            <a
-              href={localePath(locale, 'projects')}
-              aria-current={kind === 'projects' ? 'page' : undefined}
-            >
-              {t.projects}
-            </a>
-            <a
-              href={localePath(locale, 'interview')}
-              aria-current={kind.startsWith('interview') ? 'page' : undefined}
-            >
-              {locale === 'ru' ? 'Подготовка' : 'Preparation'}
-            </a>
-            <a
-              href={notePath(locale)}
-              aria-current={kind === 'notes' || kind === 'note' ? 'page' : undefined}
-            >
-              {locale === 'ru' ? 'Заметки' : 'Notes'}
-            </a>
+            {navigationItems.map((item) => {
+              const itemData = {
+                resume: {
+                  href: localePath(locale),
+                  label: t.resume,
+                  current: kind === 'resume',
+                },
+                projects: {
+                  href: localePath(locale, 'projects'),
+                  label: t.projects,
+                  current: kind === 'projects',
+                },
+                preparation: {
+                  href: localePath(locale, 'interview'),
+                  label: t.preparation,
+                  current: kind.startsWith('interview'),
+                },
+                notes: {
+                  href: notePath(locale),
+                  label: t.notes,
+                  current: kind === 'notes' || kind === 'note',
+                },
+              }[item.id];
+              return (
+                <a
+                  key={item.id}
+                  href={itemData.href}
+                  aria-current={itemData.current ? 'page' : undefined}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <span>{itemData.label}</span>
+                  {item.status === 'beta' && <span className="navigation-status">BETA</span>}
+                </a>
+              );
+            })}
 
             {enableEvolution && (
               <a
@@ -424,36 +485,43 @@ export function App({
                 aria-label={`Evolution — ${t.openEvolution}`}
                 title={t.openEvolution}
                 aria-current={kind === 'evolution' ? 'page' : undefined}
+                onClick={() => setMenuOpen(false)}
               >
                 <OrbitIcon />
                 <span>Evolution</span>
               </a>
             )}
-            <a
-              href={
-                kind === 'notes' || kind === 'note'
-                  ? notePath(
-                      otherLocale,
-                      kind === 'note' ? page.replace(/^notes\//, '') : undefined,
-                    )
-                  : kind.startsWith('interview')
-                    ? localePath(otherLocale, page)
-                    : localePath(otherLocale, kind === 'not-found' ? '' : page)
-              }
-              onFocus={syncLocaleLink}
-              onPointerDown={syncLocaleLink}
-              onContextMenu={syncLocaleLink}
-              onClick={syncLocaleLink}
-              hrefLang={otherLocale}
-              lang={otherLocale}
-              aria-label={
-                otherLocale === 'en' ? 'EN — Switch to English' : 'RU — Переключить на русский'
-              }
-            >
-              {otherLocale === 'en' ? 'EN' : 'RU'}
-            </a>
             <ThemeButton locale={locale} />
           </nav>
+          <a
+            className="language-switcher"
+            href={languageHref}
+            onFocus={syncLocaleLink}
+            onPointerDown={syncLocaleLink}
+            onContextMenu={syncLocaleLink}
+            onClick={(event) => {
+              setMenuOpen(false);
+              syncLocaleLink(event);
+            }}
+            hrefLang={otherLocale}
+            lang={otherLocale}
+            aria-label={
+              otherLocale === 'en' ? 'EN — Switch to English' : 'RU — Переключить на русский'
+            }
+          >
+            {otherLocale === 'en' ? 'EN' : 'RU'}
+          </a>
+          <button
+            ref={menuButtonRef}
+            className="menu-button"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="site-navigation"
+            aria-label={menuOpen ? t.closeMenu : t.openMenu}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <MenuIcon open={menuOpen} />
+          </button>
         </div>
       </header>
       <main id="main" tabIndex={-1} className="main-content">
