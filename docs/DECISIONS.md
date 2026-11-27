@@ -7,6 +7,8 @@
 - Keep the locale link outside the collapsible `nav` and reuse the existing localized route helpers, including Study Flow query synchronization and Notes fallback behavior. Theme persistence remains owned by the existing `ThemeButton`/`localStorage` mechanism.
 - Use minimal inline decorative SVG paths for hamburger/close states because the project has no general icon dependency. The semantic button owns localized labels, expanded state and focus restoration.
 - Preserve the existing 760 px breakpoint. Visual and automated checks at 759/760/761 px showed no need for a breakpoint change.
+- Keep Evolution as a circular 44 × 44 px icon-only control at every breakpoint. Explicit fixed dimensions and `flex: 0 0 44px` prevent shared navigation rules from deforming it.
+- Keep the shared header sticky with the existing background token and a local stacking context, so the wordmark and controls remain available after the page title leaves the viewport.
 
 ## Study Flow Phase 2R — R0 evidence and provisional quarantine (2026-11-23)
 

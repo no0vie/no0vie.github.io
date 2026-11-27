@@ -158,6 +158,45 @@ test('header remains stable around its breakpoint and representative viewports',
   }
 });
 
+test('Evolution control remains circular at every responsive width', async ({ page }) => {
+  await page.goto('en');
+  for (const width of [320, 375, 430, 760, 761, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const toggle = page.locator('.menu-button');
+    if (width <= 760) await toggle.click();
+
+    const evolution = page.getByRole('link', { name: 'Evolution — Open career evolution map' });
+    await expect(evolution).toBeVisible();
+    const dimensions = await evolution.evaluate((element) => {
+      const link = element.getBoundingClientRect();
+      const icon = element.querySelector('svg')?.getBoundingClientRect();
+      return {
+        width: link.width,
+        height: link.height,
+        iconWidth: icon?.width,
+        iconHeight: icon?.height,
+      };
+    });
+    expect(dimensions).toEqual({ width: 44, height: 44, iconWidth: 20, iconHeight: 20 });
+    await expectNoHorizontalOverflow(page);
+
+    if (width <= 760) await toggle.click();
+  }
+});
+
+test('header remains pinned after the page title leaves the viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 700 });
+  await page.goto('en');
+
+  await page.locator('#resume-title').scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollTo(0, 900));
+  await expect(page.locator('#resume-title')).not.toBeInViewport();
+  await expect(page.locator('.wordmark')).toBeInViewport();
+  expect(
+    await page.locator('.site-header').evaluate((header) => header.getBoundingClientRect().top),
+  ).toBe(0);
+});
+
 test('rapid menu toggles keep icon, label and expanded state synchronized', async ({ page }) => {
   await page.setViewportSize({ width: 430, height: 900 });
   await page.goto('en');

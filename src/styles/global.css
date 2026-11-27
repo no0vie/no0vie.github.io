@@ -142,7 +142,11 @@ button:hover {
   transform: translateY(0);
 }
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   border-bottom: 1px solid var(--border);
+  background: var(--background);
 }
 .header-inner,
 .main-content,
@@ -1172,17 +1176,28 @@ button:hover {
   padding-left: 1.2rem;
 }
 
-.evolution-link {
+.site-navigation > .evolution-link {
   display: inline-flex;
+  flex: 0 0 44px;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: center;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
   min-height: 44px;
-  padding-inline: 0.65rem !important;
+  padding: 0;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  font-size: 0.82rem;
+  border-radius: 50%;
+}
+.evolution-link span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 .orbit-icon {
+  flex: 0 0 20px;
   width: 20px;
   height: 20px;
   overflow: visible;
@@ -1506,18 +1521,6 @@ button:hover {
   }
 }
 @media (max-width: 760px) {
-  .evolution-link span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  .evolution-link {
-    justify-content: center;
-    width: 44px;
-    padding: 0 !important;
-  }
   .evolution-intro {
     display: block;
   }

@@ -55,6 +55,8 @@ Acceptance status is **PARTIAL** only because whole-worktree lint has 41 pre-exi
 - Mobile navigation uses a vertical layout; the theme selector remains inside it.
 - A single cleaned-up resize listener resets local menu state above 760 px.
 - Verified no horizontal overflow and 44 px targets across representative widths.
+- Made the site header sticky at the top of the viewport with the existing semantic background token, so the wordmark remains available after the page title scrolls out of view.
+- Locked the Evolution control to a non-shrinking circular 44 × 44 px icon-only target at every breakpoint.
 
 ### 4.4. BETA Navigation Status
 
@@ -88,22 +90,24 @@ No PDF generator, PDF template, résumé content, project content, Study Flow co
 
 ## 7. Functional Verification
 
-| Area                           | Status | Evidence                            |
-| ------------------------------ | ------ | ----------------------------------- |
-| Locale switch outside menu     | PASS   | RU/EN mobile role assertions        |
-| Route preservation             | PASS   | `/ru/projects` → `/en/projects`     |
-| Theme preservation             | PASS   | persisted dark theme remains active |
-| Menu open/close and icon state | PASS   | role, SVG and expanded assertions   |
-| Escape and focus return        | PASS   | keyboard E2E                        |
-| Close after navigation/locale  | PASS   | E2E                                 |
-| Desktop transition reset       | PASS   | 390 → 1024 → 390 E2E                |
-| BETA scope                     | PASS   | Preparation/Notes only, RU/EN       |
-| Additional navigation/theme    | PASS   | full existing E2E suite             |
-| Back/forward and direct routes | PASS   | full existing E2E suite             |
+| Area                           | Status | Evidence                             |
+| ------------------------------ | ------ | ------------------------------------ |
+| Locale switch outside menu     | PASS   | RU/EN mobile role assertions         |
+| Route preservation             | PASS   | `/ru/projects` → `/en/projects`      |
+| Theme preservation             | PASS   | persisted dark theme remains active  |
+| Menu open/close and icon state | PASS   | role, SVG and expanded assertions    |
+| Escape and focus return        | PASS   | keyboard E2E                         |
+| Close after navigation/locale  | PASS   | E2E                                  |
+| Desktop transition reset       | PASS   | 390 → 1024 → 390 E2E                 |
+| BETA scope                     | PASS   | Preparation/Notes only, RU/EN        |
+| Additional navigation/theme    | PASS   | full existing E2E suite              |
+| Evolution circular geometry    | PASS   | 44 × 44 px across responsive widths  |
+| Sticky header after scrolling  | PASS   | title leaves viewport; brand remains |
+| Back/forward and direct routes | PASS   | full existing E2E suite              |
 
 ## 8. Responsive Verification
 
-Automated header checks cover 320, 375, 390, 430, 759, 760, 761, 768, 1024, 1280, 1440 and 1920 px in light and dark reduced-motion modes. Mobile open/closed overflow, desktop navigation visibility, locale visibility and minimum target sizes pass.
+Automated header checks cover 320, 375, 390, 430, 759, 760, 761, 768, 1024, 1280, 1440 and 1920 px in light and dark reduced-motion modes. Mobile open/closed overflow, desktop navigation visibility, locale visibility and minimum target sizes pass. Evolution geometry is asserted at 320–1440 px, and the sticky header is verified after the resume title leaves the viewport.
 
 ## 9. Accessibility Verification
 
@@ -123,7 +127,8 @@ Automated header checks cover 320, 375, 390, 430, 759, 760, 761, 768, 1024, 1280
 - Before: `docs/quick-fix-01/before/`
 - After: `docs/quick-fix-01/after/`
 - Covered: RU/EN desktop, RU/EN mobile closed/open, light theme, representative dark states and 320 px dark mobile.
-- Visual inspection found no overlap, clipping, horizontal overflow or brand changes.
+- Added focused screenshots for the open mobile Evolution control, the scrolled sticky mobile header and the dark desktop Evolution control.
+- Visual inspection found no deformation, overlap, clipping, horizontal overflow or brand changes.
 
 ## 11. Test Results
 
@@ -131,8 +136,8 @@ Automated header checks cover 320, 375, 390, 430, 759, 760, 761, 768, 1024, 1280
 | ------------------- | ------ | ----------------------------------------------------- |
 | Unit                | PASS   | 136/136 in 16 files                                   |
 | Integration         | N/A    | No separate integration command; covered by build/E2E |
-| Focused header E2E  | PASS   | 9/9                                                   |
-| Full E2E            | PASS   | 71/71                                                 |
+| Focused header E2E  | PASS   | 11/11                                                 |
+| Full E2E            | PASS   | 73/73                                                 |
 | Format              | PASS   | Repository format check                               |
 | Targeted lint       | PASS   | Changed TypeScript/E2E files                          |
 | Whole-worktree lint | FAIL   | Same 41 baseline errors in untouched `examples/`      |
