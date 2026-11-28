@@ -110,6 +110,18 @@ export const careerSkills = [
     branchId: 'application-architecture',
     title: { ru: 'Архитектурные компромиссы', en: 'Architecture trade-offs' },
   },
+  {
+    id: 'production-reliability',
+    category: 'management',
+    branchId: 'engineering-practices',
+    title: { ru: 'Надёжность production', en: 'Production reliability' },
+  },
+  {
+    id: 'api-security',
+    category: 'backend',
+    branchId: 'data-services',
+    title: { ru: 'Защита API', en: 'API security' },
+  },
 ] satisfies ResumeSkill[];
 
 careerSkills.forEach((skill) => resumeSkillSchema.parse(skill));
@@ -149,6 +161,8 @@ export const skillGroups = [
       'AI Agents / Agentic Workflows',
       'Code Review',
       'Automated Testing',
+      'Production Reliability',
+      'API Security',
     ],
   },
 ] satisfies SkillGroup[];

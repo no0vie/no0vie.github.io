@@ -29,12 +29,12 @@ const presentation = {
     highlightIds: [
       'campaign-wizard',
       'template-editors',
-      'validation-feedback',
       'crm-trends-landing',
+      'public-service-reliability',
     ],
     capabilities: {
-      ru: ['Расширяемая архитектура', 'Инженерные инструменты', 'ИИ-инструменты'],
-      en: ['Extensible architecture', 'Engineering tooling', 'AI-assisted development'],
+      ru: ['Расширяемая архитектура', 'Надёжность production', 'Защита API'],
+      en: ['Extensible architecture', 'Production reliability', 'API protection'],
     },
   },
 } as const satisfies Record<

@@ -143,7 +143,10 @@ export const experienceSchema = z
         (items) => new Set(items.map(({ skillId }) => skillId)).size === items.length,
         'Experience skill IDs must be unique',
       ),
-    caseStudySlugs: z.array(z.literal('campaign-wizard')).max(1),
+    caseStudySlugs: z
+      .array(z.enum(['campaign-wizard', 'public-service-reliability']))
+      .max(2)
+      .refine((items) => new Set(items).size === items.length, 'Case study slugs must be unique'),
   })
   .strict()
   .refine(({ start, end }) => end === undefined || start <= end, {

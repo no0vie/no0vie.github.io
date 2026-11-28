@@ -55,7 +55,7 @@ export const seedContent = {
       telegram: 'https://t.me/no_0vie',
       whatsapp: 'https://wa.me/qr/XFZZQSNXJCSBL1',
     },
-    updated: '2026-11-13',
+    updated: '2026-11-28',
   },
   availability: {
     status: 'available',
@@ -87,11 +87,11 @@ export const seedContent = {
       ),
     },
     {
-      id: 'production-mentoring',
-      heading: localized('Продукт и эксплуатация', 'Product and operations'),
+      id: 'public-service-reliability',
+      heading: localized('Надёжность публичных сервисов', 'Public-facing service reliability'),
       text: localized(
-        'Совмещал продуктовую разработку с дежурствами в продакшене, расследованием инцидентов и наставничеством.',
-        'Combined product development with production on-call work, incident investigation, and mentoring.',
+        'Повысил надёжность интеграций публичного лендинга и обеспечил серверный контроль корректности заявок. Устранил причину передачи некорректных данных в бизнес-системы, выпустив исправление в день обращения.',
+        'Improved the reliability of a public-facing landing page and enforced server-side submission validation. Resolved the root cause of invalid data reaching downstream business systems and deployed the fix on the same day the issue was reported.',
       ),
     },
   ],
@@ -140,6 +140,11 @@ export const seedContent = {
           'Built a landing page for an industry event in one evening using AI-assisted development tools.',
         ),
         achievement(
+          'public-service-reliability',
+          'Повысил надёжность интеграций публичного лендинга: изолировал непродуктивные окружения от реальной отправки данных по умолчанию, реализовал серверную валидацию заявок и локальное ограничение частоты запросов к публичному API. Устранил причину передачи некорректных заявок в смежные бизнес-системы и выпустил исправление в production в день обращения маркетинга.',
+          'Improved the integration reliability of a public-facing landing page by preventing unintended submissions from non-production environments, implementing server-side submission validation, and introducing per-instance API rate limiting. Resolved the root cause of invalid submissions reaching downstream business systems and deployed the fix to production on the same day the issue was reported by marketing.',
+        ),
+        achievement(
           'ai-first-sdd',
           'Применяю AI-first Engineering и Spec-Driven Development в коммерческой разработке: формализую требования и архитектурные решения, использую AI-агентов для реализации, анализа изменений, подготовки тестов и проверки результатов, сохраняя инженерный контроль.',
           'Apply AI-first engineering and Spec-Driven Development in commercial software delivery: formalize requirements and architectural decisions, and use AI agents to support implementation, change analysis, test preparation, and result verification while retaining engineering ownership.',
@@ -165,9 +170,11 @@ export const seedContent = {
         { skillId: 'ux-validation', achievementId: 'validation-feedback' },
         { skillId: 'nestjs-bff', achievementId: 'data-tooling' },
         { skillId: 'architecture-tradeoffs', achievementId: 'campaign-wizard' },
+        { skillId: 'production-reliability', achievementId: 'public-service-reliability' },
+        { skillId: 'api-security', achievementId: 'public-service-reliability' },
         { skillId: 'mentoring', graphVisible: false },
       ],
-      caseStudySlugs: ['campaign-wizard'],
+      caseStudySlugs: ['campaign-wizard', 'public-service-reliability'],
     },
     {
       id: 'yandex-market',

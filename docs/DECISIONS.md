@@ -1,5 +1,14 @@
 # Decisions and phase log
 
+## Public-facing service reliability case (2026-11-28)
+
+- Publish the November 2026 work as one reliability achievement spanning safe non-production defaults, server-side submission validation, same-day incident response and per-instance API rate limiting. Preserve the existing AI-assisted landing-page achievement as a separate bullet because the supplied facts do not confirm that both stories concern the same product.
+- Keep the campaign wizard first in Highlights and Selected Case Studies. Replace only the generic Product and operations highlight; retain Yandex Market production on-call and mentoring achievements unchanged.
+- Describe rate limiting explicitly as per-instance. Do not publish endpoints, control parameters, identification rules, limits, bypass details, percentages, spam-elimination claims or attack classifications. State that the mechanism is not distributed protection, a WAF or a comprehensive DDoS solution.
+- Reuse the existing text-section case template. It has no diagram model, so omit the optional before/after diagram rather than introducing a one-off rendering architecture for this content update.
+- Add Production Reliability and API Security to the existing Engineering Practices group; do not create a Cybersecurity category. Update the MTS Evolution stage from generic tooling/AI capability labels to the newly evidenced reliability and API-protection capabilities.
+- Set the canonical content date to `2026-11-28`; localized pages and both PDF filenames continue to derive from that single field.
+
 ## Responsive header and navigation Quick Fix 01 (2026-11-27)
 
 - Keep menu state local to `App`; reset it with one cleaned-up `resize` listener when the viewport crosses above the existing 760 px CSS breakpoint. Do not persist or globalize this transient UI state.

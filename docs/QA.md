@@ -1,5 +1,12 @@
 # QA evidence and open checks
 
+## Public-facing service reliability case (2026-11-28)
+
+- TDD evidence: focused content and route tests first failed on the missing MTS achievement, third highlight, second case slug, new Engineering Practices skills and updated PDF date. After implementation, the focused content/routes/Evolution/clipboard unit set passed 45/45.
+- `npm run validate` passed completely: formatting, lint and strict typecheck; 136/136 unit tests; production build; mandatory RU/EN PDFs named with `2026-11-28`; and 75/75 Playwright tests. The new RU/EN case routes passed direct-link status, canonical/hreflang, locale switching, no-JavaScript fallback and axe checks.
+- Responsive browser coverage remained green at 320, 375, 768, 1024, 1280 and 1440 px in light/dark reduced-motion modes. Evolution passed with the two new verified capability nodes. `git diff --check` passed.
+- Build retains the existing non-fatal Zod annotation and chunk-size warnings. Automated PDF structure/download checks passed; no independent page-by-page visual PDF review or live GitHub Pages deployment was performed before push.
+
 ## Responsive header and navigation Quick Fix 01 (2026-11-27)
 
 - Baseline before implementation: formatting, typecheck, 136/136 unit tests, production build and 62/62 E2E passed. Whole-worktree lint failed on 41 pre-existing errors in the untouched, untracked `examples/` working set.
