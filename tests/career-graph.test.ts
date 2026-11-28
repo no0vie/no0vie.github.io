@@ -54,6 +54,12 @@ describe('buildCareerGraph', () => {
       target: 'yandex-market:typescript',
       type: 'evolution',
     });
+    expect(graph.nodes).toContainEqual(
+      expect.objectContaining({
+        id: 'mts-web-services:regulatory-compliance',
+        stageId: 'mts-web-services',
+      }),
+    );
     expect(new Set(graph.nodes.map(({ id }) => id)).size).toBe(graph.nodes.length);
     expect(new Set(graph.edges.map(({ id }) => id)).size).toBe(graph.edges.length);
   });

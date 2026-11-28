@@ -2,36 +2,38 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 const enabled = process.env.ENABLE_EVOLUTION !== 'false';
 for (const locale of ['ru', 'en']) {
-  test(`${locale}: case deep link, locale parity, static fallback and axe`, async ({
-    page,
-    browser,
-    baseURL,
-  }) => {
-    const errors: string[] = [];
-    page.on('pageerror', (error) => errors.push(error.message));
-    expect((await page.goto(`${locale}/cases/campaign-wizard`))?.status()).toBe(200);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-      'href',
-      new RegExp(`/${locale}/cases/campaign-wizard$`),
-    );
-    await expect(page.locator('link[hreflang="en"]')).toHaveAttribute(
-      'href',
-      /\/en\/cases\/campaign-wizard$/,
-    );
-    await expect(page.locator('#results')).toBeVisible();
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-    await page.locator('a[hreflang]').click();
-    await expect(page).toHaveURL(
-      new RegExp(`/${locale === 'en' ? 'ru' : 'en'}/cases/campaign-wizard/?$`),
-    );
-    const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
-    const staticPage = await context.newPage();
-    await staticPage.goto(`${locale}/cases/campaign-wizard`);
-    await expect(staticPage.locator('#lessons')).toBeVisible();
-    await context.close();
-    expect(errors).toEqual([]);
-    expect((await page.goto(`${locale}/cases/missing`))?.status()).toBe(404);
-  });
+  for (const slug of ['campaign-wizard', 'public-service-reliability']) {
+    test(`${locale}: ${slug} deep link, locale parity, static fallback and axe`, async ({
+      page,
+      browser,
+      baseURL,
+    }) => {
+      const errors: string[] = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      expect((await page.goto(`${locale}/cases/${slug}`))?.status()).toBe(200);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        new RegExp(`/${locale}/cases/${slug}$`),
+      );
+      await expect(page.locator('link[hreflang="en"]')).toHaveAttribute(
+        'href',
+        new RegExp(`/en/cases/${slug}$`),
+      );
+      await expect(page.locator('#results')).toBeVisible();
+      expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+      await page.locator('a[hreflang]').click();
+      await expect(page).toHaveURL(
+        new RegExp(`/${locale === 'en' ? 'ru' : 'en'}/cases/${slug}/?$`),
+      );
+      const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+      const staticPage = await context.newPage();
+      await staticPage.goto(`${locale}/cases/${slug}`);
+      await expect(staticPage.locator('#lessons')).toBeVisible();
+      await context.close();
+      expect(errors).toEqual([]);
+      expect((await page.goto(`${locale}/cases/missing`))?.status()).toBe(404);
+    });
+  }
   test(`${locale}: evolution flag, keyboard, mobile, reduced motion and fallback`, async ({
     page,
     browser,
@@ -55,7 +57,7 @@ for (const locale of ['ru', 'en']) {
     await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
     await expect(page.locator('.career-graph')).toBeVisible();
     const graphNodes = page.locator('[data-node-id] > .universal-node');
-    await expect(graphNodes).toHaveCount(24);
+    await expect(graphNodes).toHaveCount(27);
     await expect(graphNodes.first()).toBeVisible();
     await graphNodes.first().focus();
     await page.keyboard.press('Enter');

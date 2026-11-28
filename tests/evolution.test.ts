@@ -37,6 +37,20 @@ describe('Evolution stage adapter', () => {
     },
   );
 
+  it('presents reliability, regulatory compliance and AI delivery as distinct MTS highlights', () => {
+    const ru = getEvolutionStages('ru').find(({ id }) => id === 'mts-web-services');
+    const en = getEvolutionStages('en').find(({ id }) => id === 'mts-web-services');
+
+    expect(ru?.highlights.join(' ')).toMatch(
+      /технический долг.*всех публичных лендингов.*новый лендинг/is,
+    );
+    expect(en?.highlights.join(' ')).toMatch(
+      /technical debt.*all public-facing landing pages.*new event landing page/is,
+    );
+    expect(ru?.capabilities).toContain('Регуляторные требования');
+    expect(en?.capabilities).toContain('Regulatory compliance');
+  });
+
   it('keeps localized presentation metadata aligned by stable stage ID', () => {
     const ru = getEvolutionStages('ru');
     const en = getEvolutionStages('en');

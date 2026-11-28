@@ -55,7 +55,7 @@ export const seedContent = {
       telegram: 'https://t.me/no_0vie',
       whatsapp: 'https://wa.me/qr/XFZZQSNXJCSBL1',
     },
-    updated: '2026-11-13',
+    updated: '2026-11-28',
   },
   availability: {
     status: 'available',
@@ -87,11 +87,11 @@ export const seedContent = {
       ),
     },
     {
-      id: 'production-mentoring',
-      heading: localized('Продукт и эксплуатация', 'Product and operations'),
+      id: 'public-service-reliability',
+      heading: localized('Надёжность публичных сервисов', 'Public-facing service reliability'),
       text: localized(
-        'Совмещал продуктовую разработку с дежурствами в продакшене, расследованием инцидентов и наставничеством.',
-        'Combined product development with production on-call work, incident investigation, and mentoring.',
+        'Повысил надёжность существующего публичного сервиса, устранил причину передачи некорректных заявок в бизнес-системы и обеспечил выпуск исправления в день обращения маркетинга.',
+        'Improved the reliability of an existing public-facing service, resolved the root cause of invalid submissions reaching business systems, and delivered the fix on the same day it was reported by marketing.',
       ),
     },
   ],
@@ -135,9 +135,19 @@ export const seedContent = {
           'Used Node.js and NestJS for data preparation and transformation; worked on engineering scripts and Linux deployment portability.',
         ),
         achievement(
+          'public-service-reliability',
+          'В ходе развития существующего публичного лендинга выявил и устранил накопленный технический долг, повысил надёжность интеграций, внедрил серверную валидацию и дополнительную защиту API. Обеспечил выпуск исправления в production в день обращения маркетинга.',
+          'Identified and addressed pre-existing technical debt while enhancing an existing public-facing landing page. Improved integration reliability, implemented server-side validation and additional API protection, and delivered a production fix on the same day the issue was reported by marketing.',
+        ),
+        achievement(
+          'regulatory-compliance',
+          'В рамках комплексного развития всех публичных лендингов адаптировал общие технические решения к требованиям законодательства о персональных данных (152-ФЗ), способствуя снижению правовых и финансовых рисков компании.',
+          'Adapted shared technical solutions across all public-facing landing pages to support compliance with applicable personal data protection requirements, helping mitigate regulatory and financial risks for the company.',
+        ),
+        achievement(
           'crm-trends-landing',
-          'С использованием ИИ-инструментов разработал лендинг для отраслевого мероприятия за один вечер.',
-          'Built a landing page for an industry event in one evening using AI-assisted development tools.',
+          'Разработал новый лендинг для отраслевого мероприятия за один вечер с использованием AI-инструментов.',
+          'Delivered a new event landing page in a single evening using AI-assisted development tools.',
         ),
         achievement(
           'ai-first-sdd',
@@ -165,9 +175,12 @@ export const seedContent = {
         { skillId: 'ux-validation', achievementId: 'validation-feedback' },
         { skillId: 'nestjs-bff', achievementId: 'data-tooling' },
         { skillId: 'architecture-tradeoffs', achievementId: 'campaign-wizard' },
+        { skillId: 'production-reliability', achievementId: 'public-service-reliability' },
+        { skillId: 'api-security', achievementId: 'public-service-reliability' },
+        { skillId: 'regulatory-compliance', achievementId: 'regulatory-compliance' },
         { skillId: 'mentoring', graphVisible: false },
       ],
-      caseStudySlugs: ['campaign-wizard'],
+      caseStudySlugs: ['campaign-wizard', 'public-service-reliability'],
     },
     {
       id: 'yandex-market',

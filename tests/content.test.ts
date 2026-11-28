@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { cases } from '../src/content/cases';
 import {
   achievementSchema,
   availability,
@@ -61,6 +62,11 @@ describe('approved bilingual content', () => {
     ]);
     expect(experience.find(({ id }) => id === 'mts-web-services')?.caseStudySlugs).toEqual([
       'campaign-wizard',
+      'public-service-reliability',
+    ]);
+    expect(cases.map(({ slug }) => slug)).toEqual([
+      'campaign-wizard',
+      'public-service-reliability',
     ]);
     expect(experience.find(({ id }) => id === 'mts-web-services')?.links).toEqual([
       { label: 'OMNI', url: 'https://omnichannel.mts.ru/' },
@@ -161,7 +167,10 @@ describe('approved bilingual content', () => {
       experienceSchema.safeParse({ ...item, caseStudySlugs: ['unverified-case'] }).success,
     ).toBe(false);
     expect(
-      experienceSchema.safeParse({ ...item, caseStudySlugs: ['campaign-wizard'] }).success,
+      experienceSchema.safeParse({
+        ...item,
+        caseStudySlugs: ['campaign-wizard', 'public-service-reliability'],
+      }).success,
     ).toBe(true);
   });
 
@@ -276,7 +285,24 @@ describe('approved bilingual content', () => {
     const mtsSurfaces = JSON.stringify([highlights[0], mts]);
     expect(mts?.employer).toEqual({ ru: 'МТС Веб Сервисы', en: 'MTS Web Services' });
     expect(mts?.role).toEqual({ ru: 'Ведущий разработчик', en: 'Senior Developer' });
-    expect(mts?.achievements).toHaveLength(6);
+    expect(mts?.achievements).toHaveLength(8);
+    expect(mts?.achievements.map(({ id }) => id).slice(4, 7)).toEqual([
+      'public-service-reliability',
+      'regulatory-compliance',
+      'crm-trends-landing',
+    ]);
+    expect(mts?.achievements.find(({ id }) => id === 'public-service-reliability')?.text).toEqual({
+      ru: 'В ходе развития существующего публичного лендинга выявил и устранил накопленный технический долг, повысил надёжность интеграций, внедрил серверную валидацию и дополнительную защиту API. Обеспечил выпуск исправления в production в день обращения маркетинга.',
+      en: 'Identified and addressed pre-existing technical debt while enhancing an existing public-facing landing page. Improved integration reliability, implemented server-side validation and additional API protection, and delivered a production fix on the same day the issue was reported by marketing.',
+    });
+    expect(mts?.achievements.find(({ id }) => id === 'regulatory-compliance')?.text).toEqual({
+      ru: 'В рамках комплексного развития всех публичных лендингов адаптировал общие технические решения к требованиям законодательства о персональных данных (152-ФЗ), способствуя снижению правовых и финансовых рисков компании.',
+      en: 'Adapted shared technical solutions across all public-facing landing pages to support compliance with applicable personal data protection requirements, helping mitigate regulatory and financial risks for the company.',
+    });
+    expect(mts?.achievements.find(({ id }) => id === 'crm-trends-landing')?.text).toEqual({
+      ru: 'Разработал новый лендинг для отраслевого мероприятия за один вечер с использованием AI-инструментов.',
+      en: 'Delivered a new event landing page in a single evening using AI-assisted development tools.',
+    });
     expect(mts?.achievements.find(({ id }) => id === 'ai-first-sdd')?.text).toEqual({
       ru: 'Применяю AI-first Engineering и Spec-Driven Development в коммерческой разработке: формализую требования и архитектурные решения, использую AI-агентов для реализации, анализа изменений, подготовки тестов и проверки результатов, сохраняя инженерный контроль.',
       en: 'Apply AI-first engineering and Spec-Driven Development in commercial software delivery: formalize requirements and architectural decisions, and use AI agents to support implementation, change analysis, test preparation, and result verification while retaining engineering ownership.',
@@ -300,6 +326,46 @@ describe('approved bilingual content', () => {
       ru: 'Спроектировал расширяемую архитектуру мастера каскадных кампаний, сократив добавление новых каналов и замену редакторов с примерно двух недель до 1–2 рабочих дней.',
       en: 'Designed an extensible cascade campaign wizard architecture, reducing the effort to add new channels or replace editors from roughly two weeks to 1–2 working days.',
     });
+    expect(highlights[2]).toEqual({
+      id: 'public-service-reliability',
+      heading: {
+        ru: 'Надёжность публичных сервисов',
+        en: 'Public-facing service reliability',
+      },
+      text: {
+        ru: 'Повысил надёжность существующего публичного сервиса, устранил причину передачи некорректных заявок в бизнес-системы и обеспечил выпуск исправления в день обращения маркетинга.',
+        en: 'Improved the reliability of an existing public-facing service, resolved the root cause of invalid submissions reaching business systems, and delivered the fix on the same day it was reported by marketing.',
+      },
+    });
+
+    const reliabilityCase = cases.find(({ slug }) => slug === 'public-service-reliability');
+    if (reliabilityCase?.slug !== 'public-service-reliability') {
+      throw new Error('Expected the public service reliability case');
+    }
+    expect(reliabilityCase.title).toEqual({
+      ru: 'Развитие и повышение надёжности публичного сервиса',
+      en: 'Improving the Reliability of an Existing Public-Facing Service',
+    });
+    expect(Object.keys(reliabilityCase.sections)).toEqual([
+      'context',
+      'constraints',
+      'approach',
+      'environmentIsolation',
+      'serverValidation',
+      'apiProtection',
+      'broaderContext',
+      'results',
+      'lessons',
+    ]);
+    expect(reliabilityCase.sections.broaderContext.ru).toMatch(
+      /всех публичных лендингов.*персональных данных.*правовых и финансовых рисков/i,
+    );
+    expect(reliabilityCase.sections.broaderContext.en).toMatch(
+      /all public-facing landing pages.*personal data protection.*regulatory and financial risks/i,
+    );
+    expect(JSON.stringify(reliabilityCase)).not.toMatch(
+      /test и stage|test and stage|server instance|серверного инстанса|WAF|DDoS|per-instance|процент|percent|порог|threshold|\/api\/|user id|идентификатор пользователя|до нуля|to zero/i,
+    );
 
     const tensor = experience.find(({ id }) => id === 'tensor');
     expect(JSON.stringify(tensor)).toMatch(
@@ -372,6 +438,9 @@ describe('approved bilingual content', () => {
         'AI Agents / Agentic Workflows',
         'Code Review',
         'Automated Testing',
+        'Production Reliability',
+        'API Security',
+        'Regulatory Compliance',
       ]),
     );
     const practices = skillGroups.find(({ id }) => id === 'engineering-practices');

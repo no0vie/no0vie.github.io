@@ -1,5 +1,28 @@
 # Decisions and phase log
 
+## Public Service Reliability & Regulatory Compliance v3 (2026-11-28)
+
+This decision supersedes the public wording and scope decisions in “Public-facing service reliability case” below without deleting that historical record.
+
+- **D1:** The AI-assisted event landing page is a new product and is distinct from the existing landing page in the reliability case. Keep its one-evening delivery as a separate achievement and do not imply that AI-assisted development created the other product’s technical debt.
+- **D2:** The reliability achievement concerns pre-existing technical debt identified while enhancing an existing public-facing service. Preserve integration reliability, server-side validation, additional API protection and the same-day production fix; do not identify who created the debt.
+- **D3:** Personal-data regulatory work applied to shared technical solutions across all public-facing landing pages in the relevant product area, not only the service in the reliability case. Do not infer a platform, shared library or centralized infrastructure.
+- **D4:** Regulatory Compliance is a separate commercial achievement and an engineering competency, not a claim of legal, audit, cybersecurity or comprehensive compliance expertise.
+- **D5:** The detailed reliability case may include the broader regulatory context in a semantically separate section, but regulatory work is not presented as a result of the production incident or as exclusive to one service.
+- **D6:** No measured business metrics are available. Describe reduced legal, financial and operational risk as intended or risk-mitigation value; do not claim zero invalid submissions, measured marketing-load reduction, prevented penalties or guaranteed legal compliance.
+- **D7:** Continue in the existing `feat/public-service-reliability` head branch of PR #14. Do not merge, create a replacement PR or deploy production as part of this revision.
+- **D8:** HH and LinkedIn updates remain deferred until the site changes are accepted and published.
+- Keep rate limiting at the public abstraction level of “additional API protection”: do not expose environment names, mode controls, protection parameters, request-identification details or internal state/storage architecture. Remove the previous public negative-security disclaimer section rather than enumerating unsupported protection classes.
+
+## Public-facing service reliability case (2026-11-28)
+
+- Publish the November 2026 work as one reliability achievement spanning safe non-production defaults, server-side submission validation, same-day incident response and per-instance API rate limiting. Preserve the existing AI-assisted landing-page achievement as a separate bullet because the supplied facts do not confirm that both stories concern the same product.
+- Keep the campaign wizard first in Highlights and Selected Case Studies. Replace only the generic Product and operations highlight; retain Yandex Market production on-call and mentoring achievements unchanged.
+- Describe rate limiting explicitly as per-instance. Do not publish endpoints, control parameters, identification rules, limits, bypass details, percentages, spam-elimination claims or attack classifications. State that the mechanism is not distributed protection, a WAF or a comprehensive DDoS solution.
+- Reuse the existing text-section case template. It has no diagram model, so omit the optional before/after diagram rather than introducing a one-off rendering architecture for this content update.
+- Add Production Reliability and API Security to the existing Engineering Practices group; do not create a Cybersecurity category. Update the MTS Evolution stage from generic tooling/AI capability labels to the newly evidenced reliability and API-protection capabilities.
+- Set the canonical content date to `2026-11-28`; localized pages and both PDF filenames continue to derive from that single field.
+
 ## Responsive header and navigation Quick Fix 01 (2026-11-27)
 
 - Keep menu state local to `App`; reset it with one cleaned-up `resize` listener when the viewport crosses above the existing 760 px CSS breakpoint. Do not persist or globalize this transient UI state.
