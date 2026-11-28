@@ -88,6 +88,26 @@ describe('professional CV projection', () => {
     expect(availability.label.en).toBe('Open to opportunities');
   });
 
+  it('projects the three distinct landing-page workstreams into both localized PDFs', () => {
+    for (const locale of ['ru', 'en'] as const) {
+      const mts = createProfessionalCv(locale).experience.find(
+        ({ id }) => id === 'mts-web-services',
+      );
+      const text = mts?.achievements.map((achievement) => achievement.text[locale]).join(' ');
+      expect(text).toMatch(
+        locale === 'ru'
+          ? /существующего публичного лендинга/
+          : /existing public-facing landing page/,
+      );
+      expect(text).toMatch(
+        locale === 'ru' ? /всех публичных лендингов/ : /all public-facing landing pages/,
+      );
+      expect(text).toMatch(
+        locale === 'ru' ? /новый лендинг.*один вечер/ : /new event landing page.*single evening/,
+      );
+    }
+  });
+
   it('keeps substantial experience content intact', () => {
     const cv = createProfessionalCv('ru');
 

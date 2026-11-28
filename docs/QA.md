@@ -1,5 +1,13 @@
 # QA evidence and open checks
 
+## Public Service Reliability & Regulatory Compliance v3 (2026-11-28)
+
+- PR audit confirmed open PR #14 uses `feat/public-service-reliability` at the expected v2 commit before this revision; the worktree was clean and synchronized. TDD RED produced six focused failures across canonical content, clipboard, professional CV projection and Evolution before the v3 data changes. The focused suite then passed 51/51.
+- `npm run validate` passed completely: formatting, lint, strict typecheck, 139/139 unit tests, production build with mandatory RU/EN PDFs, and 75/75 Playwright tests. The case routes retained canonical/hreflang, locale switching, no-JavaScript fallback and axe coverage; responsive tests passed from 320 through 1440 px in light/dark reduced-motion modes.
+- Manual PDF review rendered and inspected every page: RU has three pages and EN has two. All five pages have readable text, stable margins, working section flow, and no clipping, overlap or blank page. RU page three contains skills, education, released project and portfolio link with substantial remaining whitespace; this is a valid populated page, not an empty export page.
+- Manual browser review covered the updated RU MTS experience and reliability case at 375 × 900 and 1440 × 1000. The case changes from the desktop label/content grid to a readable single-column mobile flow; long titles, bullets and skill tags remain contained. Existing automated checks additionally cover both locales and themes.
+- Existing non-fatal Vite/Rollup warnings remain for Zod annotation placement and the large main chunk. No live Pages deployment, HH update, LinkedIn update or PR merge was performed.
+
 ## Public-facing service reliability case (2026-11-28)
 
 - TDD evidence: focused content and route tests first failed on the missing MTS achievement, third highlight, second case slug, new Engineering Practices skills and updated PDF date. After implementation, the focused content/routes/Evolution/clipboard unit set passed 45/45.

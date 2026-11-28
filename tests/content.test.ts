@@ -285,10 +285,23 @@ describe('approved bilingual content', () => {
     const mtsSurfaces = JSON.stringify([highlights[0], mts]);
     expect(mts?.employer).toEqual({ ru: 'МТС Веб Сервисы', en: 'MTS Web Services' });
     expect(mts?.role).toEqual({ ru: 'Ведущий разработчик', en: 'Senior Developer' });
-    expect(mts?.achievements).toHaveLength(7);
+    expect(mts?.achievements).toHaveLength(8);
+    expect(mts?.achievements.map(({ id }) => id).slice(4, 7)).toEqual([
+      'public-service-reliability',
+      'regulatory-compliance',
+      'crm-trends-landing',
+    ]);
     expect(mts?.achievements.find(({ id }) => id === 'public-service-reliability')?.text).toEqual({
-      ru: 'Повысил надёжность интеграций публичного лендинга: изолировал непродуктивные окружения от реальной отправки данных по умолчанию, реализовал серверную валидацию заявок и локальное ограничение частоты запросов к публичному API. Устранил причину передачи некорректных заявок в смежные бизнес-системы и выпустил исправление в production в день обращения маркетинга.',
-      en: 'Improved the integration reliability of a public-facing landing page by preventing unintended submissions from non-production environments, implementing server-side submission validation, and introducing per-instance API rate limiting. Resolved the root cause of invalid submissions reaching downstream business systems and deployed the fix to production on the same day the issue was reported by marketing.',
+      ru: 'В ходе развития существующего публичного лендинга выявил и устранил накопленный технический долг, повысил надёжность интеграций, внедрил серверную валидацию и дополнительную защиту API. Обеспечил выпуск исправления в production в день обращения маркетинга.',
+      en: 'Identified and addressed pre-existing technical debt while enhancing an existing public-facing landing page. Improved integration reliability, implemented server-side validation and additional API protection, and delivered a production fix on the same day the issue was reported by marketing.',
+    });
+    expect(mts?.achievements.find(({ id }) => id === 'regulatory-compliance')?.text).toEqual({
+      ru: 'В рамках комплексного развития всех публичных лендингов адаптировал общие технические решения к требованиям законодательства о персональных данных (152-ФЗ), способствуя снижению правовых и финансовых рисков компании.',
+      en: 'Adapted shared technical solutions across all public-facing landing pages to support compliance with applicable personal data protection requirements, helping mitigate regulatory and financial risks for the company.',
+    });
+    expect(mts?.achievements.find(({ id }) => id === 'crm-trends-landing')?.text).toEqual({
+      ru: 'Разработал новый лендинг для отраслевого мероприятия за один вечер с использованием AI-инструментов.',
+      en: 'Delivered a new event landing page in a single evening using AI-assisted development tools.',
     });
     expect(mts?.achievements.find(({ id }) => id === 'ai-first-sdd')?.text).toEqual({
       ru: 'Применяю AI-first Engineering и Spec-Driven Development в коммерческой разработке: формализую требования и архитектурные решения, использую AI-агентов для реализации, анализа изменений, подготовки тестов и проверки результатов, сохраняя инженерный контроль.',
@@ -320,8 +333,8 @@ describe('approved bilingual content', () => {
         en: 'Public-facing service reliability',
       },
       text: {
-        ru: 'Повысил надёжность интеграций публичного лендинга и обеспечил серверный контроль корректности заявок. Устранил причину передачи некорректных данных в бизнес-системы, выпустив исправление в день обращения.',
-        en: 'Improved the reliability of a public-facing landing page and enforced server-side submission validation. Resolved the root cause of invalid data reaching downstream business systems and deployed the fix on the same day the issue was reported.',
+        ru: 'Повысил надёжность существующего публичного сервиса, устранил причину передачи некорректных заявок в бизнес-системы и обеспечил выпуск исправления в день обращения маркетинга.',
+        en: 'Improved the reliability of an existing public-facing service, resolved the root cause of invalid submissions reaching business systems, and delivered the fix on the same day it was reported by marketing.',
       },
     });
 
@@ -330,8 +343,8 @@ describe('approved bilingual content', () => {
       throw new Error('Expected the public service reliability case');
     }
     expect(reliabilityCase.title).toEqual({
-      ru: 'Надёжность и защищённость публичного сервиса',
-      en: 'Improving Public-Facing Service Reliability and API Protection',
+      ru: 'Развитие и повышение надёжности публичного сервиса',
+      en: 'Improving the Reliability of an Existing Public-Facing Service',
     });
     expect(Object.keys(reliabilityCase.sections)).toEqual([
       'context',
@@ -340,21 +353,18 @@ describe('approved bilingual content', () => {
       'environmentIsolation',
       'serverValidation',
       'apiProtection',
-      'boundaries',
+      'broaderContext',
       'results',
       'lessons',
     ]);
-    expect(JSON.stringify(reliabilityCase)).toMatch(
-      /отдельного серверного инстанса|server instance/i,
+    expect(reliabilityCase.sections.broaderContext.ru).toMatch(
+      /всех публичных лендингов.*персональных данных.*правовых и финансовых рисков/i,
     );
-    expect(reliabilityCase.sections.boundaries.ru).toMatch(
-      /не распредел[её]нная защита.*WAF.*DDoS/i,
-    );
-    expect(reliabilityCase.sections.boundaries.en).toMatch(
-      /not distributed protection.*WAF.*DDoS/i,
+    expect(reliabilityCase.sections.broaderContext.en).toMatch(
+      /all public-facing landing pages.*personal data protection.*regulatory and financial risks/i,
     );
     expect(JSON.stringify(reliabilityCase)).not.toMatch(
-      /процент|percent|порог|threshold|\/api\/|user id|идентификатор пользователя/i,
+      /test и stage|test and stage|server instance|серверного инстанса|WAF|DDoS|per-instance|процент|percent|порог|threshold|\/api\/|user id|идентификатор пользователя|до нуля|to zero/i,
     );
 
     const tensor = experience.find(({ id }) => id === 'tensor');
@@ -430,6 +440,7 @@ describe('approved bilingual content', () => {
         'Automated Testing',
         'Production Reliability',
         'API Security',
+        'Regulatory Compliance',
       ]),
     );
     const practices = skillGroups.find(({ id }) => id === 'engineering-practices');

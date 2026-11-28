@@ -122,6 +122,12 @@ export const careerSkills = [
     branchId: 'data-services',
     title: { ru: 'Защита API', en: 'API security' },
   },
+  {
+    id: 'regulatory-compliance',
+    category: 'management',
+    branchId: 'engineering-practices',
+    title: { ru: 'Регуляторные требования', en: 'Regulatory compliance' },
+  },
 ] satisfies ResumeSkill[];
 
 careerSkills.forEach((skill) => resumeSkillSchema.parse(skill));
@@ -163,6 +169,7 @@ export const skillGroups = [
       'Automated Testing',
       'Production Reliability',
       'API Security',
+      'Regulatory Compliance',
     ],
   },
 ] satisfies SkillGroup[];

@@ -57,7 +57,7 @@ for (const locale of ['ru', 'en']) {
     await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
     await expect(page.locator('.career-graph')).toBeVisible();
     const graphNodes = page.locator('[data-node-id] > .universal-node');
-    await expect(graphNodes).toHaveCount(26);
+    await expect(graphNodes).toHaveCount(27);
     await expect(graphNodes.first()).toBeVisible();
     await graphNodes.first().focus();
     await page.keyboard.press('Enter');

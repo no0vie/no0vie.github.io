@@ -28,13 +28,13 @@ const presentation = {
   'mts-web-services': {
     highlightIds: [
       'campaign-wizard',
-      'template-editors',
-      'crm-trends-landing',
       'public-service-reliability',
+      'regulatory-compliance',
+      'crm-trends-landing',
     ],
     capabilities: {
-      ru: ['Расширяемая архитектура', 'Надёжность production', 'Защита API'],
-      en: ['Extensible architecture', 'Production reliability', 'API protection'],
+      ru: ['Расширяемая архитектура', 'Надёжность production', 'Регуляторные требования'],
+      en: ['Extensible architecture', 'Production reliability', 'Regulatory compliance'],
     },
   },
 } as const satisfies Record<

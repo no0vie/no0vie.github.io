@@ -21,7 +21,7 @@ const reliabilitySectionsSchema = z
     environmentIsolation: localizedSchema,
     serverValidation: localizedSchema,
     apiProtection: localizedSchema,
-    boundaries: localizedSchema,
+    broaderContext: localizedSchema,
     results: localizedSchema,
     lessons: localizedSchema,
   })
@@ -90,51 +90,51 @@ export const cases = caseSchema.array().parse([
   {
     slug: 'public-service-reliability',
     title: {
-      ru: 'Надёжность и защищённость публичного сервиса',
-      en: 'Improving Public-Facing Service Reliability and API Protection',
+      ru: 'Развитие и повышение надёжности публичного сервиса',
+      en: 'Improving the Reliability of an Existing Public-Facing Service',
     },
     summary: {
-      ru: 'МТС Web Services: изоляция окружений, серверная валидация и дополнительная защита публичного API лендинга.',
-      en: 'MTS Web Services: environment isolation, server-side validation, and additional protection for a landing page’s public API.',
+      ru: 'МТС Web Services: устранение технического долга, повышение надёжности интеграций и защита данных существующего публичного сервиса.',
+      en: 'MTS Web Services: addressing technical debt, improving integration reliability, and protecting data in an existing public-facing service.',
     },
     evidence: 'confirmed',
     publishable: true,
     sections: {
       context: {
-        ru: 'Публичный лендинг передавал заявки в смежные бизнес-системы. После обращения маркетинга о некорректных заявках требовалось найти причину, восстановить целостность данных и сохранить штатную обработку корректных обращений.',
-        en: 'A public-facing landing page submitted requests to downstream business systems. After marketing reported invalid submissions, the task was to identify the root cause, restore data integrity, and preserve the normal handling of valid requests.',
+        ru: 'В рамках развития существующих публичных лендингов выполнял работы по повышению надёжности интеграций и совершенствованию общих технических решений. В ходе работы над одним из ранее существовавших сервисов был выявлен накопленный технический долг, влиявший на корректность обработки пользовательских заявок и создававший дополнительную нагрузку на бизнес-подразделения.',
+        en: 'As part of the ongoing development of existing public-facing landing pages, I worked on improving integration reliability and shared technical solutions. While enhancing one of the existing services, I identified pre-existing technical debt affecting submission processing and creating additional workload for business teams.',
       },
       constraints: {
-        ru: 'Production-функциональность и возможность интеграционного тестирования должны были сохраниться. Параметры управления отправкой, правила идентификации и настройки ограничения запросов относятся к внутренним деталям и не раскрываются.',
-        en: 'Production behavior and integration testing had to remain available. Submission controls, identification rules, and rate-limit settings are internal implementation details and are not disclosed.',
+        ru: 'Изменения должны были сохранить штатную production-функциональность, обработку корректных заявок и возможность интеграционного тестирования. Чувствительные параметры и внутренние механизмы защиты не раскрываются.',
+        en: 'The changes had to preserve normal production behavior, valid submission processing, and integration testing. Sensitive parameters and internal protection mechanisms are not disclosed.',
       },
       approach: {
-        ru: 'Работа объединила плановую изоляцию окружений с оперативным устранением причины некорректных заявок: сначала были разделены безопасные режимы отправки, затем проверка данных перенесена на серверную границу и дополнена ограничением частоты запросов.',
-        en: 'The work combined planned environment isolation with an incident-driven root-cause fix: safe submission modes were separated first, then data checks were enforced at the server boundary and complemented with request rate limiting.',
+        ru: 'Работа была разделена на три инженерных направления: надёжность интеграций и тестовых сред, обязательная серверная проверка данных и дополнительная защита публичного API. Оперативное исправление production-проблемы выполнялось отдельно от планового развития сервиса.',
+        en: 'The work covered three engineering areas: integration and test-environment reliability, mandatory server-side data validation, and additional protection for the public API. The production issue was addressed separately from the service’s planned development.',
       },
       environmentIsolation: {
-        ru: 'Для test и stage реальная отправка данных была отключена по умолчанию. Управляемые режимы позволили эмулировать успешный и неуспешный ответ либо явно включить реальную отправку для интеграционного тестирования, не меняя штатное поведение production.',
-        en: 'Real submissions from test and stage were disabled by default. Controlled modes supported successful and unsuccessful emulation or explicit real submission for integration testing, while normal production behavior remained unchanged.',
+        ru: 'Исправил тестовые среды, исключив непреднамеренную отправку данных в бизнес-системы и сохранив возможность интеграционного тестирования.',
+        en: 'Corrected test-environment behavior to prevent unintended submissions to business systems while preserving integration testing.',
       },
       serverValidation: {
-        ru: 'Анализ показал отсутствие обязательной серверной проверки. На сервере были применены существующие правила клиентской валидации: некорректные заявки перестали передаваться дальше, а корректный сценарий сохранился.',
-        en: 'The investigation found that mandatory server-side validation was missing. Existing client-side rules were enforced on the server, preventing invalid submissions from being forwarded while preserving the valid path.',
+        ru: 'Реализовал обязательную серверную валидацию на основе действующих правил обработки заявок. Заявки, не проходящие проверку, перестали передаваться дальше, при этом штатная обработка корректных заявок сохранилась.',
+        en: 'Implemented mandatory server-side validation based on the existing submission rules. Submissions that failed validation were no longer forwarded, while valid submissions continued to be processed normally.',
       },
       apiProtection: {
-        ru: 'Публичный API был дополнен ограничением частоты запросов. Состояние ограничения хранится на уровне отдельного серверного инстанса и снижает риск локальных всплесков запросов.',
-        en: 'The public API gained request rate limiting. Its state is stored on each individual server instance, reducing exposure to local request bursts.',
+        ru: 'Добавил rate limiting как дополнительную меру защиты публичного API от избыточного потока повторных запросов.',
+        en: 'Added rate limiting as an additional safeguard for the public API against excessive repeated requests.',
       },
-      boundaries: {
-        ru: 'Это локальное ограничение частоты запросов, а не распределённая защита, WAF или комплексное решение против DDoS. Кейс не утверждает полного устранения спама или предотвращения подтверждённой атаки.',
-        en: 'This is per-instance rate limiting, not distributed protection, a WAF, or a comprehensive DDoS solution. The case does not claim complete spam prevention or that a confirmed attack was stopped.',
+      broaderContext: {
+        ru: 'Параллельно в рамках развития всех публичных лендингов выполнялись доработки общих технических решений в соответствии с требованиями законодательства о персональных данных, направленные на снижение правовых и финансовых рисков компании.',
+        en: 'In parallel, shared technical solutions across all public-facing landing pages were adapted to support applicable personal data protection requirements and mitigate regulatory and financial risks.',
       },
       results: {
-        ru: 'Причина передачи заявок, не соответствовавших действующим правилам, была устранена. Исправление серверной валидации выпущено в production в день обращения маркетинга, после чего заинтересованное подразделение получило информацию о результате.',
-        en: 'The root cause of submissions violating the existing rules was removed. The server-side validation fix was deployed to production on the same day marketing reported the issue, and the stakeholder team was informed of the result.',
+        ru: 'Исключена непреднамеренная отправка данных из тестовых сред и передача заявок, не проходящих серверную валидацию. Публичный API получил дополнительную защиту, а исправление было выпущено в production в день обращения маркетинга с сохранением штатной обработки корректных заявок. Эти изменения направлены на снижение риска избыточной операционной нагрузки и повышение надёжности взаимодействия со смежными бизнес-системами.',
+        en: 'Unintended submissions from test environments and submissions failing server-side validation were prevented. The public API gained an additional safeguard, and the fix was deployed to production on the same day marketing reported the issue while valid submissions continued to be processed normally. These changes are intended to reduce the risk of excessive operational workload and improve the reliability of downstream business-system interactions.',
       },
       lessons: {
-        ru: 'Надёжность публичной интеграции требует защиты на нескольких границах: безопасных значений по умолчанию для непродуктивных окружений, обязательной серверной валидации независимо от клиента и честно обозначенных пределов локальных защитных механизмов.',
-        en: 'Reliable public integrations require controls at several boundaries: safe defaults for non-production environments, mandatory server-side validation independent of the client, and explicit limits for local protection mechanisms.',
+        ru: 'Развитие публичного веб-приложения не ограничивается реализацией пользовательского интерфейса. Инженерная ответственность включает надёжность интеграций, целостность данных и влияние технических решений на бизнес-процессы. Работа с существующими системами требует своевременного выявления и устранения накопленного технического долга.',
+        en: 'Engineering a public-facing application goes beyond implementing its user interface. Engineering ownership includes integration reliability, data integrity, and the impact of technical decisions on business processes. Maintaining existing systems requires identifying and addressing accumulated technical debt.',
       },
     },
   },

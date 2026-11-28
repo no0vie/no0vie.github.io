@@ -30,6 +30,20 @@ describe('resume clipboard blocks', () => {
     }
   });
 
+  it('exports the three distinct landing-page workstreams from canonical MTS content', () => {
+    const mts = experience.find(({ id }) => id === 'mts-web-services');
+    if (!mts) throw new Error('Expected MTS experience');
+
+    const ru = formatExperienceForClipboard(mts, 'ru');
+    const en = formatExperienceForClipboard(mts, 'en');
+    expect(ru).toMatch(/существующего публичного лендинга.*технический долг/i);
+    expect(ru).toMatch(/всех публичных лендингов.*152-ФЗ/i);
+    expect(ru).toMatch(/новый лендинг.*за один вечер.*AI-инструментов/i);
+    expect(en).toMatch(/pre-existing technical debt.*existing public-facing landing page/i);
+    expect(en).toMatch(/all public-facing landing pages.*personal data protection/i);
+    expect(en).toMatch(/new event landing page.*single evening.*AI-assisted/i);
+  });
+
   it('omits empty paragraphs, normalizes whitespace and removes duplicate bullets', () => {
     const source = experience[0];
     const duplicate = source.achievements[0];
